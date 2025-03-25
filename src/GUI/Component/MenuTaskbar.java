@@ -5,6 +5,7 @@ import GUI.Panel.QuatPanel;
 import GUI.Panel.TrangChu;
 import GUI.Panel.PhieuNhapPanel;
 import GUI.Panel.NhaCungCapPanel;
+import GUI.Panel.PhieuXuatPanel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -58,6 +59,8 @@ public class MenuTaskbar extends JPanel {
         });
         menuPanel.add(btnQuanLyQuat);
         
+        // Nút Quản lý phiếu nhập
+        
         JButton btnPhieuNhap = new JButton("Phiếu nhập");
         btnPhieuNhap.setHorizontalAlignment(SwingConstants.LEFT);
         btnPhieuNhap.addActionListener(e -> {
@@ -71,8 +74,18 @@ public class MenuTaskbar extends JPanel {
             mainFrame.setPanel(new NhaCungCapPanel());
         });
         menuPanel.add(btnNhaCungCap);
+        
+        // Nút Quản lý phiếu Xuất
+        JButton btnPhieuXuat = new JButton("Phiếu xuất");
+        btnPhieuXuat.setHorizontalAlignment(SwingConstants.LEFT);
+        btnPhieuXuat.addActionListener(e -> {
+            mainFrame.setPanel(new PhieuXuatPanel());
+        });
+        menuPanel.add(btnPhieuXuat);
+        // ...
 
-        // Thêm các nút khác (phiếu nhập, phiếu xuất, khách hàng, hóa đơn, v.v.) nếu muốn
+
+        // Thêm các nút khác 
         // ...
 
         this.add(menuPanel, BorderLayout.CENTER);
