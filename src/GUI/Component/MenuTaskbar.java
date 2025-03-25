@@ -68,7 +68,7 @@ public class MenuTaskbar extends JPanel {
         JButton btnNhaCungCap = new JButton("Nhà Cung Cấp");
         btnNhaCungCap.setHorizontalAlignment(SwingConstants.LEFT);
         btnNhaCungCap.addActionListener(e -> {
-            mainFrame.setPanel(new PhieuNhapPanel());
+            mainFrame.setPanel(new NhaCungCapPanel());
         });
         menuPanel.add(btnNhaCungCap);
 
