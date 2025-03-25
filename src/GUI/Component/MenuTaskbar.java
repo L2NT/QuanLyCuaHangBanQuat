@@ -6,6 +6,7 @@ import GUI.Panel.TrangChu;
 import GUI.Panel.PhieuNhapPanel;
 import GUI.Panel.NhaCungCapPanel;
 import GUI.Panel.PhieuXuatPanel;
+import GUI.Panel.KhuyenMaiPanel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -82,7 +83,13 @@ public class MenuTaskbar extends JPanel {
             mainFrame.setPanel(new PhieuXuatPanel());
         });
         menuPanel.add(btnPhieuXuat);
-        // ...
+        
+        // Nút quản lý khuyến mãi
+        JButton btnKhuyenMai = new JButton("Khuyến mãi");
+        btnKhuyenMai.addActionListener(e -> {
+            mainFrame.setPanel(new KhuyenMaiPanel());
+        });
+        menuPanel.add(btnKhuyenMai);
 
 
         // Thêm các nút khác 
