@@ -8,6 +8,7 @@ import GUI.Panel.PhieuNhapPanel;
 import GUI.Panel.NhaCungCapPanel;
 import GUI.Panel.PhieuXuatPanel;
 import GUI.Panel.KhuyenMaiPanel;
+import GUI.Panel.HoaDonPanel;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -61,6 +62,14 @@ public class MenuTaskbar extends JPanel {
         });
         menuPanel.add(btnQuanLyQuat);
         
+        // ...
+        JButton btnHoaDon = new JButton("Hóa đơn");
+        btnHoaDon.setHorizontalAlignment(SwingConstants.LEFT);
+        btnHoaDon.addActionListener(e -> {
+            mainFrame.setPanel(new HoaDonPanel());
+        });
+        menuPanel.add(btnHoaDon);
+        
         // Nút Quản lý phiếu nhập
         
         JButton btnPhieuNhap = new JButton("Phiếu nhập");
@@ -89,6 +98,7 @@ public class MenuTaskbar extends JPanel {
         
         // Nút quản lý khuyến mãi
         JButton btnKhuyenMai = new JButton("Khuyến mãi");
+        btnKhuyenMai.setHorizontalAlignment(SwingConstants.LEFT);
         btnKhuyenMai.addActionListener(e -> {
             mainFrame.setPanel(new KhuyenMaiPanel());
         });
