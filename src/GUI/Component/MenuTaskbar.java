@@ -70,12 +70,6 @@ public class MenuTaskbar extends JPanel {
         });
         menuPanel.add(btnPhieuNhap);
                 
-        JButton btnNhaCungCap = new JButton("Nhà Cung Cấp");
-        btnNhaCungCap.setHorizontalAlignment(SwingConstants.LEFT);
-        btnNhaCungCap.addActionListener(e -> {
-            mainFrame.setPanel(new NhaCungCapPanel());
-        });
-        menuPanel.add(btnNhaCungCap);
         
         // Nút Quản lý phiếu Xuất
         JButton btnPhieuXuat = new JButton("Phiếu xuất");
@@ -84,6 +78,14 @@ public class MenuTaskbar extends JPanel {
             mainFrame.setPanel(new PhieuXuatPanel());
         });
         menuPanel.add(btnPhieuXuat);
+        
+        // Nút quản lý nhà cung cấp
+        JButton btnNhaCungCap = new JButton("Nhà Cung Cấp");
+        btnNhaCungCap.setHorizontalAlignment(SwingConstants.LEFT);
+        btnNhaCungCap.addActionListener(e -> {
+            mainFrame.setPanel(new NhaCungCapPanel());
+        });
+        menuPanel.add(btnNhaCungCap);
         
         // Nút quản lý khuyến mãi
         JButton btnKhuyenMai = new JButton("Khuyến mãi");
