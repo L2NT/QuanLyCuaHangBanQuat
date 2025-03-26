@@ -10,6 +10,8 @@ import GUI.Panel.PhieuXuatPanel;
 import GUI.Panel.KhuyenMaiPanel;
 import GUI.Panel.HoaDonPanel;
 import GUI.Panel.BanQuatPanel;
+import GUI.Panel.QuanLyThuocTinhSP;
+
 // ...
 
 import java.awt.*;
@@ -37,7 +39,7 @@ public class MenuTaskbar extends JPanel {
         // Phần hiển thị thông tin user ở trên (ví dụ cứng)
         JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
         userPanel.setBackground(Color.WHITE);
-        JLabel lblUserName = new JLabel("Nhân viên: Nguyễn Văn A");
+        JLabel lblUserName = new JLabel("Nhân viên: Lê Nguyễn Nhất Tâm");
         lblUserName.setFont(lblUserName.getFont().deriveFont(Font.BOLD, 14f));
         userPanel.add(lblUserName);
 
@@ -72,6 +74,13 @@ public class MenuTaskbar extends JPanel {
             mainFrame.setPanel(new QuatPanel());
         });
         menuPanel.add(btnQuanLyQuat);
+        
+        JButton btnQuanLyThuocTinh = new JButton("Quản lý thuộc tính");
+        btnQuanLyThuocTinh.setHorizontalAlignment(SwingConstants.LEFT);
+        btnQuanLyThuocTinh.addActionListener(e -> {
+            mainFrame.setPanel(new QuanLyThuocTinhSP(mainFrame));
+        });
+menuPanel.add(btnQuanLyThuocTinh);
         
         // ...
         JButton btnHoaDon = new JButton("Hóa đơn");

@@ -1,6 +1,6 @@
 package GUI.Panel;
 
-import GUI.Component.itemTaskbar;
+import GUI.Component.ItemTaskbar;
 import GUI.Main;
 
 import java.awt.*;
@@ -12,7 +12,7 @@ public class QuanLyThuocTinhSP extends JPanel {
     private final Main mainFrame; // Main Frame chính
 
     private JPanel contentCenter;
-    private final itemTaskbar[] listitem;
+    private final ItemTaskbar[] listitem;
 
     // Icon & Header của các thuộc tính
     private final String[] iconst = {
@@ -28,7 +28,7 @@ public class QuanLyThuocTinhSP extends JPanel {
 
     public QuanLyThuocTinhSP(Main mainFrame) {
         this.mainFrame = mainFrame;
-        this.listitem = new itemTaskbar[header.length];
+        this.listitem = new ItemTaskbar[header.length];
         initComponent();
     }
 
@@ -45,7 +45,7 @@ public class QuanLyThuocTinhSP extends JPanel {
 
         // Tạo danh sách itemTaskbar và thêm sự kiện click
         for (int i = 0; i < header.length; i++) {
-            listitem[i] = new itemTaskbar(iconst[i], header[i], header[i]);
+            listitem[i] = new ItemTaskbar(iconst[i], header[i], header[i]);
             contentCenter.add(listitem[i]);
 
             // Thêm sự kiện click

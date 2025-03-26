@@ -56,7 +56,7 @@ public class Main extends JFrame {
      * Khởi tạo các thành phần GUI chính.
      */
     private void initComponent() {
-        this.setTitle("Hệ thống quản lý cửa hàng bán quạt (GUI Only)");
+        this.setTitle("Hệ thống quản lý cửa hàng bán quạt");
         this.setSize(1200, 800);
         this.setLocationRelativeTo(null);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
