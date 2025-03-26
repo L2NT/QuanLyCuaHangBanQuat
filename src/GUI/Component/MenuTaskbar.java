@@ -12,6 +12,7 @@ import GUI.Panel.HoaDonPanel;
 import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuanLyThuocTinhSP;
 import GUI.Panel.KhachHangPanel;
+import GUI.Panel.TaiKhoanPanel;
 
 // ...
 
@@ -133,6 +134,16 @@ menuPanel.add(btnQuanLyThuocTinh);
             mainFrame.setPanel(new KhuyenMaiPanel());
         });
         menuPanel.add(btnKhuyenMai);
+        
+        // Nút quản lý tài khoản
+        JButton btnTaiKhoan = new JButton("Tài khoản");
+        btnTaiKhoan.addActionListener(e -> {
+            mainFrame.setPanel(new TaiKhoanPanel());
+        });
+        menuPanel.add(btnTaiKhoan);
+        
+        // Thêm các nút khác 
+        // ...
 
         // 🔹 **Nút Đăng xuất**
         JButton btnDangXuat = new JButton("Đăng xuất");
@@ -149,8 +160,7 @@ menuPanel.add(btnQuanLyThuocTinh);
             }
         });
         menuPanel.add(btnDangXuat);
-        // Thêm các nút khác 
-        // ...
+        
 
         this.add(menuPanel, BorderLayout.CENTER);
         
