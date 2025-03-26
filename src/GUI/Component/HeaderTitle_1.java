@@ -6,9 +6,9 @@ import javax.swing.*;
 /**
  * HeaderTitle - hiển thị tiêu đề lớn ở đầu panel/dialog (nếu muốn dùng).
  */
-public class HeaderTitle extends JPanel {
+public class HeaderTitle_1 extends JPanel {
 
-    public HeaderTitle(String title) {
+    public HeaderTitle_1(String title) {
         this.setLayout(new FlowLayout(FlowLayout.CENTER));
         this.setBackground(Color.WHITE);
 

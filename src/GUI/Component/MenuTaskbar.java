@@ -1,5 +1,6 @@
 package GUI.Component;
 
+import GUI.Log_In;
 import GUI.Main;
 import GUI.Panel.QuatPanel;
 import GUI.Panel.TrangChu;
@@ -91,7 +92,21 @@ public class MenuTaskbar extends JPanel {
         });
         menuPanel.add(btnKhuyenMai);
 
-
+        // 🔹 **Nút Đăng xuất**
+        JButton btnDangXuat = new JButton("Đăng xuất");
+        btnDangXuat.setHorizontalAlignment(SwingConstants.LEFT);
+        btnDangXuat.setForeground(Color.RED); // Màu đỏ để nổi bật
+        btnDangXuat.addActionListener(e -> {
+            int input = JOptionPane.showConfirmDialog(null,
+                    "Bạn có chắc chắn muốn đăng xuất?", "Đăng xuất",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (input == JOptionPane.OK_OPTION) {
+                Log_In login = new Log_In();
+                mainFrame.dispose(); // Đóng cửa sổ hiện tại
+                login.setVisible(true); // Mở lại màn hình đăng nhập
+            }
+        });
+        menuPanel.add(btnDangXuat);
         // Thêm các nút khác 
         // ...
 
