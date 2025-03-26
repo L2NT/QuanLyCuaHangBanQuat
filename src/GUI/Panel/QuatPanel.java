@@ -9,12 +9,12 @@ import java.util.List;
 
 public class QuatPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnChiTiet, btnExcel, btnLamMoi;
-    private JComboBox<String> cbbLoaiQuat;  // ComboBox để lọc theo loại quạt
-    private JTextField txtSearch;           // Ô tìm kiếm
+    private JComboBox<String> cbbLoaiQuat;  
+    private JTextField txtSearch;          
     private JTable table;
     private DefaultTableModel tableModel;
 
-    // Danh sách quạt gốc (dummy)
+    // Danh sách quạt dummy
     private List<Quat> listQuat;
 
     public QuatPanel() {
@@ -27,7 +27,7 @@ public class QuatPanel extends JPanel implements ItemListener, KeyListener {
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
 
-        // ================== Thanh công cụ (toolbar) ==================
+        // ================== Thanh công cụ  ==================
         // Dùng BorderLayout để tách: nút ở trái, combo + search + refresh ở phải
         JPanel toolbar = new JPanel(new BorderLayout());
 
@@ -46,10 +46,10 @@ public class QuatPanel extends JPanel implements ItemListener, KeyListener {
         JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         // ComboBox loại quạt
         cbbLoaiQuat = new JComboBox<>(new String[]{"Tất cả", "Quạt treo tường", "Quạt đứng", "Quạt bàn"});
-        cbbLoaiQuat.addItemListener(this); // lắng nghe sự kiện thay đổi combo
+        cbbLoaiQuat.addItemListener(this); 
         // Ô tìm kiếm
         txtSearch = new JTextField("Nhập nội dung tìm kiếm...", 15);
-        txtSearch.addKeyListener(this);    // lắng nghe gõ phím
+        txtSearch.addKeyListener(this);    
         // Nút làm mới
         btnLamMoi = new JButton("LÀM MỚI");
 
