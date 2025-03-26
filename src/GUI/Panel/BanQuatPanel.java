@@ -16,25 +16,25 @@ public class BanQuatPanel extends JPanel implements ActionListener {
     private JRadioButton rdoThanhVien, rdoVangLai;
     private ButtonGroup bgTrangThai;
 
-    // Khách hàng (combo phone + tên) & nút "Mới"
+    //Khách hàng (combo phone + tên) với nút Mới
     private JComboBox<String> cbbKhachHang;
     private JButton btnMoiKhach;
 
-    // Sản phẩm (combo) & nút "Thêm"
+    //Sản phẩm (combo) và nút Thêm
     private JComboBox<String> cbbSanPham;
     private JButton btnThemSP;
 
-    // Bảng hiển thị sản phẩm
+    //Bảng hiển thị sản phẩm
     private JTable table;
     private DefaultTableModel tableModel;
 
-    // Phần dưới: Sử dụng điểm, Tổng, Điểm tích lũy, nút Lưu, Xuất PDF, Hủy
+    //Phần dưới: Sử dụng điểm, Tổng, Điểm tích lũy, nút Lưu, Xuất PDF, Hủy
     private JCheckBox chkSuDungDiem;
     private JLabel lblTong, lblDiemTichLuy;
     private JTextField txtTong, txtDiemTichLuy;
     private JButton btnLuu, btnXuatPDF, btnHuy;
 
-    // Màu nền pastel (có thể đổi)
+    // Màu nền pastel 
     private static final Color BACKGROUND_COLOR = new Color(233, 247, 249);
 
     public BanQuatPanel() {
