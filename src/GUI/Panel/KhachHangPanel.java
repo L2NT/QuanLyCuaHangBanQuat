@@ -115,7 +115,7 @@ public class KhachHangPanel extends JPanel implements ItemListener, KeyListener 
         listKH = new ArrayList<>();
         // (maKH, tenKH, sdt, email, loaiKH, diemTichLuy)
         listKH.add(new KhachHang("KH001", "Lê Nguyễn Nhất Tâm", "3122410369", "nva@gmail.com", "Thành viên", 100));
-        listKH.add(new KhachHang("KH002", "Lưu Hồng Phúc", "3123456789", "ttb@gmail.com", "Vãng lai", 0));
+        listKH.add(new KhachHang("KH002", "Lưu Hồng Phúc", "3123456789", "ttb@gmail.com", "Thành viên", 0));
         
     }
 

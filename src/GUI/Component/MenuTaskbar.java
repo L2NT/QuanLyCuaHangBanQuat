@@ -13,6 +13,9 @@ import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuanLyThuocTinhSP;
 import GUI.Panel.KhachHangPanel;
 import GUI.Panel.TaiKhoanPanel;
+import GUI.Panel.NhanVienPanel;
+import GUI.Panel.PhanQuyenPanel;
+import GUI.Panel.ThongKePanel;
 
 // ...
 
@@ -135,12 +138,35 @@ menuPanel.add(btnQuanLyThuocTinh);
         });
         menuPanel.add(btnKhuyenMai);
         
+        // Nút quản lý nhân viên
+        JButton btnNhanVien = new JButton("Nhân viên");
+        btnNhanVien.setHorizontalAlignment(SwingConstants.LEFT);
+        btnNhanVien.addActionListener(e -> {
+           mainFrame.setPanel(new NhanVienPanel());
+        });
+        menuPanel.add(btnNhanVien);
+        
         // Nút quản lý tài khoản
         JButton btnTaiKhoan = new JButton("Tài khoản");
+        btnTaiKhoan.setHorizontalAlignment(SwingConstants.LEFT);
         btnTaiKhoan.addActionListener(e -> {
             mainFrame.setPanel(new TaiKhoanPanel());
         });
         menuPanel.add(btnTaiKhoan);
+        
+        JButton btnPhanQuyen = new JButton("Phân quyền");
+        btnPhanQuyen.setHorizontalAlignment(SwingConstants.LEFT);
+        btnPhanQuyen.addActionListener(e -> {
+           mainFrame.setPanel(new PhanQuyenPanel());
+        });
+        menuPanel.add(btnPhanQuyen);
+        
+        //JButton btnThongKe = new JButton("Thống Kê");
+        //btnThongKe.setHorizontalAlignment(SwingConstants.LEFT);
+        //btnThongKe.addActionListener(e -> {
+         //  mainFrame.setPanel(new ThongKePanel());
+        //});
+        //menuPanel.add(btnThongKe);
         
         // Thêm các nút khác 
         // ...
