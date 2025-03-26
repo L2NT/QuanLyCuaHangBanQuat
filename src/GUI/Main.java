@@ -20,9 +20,7 @@ public class Main extends JFrame {
         initComponent();
     }
 
-    /**
-     * Cài đặt Look & Feel (FlatLaf) để giao diện hiện đại.
-     */
+   
     private void initLookAndFeel() {
         try {
             FlatRobotoFont.install();
