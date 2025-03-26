@@ -9,6 +9,8 @@ import GUI.Panel.NhaCungCapPanel;
 import GUI.Panel.PhieuXuatPanel;
 import GUI.Panel.KhuyenMaiPanel;
 import GUI.Panel.HoaDonPanel;
+import GUI.Panel.BanQuatPanel;
+// ...
 
 import java.awt.*;
 import java.awt.event.*;
@@ -54,6 +56,15 @@ public class MenuTaskbar extends JPanel {
         });
         menuPanel.add(btnTrangChu);
 
+        
+        // NÚT BÁN HÀNG CỦA NHÂN VIÊN
+        JButton btnBanQuat = new JButton("Bán quạt");
+        btnBanQuat.addActionListener(e -> {
+            mainFrame.setPanel(new BanQuatPanel());
+        });
+        menuPanel.add(btnBanQuat);
+
+        
         // Nút Quản lý quạt
         JButton btnQuanLyQuat = new JButton("Quản lý quạt");
         btnQuanLyQuat.setHorizontalAlignment(SwingConstants.LEFT);
