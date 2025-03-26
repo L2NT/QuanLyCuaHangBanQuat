@@ -10,9 +10,6 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-/**
- * Lớp JFrame chính của chương trình quản lý cửa hàng bán quạt (GUI only).
- */
 public class Main extends JFrame {
 
     private JPanel mainContent;  // Khu vực hiển thị panel

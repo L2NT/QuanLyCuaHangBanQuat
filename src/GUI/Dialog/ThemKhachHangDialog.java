@@ -3,10 +3,6 @@ package GUI.Dialog;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog thêm (hoặc sửa) khách hàng.
- * Trường: Mã KH, Tên KH, SĐT, Email, Loại KH, Điểm tích lũy.
- */
 public class ThemKhachHangDialog extends JDialog {
     private JTextField txtMaKH, txtTenKH, txtSdt, txtEmail, txtDiem;
     private JComboBox<String> cbbLoaiKH;

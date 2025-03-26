@@ -3,10 +3,6 @@ package GUI.Dialog;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog thêm (hoặc sửa) nhân viên.
- * Trường: Mã NV, Tên NV, Chức vụ, SĐT, Email, Tình trạng, ...
- */
 public class ThemNhanVienDialog extends JDialog {
     private JTextField txtMaNV, txtTenNV, txtSdt, txtEmail;
     private JComboBox<String> cbbChucVu;

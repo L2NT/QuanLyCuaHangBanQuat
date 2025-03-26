@@ -7,11 +7,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel quản lý Nhân viên (GUI Only).
- * Có bảng hiển thị, thanh công cụ (Thêm, Xóa, Sửa, Xuất Excel),
- * ComboBox lọc (VD: Tất cả, Quản lý, Nhân viên), ô tìm kiếm, và nút Làm mới.
- */
 public class NhanVienPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnSua, btnExcel, btnLamMoi;
     private JComboBox<String> cbbChucVu;     // ComboBox để lọc (Tất cả, Quản lý, Nhân viên,...)

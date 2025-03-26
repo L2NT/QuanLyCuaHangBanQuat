@@ -3,10 +3,6 @@ package GUI.Dialog;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog thêm (hoặc sửa) khuyến mãi.
- * Chứa 6 trường: Mã KM, Tên KM, Phần trăm giảm, Ngày BD, Ngày KT, Điều kiện.
- */
 public class ThemKhuyenMaiDialog extends JDialog {
 
     private JTextField txtMaKM, txtTenKM, txtPhanTram, txtNgayBD, txtNgayKT, txtDieuKien;

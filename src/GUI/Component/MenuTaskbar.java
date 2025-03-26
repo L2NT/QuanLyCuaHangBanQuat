@@ -23,12 +23,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-/**
- * Thanh menu bên trái hiển thị các chức năng:
- *  - Trang chủ
- *  - Quản lý quạt
- *  - ... (thêm nút khác nếu muốn)
- */
+
 public class MenuTaskbar extends JPanel {
     private Main mainFrame;
 

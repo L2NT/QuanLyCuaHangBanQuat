@@ -4,10 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-/**
- * Dialog xem chi tiết quạt (ví dụ danh sách serial, tình trạng...).
- * Chỉ để demo giao diện, không kết nối DB.
- */
+
 public class ChiTietQuatDialog extends JDialog {
 
     private JTable table;

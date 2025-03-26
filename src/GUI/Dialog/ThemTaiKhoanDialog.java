@@ -3,10 +3,6 @@ package GUI.Dialog;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog thêm (hoặc sửa) tài khoản.
- * Trường: Mã TK, Tên đăng nhập, Loại TK, Email, Trạng thái, ...
- */
 public class ThemTaiKhoanDialog extends JDialog {
     private JTextField txtMaTK, txtTenDN, txtEmail;
     private JComboBox<String> cbbLoaiTK;

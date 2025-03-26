@@ -10,10 +10,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel quản lý Hóa đơn: hiển thị danh sách, thêm, xóa, xem chi tiết, v.v.
- * Có combo filter, ô tìm kiếm, nút làm mới tương tự các panel khác.
- */
 public class HoaDonPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnChiTiet, btnExcel, btnLamMoi;
     private JComboBox<String> cbbFilter;  // ComboBox lọc theo Mã HD / Mã KH / Mã NV / Tất cả

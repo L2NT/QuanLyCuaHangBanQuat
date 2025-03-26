@@ -7,10 +7,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel quản lý Tài khoản (GUI Only).
- * Có bảng, thanh công cụ, lọc theo loại tài khoản, tìm kiếm.
- */
+
 public class TaiKhoanPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnSua, btnExcel, btnLamMoi;
     private JComboBox<String> cbbLoaiTK;     // ComboBox lọc (Tất cả, Admin, User, ...)

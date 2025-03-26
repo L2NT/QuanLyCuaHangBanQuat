@@ -10,10 +10,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 import javax.swing.JButton;
 
-/**
- *
- * @author Tran Nhat Sinh
- */
+
 public class ButtonToolBar extends JButton{
     String permisson;
     

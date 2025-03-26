@@ -7,10 +7,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel quản lý Khách hàng (GUI Only).
- * Có bảng, thanh công cụ, lọc theo loại khách, tìm kiếm.
- */
 public class KhachHangPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnSua, btnExcel, btnLamMoi;
     private JComboBox<String> cbbLoaiKH;    // ComboBox để lọc theo loại khách (Tất cả, Thành viên, Vãng lai,...)

@@ -3,9 +3,7 @@ package GUI.Dialog;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Dialog thêm quạt (chỉ nhập thông tin cơ bản, không lưu DB).
- */
+
 public class ThemQuatDialog extends JDialog {
 
     private JTextField txtTenQuat, txtLoaiQuat, txtThuongHieu, txtXuatXu, txtSoLuong;

@@ -9,9 +9,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel quản lý Sự kiện khuyến mãi (có ComboBox, ô tìm kiếm, nút Làm mới).
- */
+
 public class KhuyenMaiPanel extends JPanel implements ItemListener, KeyListener {
     private JButton btnThem, btnXoa, btnChiTiet, btnExcel, btnLamMoi;
     private JComboBox<String> cbbPhanTram;  // ComboBox lọc theo phần trăm giảm (hoặc tùy ý)

@@ -9,9 +9,7 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Panel Quản lý Phân quyền, nhưng hiển thị Mã tài khoản + Tên tài khoản.
- */
+
 public class PhanQuyenPanel extends JPanel {
     private JButton btnThemTK, btnXoaTK, btnPhanQuyen, btnExcel, btnLamMoi;
     private JTable table;
