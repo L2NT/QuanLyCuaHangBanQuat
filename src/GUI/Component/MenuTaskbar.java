@@ -11,6 +11,7 @@ import GUI.Panel.KhuyenMaiPanel;
 import GUI.Panel.HoaDonPanel;
 import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuanLyThuocTinhSP;
+import GUI.Panel.KhachHangPanel;
 
 // ...
 
@@ -90,6 +91,15 @@ menuPanel.add(btnQuanLyThuocTinh);
         });
         menuPanel.add(btnHoaDon);
         
+        
+        // nút quản lý khách hàng
+        JButton btnKhachHang = new JButton("Khách hàng");
+        btnKhachHang.setHorizontalAlignment(SwingConstants.LEFT);
+        btnKhachHang.addActionListener(e -> {
+            mainFrame.setPanel(new KhachHangPanel());
+        });
+        menuPanel.add(btnKhachHang);
+
         // Nút Quản lý phiếu nhập
         
         JButton btnPhieuNhap = new JButton("Phiếu nhập");
