@@ -3,9 +3,7 @@ package GUI.Component;
 import java.awt.*;
 import javax.swing.*;
 
-/**
- * HeaderTitle - hiển thị tiêu đề lớn ở đầu panel/dialog (nếu cần).
- */
+
 public class HeaderTitle extends JPanel {
 
     public HeaderTitle(String title) {
