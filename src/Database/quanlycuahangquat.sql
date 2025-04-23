@@ -392,7 +392,7 @@ ALTER TABLE `quat`
   ADD PRIMARY KEY (`MaQuat`);
 
 --
--- Chỉ mục cho bảng `sk khuyen mai`
+-- Chỉ mục cho bảng `sk khuyen maii`
 --
 ALTER TABLE `sk khuyen mai`
   ADD PRIMARY KEY (`MaSKKhuyenMai`);
