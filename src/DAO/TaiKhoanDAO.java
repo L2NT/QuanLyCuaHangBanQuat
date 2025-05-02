@@ -1,7 +1,7 @@
 package dao;
 
 import dto.TaiKhoan;
-import util.DBConnection;
+import Database.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

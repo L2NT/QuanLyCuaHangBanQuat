@@ -400,16 +400,24 @@ ALTER TABLE `sk khuyen mai`
 --
 -- Chỉ mục cho bảng `tai khoan`
 --
+-- Xóa bảng nếu đã tồn tại
 DROP TABLE IF EXISTS `taikhoan`;
-CREATE TABLE `taikhoan` (
-  `id` INT AUTO_INCREMENT PRIMARY KEY,
-  `username` VARCHAR(50) NOT NULL UNIQUE,
-  `password` VARCHAR(50) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `taikhoan` (`username`,`password`) VALUES
-  ('admin','admin123'),
-  ('user1','pass1');
+-- Tạo lại bảng với cấu trúc như mong muốn
+CREATE TABLE `taikhoan` (
+  `MaTaiKhoan`   VARCHAR(10)   NOT NULL PRIMARY KEY,
+  `TenTaiKhoan`  VARCHAR(100)  NOT NULL,
+  `MatKhau`      VARCHAR(100)  NOT NULL,
+  `VaiTro`       VARCHAR(50)   NOT NULL
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+-- Thêm dữ liệu mẫu
+INSERT INTO `taikhoan` (`MaTaiKhoan`, `TenTaiKhoan`, `MatKhau`, `VaiTro`) VALUES
+  ('TK001', 'nguyenvana', 'matkhau123', 'Admin'),
+  ('TK002', 'tranthingoc', 'ngoc2024',    'NhanVien'),
+  ('TK003', 'lebaoduy',   'duy_quat123',  'KhachHang');
 
 COMMIT;
 
