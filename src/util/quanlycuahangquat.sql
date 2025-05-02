@@ -400,8 +400,17 @@ ALTER TABLE `sk khuyen mai`
 --
 -- Chỉ mục cho bảng `tai khoan`
 --
-ALTER TABLE `tai khoan`
-  ADD PRIMARY KEY (`MaTaiKhoan`);
+DROP TABLE IF EXISTS `taikhoan`;
+CREATE TABLE `taikhoan` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `username` VARCHAR(50) NOT NULL UNIQUE,
+  `password` VARCHAR(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `taikhoan` (`username`,`password`) VALUES
+  ('admin','admin123'),
+  ('user1','pass1');
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -1,6 +1,6 @@
 package GUI.Panel;
 
-import Database.MySQLConnect;
+import Database.DBConnection;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;

@@ -1,6 +1,6 @@
 package GUI.Component;
 
-import GUI.Log_In;
+import GUI.LoginFrame;
 import GUI.Main;
 import GUI.Panel.QuatPanel;
 import GUI.Panel.TrangChu;
@@ -175,7 +175,7 @@ menuPanel.add(btnQuanLyThuocTinh);
                     "Bạn có chắc chắn muốn đăng xuất?", "Đăng xuất",
                     JOptionPane.OK_CANCEL_OPTION, JOptionPane.INFORMATION_MESSAGE);
             if (input == JOptionPane.OK_OPTION) {
-                Log_In login = new Log_In();
+                LoginFrame login = new LoginFrame();
                 mainFrame.dispose(); // Đóng cửa sổ hiện tại
                 login.setVisible(true); // Mở lại màn hình đăng nhập
             }

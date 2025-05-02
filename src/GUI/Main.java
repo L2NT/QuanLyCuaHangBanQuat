@@ -6,13 +6,13 @@ import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 
-import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 public class Main extends JFrame {
 
-    private JPanel mainContent;  // Khu vực hiển thị panel
+    private JPanel mainContent;      // Khu vực hiển thị panel
     private MenuTaskbar menuTaskbar; // Thanh menu bên trái
 
     public Main() {
@@ -20,7 +20,6 @@ public class Main extends JFrame {
         initComponent();
     }
 
-   
     private void initLookAndFeel() {
         try {
             FlatRobotoFont.install();
@@ -51,29 +50,28 @@ public class Main extends JFrame {
      * Khởi tạo các thành phần GUI chính.
      */
     private void initComponent() {
-        this.setTitle("Hệ thống quản lý cửa hàng bán quạt");
-        this.setSize(1200, 800);
-        this.setLocationRelativeTo(null);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setLayout(new BorderLayout(0, 0));
+        setTitle("Hệ thống quản lý cửa hàng bán quạt");
+        setSize(1200, 800);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(0, 0));
 
         // Menu bên trái
         menuTaskbar = new MenuTaskbar(this);
         menuTaskbar.setPreferredSize(new Dimension(250, 800));
-        this.add(menuTaskbar, BorderLayout.WEST);
+        add(menuTaskbar, BorderLayout.WEST);
 
         // Vùng nội dung hiển thị panel
-        mainContent = new JPanel();
-        mainContent.setLayout(new BorderLayout());
+        mainContent = new JPanel(new BorderLayout());
         mainContent.setBackground(Color.WHITE);
-        this.add(mainContent, BorderLayout.CENTER);
+        add(mainContent, BorderLayout.CENTER);
 
         // Mặc định hiển thị TrangChu
         setPanel(new TrangChu());
     }
 
     /**
-     * Hàm cho phép thay đổi panel hiển thị ở khu vực mainContent.
+     * Thay đổi panel hiển thị trong mainContent.
      */
     public void setPanel(JPanel panel) {
         mainContent.removeAll();
@@ -83,11 +81,12 @@ public class Main extends JFrame {
     }
 
     /**
-     * Hàm main chạy chương trình
+     * Hàm main chạy chương trình.
+     * Khi khởi động, mở LoginFrame trước. Sau khi login thành công, LoginFrame sẽ khởi tạo và hiển thị Main.
      */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new Main().setVisible(true);
+            new LoginFrame().setVisible(true);
         });
     }
 }
