@@ -13,6 +13,8 @@ import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuanLyThuocTinhSP;
 import GUI.Panel.KhachHangPanel;
 import GUI.Panel.TaiKhoanPanel;
+import GUI.Panel.NhanVienPanel;   
+import GUI.Panel.PhanQuyenPanel;  
 import GUI.Panel.NhanVienPanel;
 import GUI.Panel.PhanQuyenPanel;
 import GUI.Panel.ThongKePanel;
