@@ -1,4 +1,5 @@
-package gui.panel;
+package GUI.Panel;
+
 
 import bll.TaiKhoanBLL;
 import dto.TaiKhoan;
