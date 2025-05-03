@@ -1,7 +1,6 @@
-// src/GUI/EmployeeMainFrame.java
 package GUI;
 
-import GUI.Component.MenuTaskbar;
+import GUI.Component.MenuTaskbar;       // ← thêm dòng này
 import GUI.Panel.TrangChu;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
@@ -36,21 +35,17 @@ public class EmployeeMainFrame extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(0, 0));
 
-        // ⚙️ GÁN VÀO FIELD menuTaskbar với isManager=false
         menuTaskbar = new MenuTaskbar(this, false);
         menuTaskbar.setPreferredSize(new Dimension(250, 800));
         add(menuTaskbar, BorderLayout.WEST);
 
-        // ⚙️ GÁN VÀO FIELD mainContent
         mainContent = new JPanel(new BorderLayout());
         mainContent.setBackground(Color.WHITE);
         add(mainContent, BorderLayout.CENTER);
 
-        // Mặc định hiển thị TrangChu
         setPanel(new TrangChu());
     }
 
-    /** Cho phép các panel con swap vào mainContent */
     public void setPanel(JPanel panel) {
         mainContent.removeAll();
         mainContent.add(panel, BorderLayout.CENTER);

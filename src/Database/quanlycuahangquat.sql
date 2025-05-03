@@ -467,21 +467,23 @@ INSERT INTO `skkhuyenmai` (`MaSKKhuyenMai`, `PhanTramGiam`, `TenKhuyenMai`, `Nga
 -- Cấu trúc bảng cho bảng `tai khoan`
 --
 
-CREATE TABLE `tai khoan` (
-  `MaTaiKhoan` varchar(50) NOT NULL,
-  `TenTaiKhoan` varchar(200) NOT NULL,
-  `MatKhau` varchar(200) NOT NULL,
-  `VaiTro` varchar(200) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- Xóa bảng nếu đã tồn tại
+DROP TABLE IF EXISTS `taikhoan`;
 
---
--- Đang đổ dữ liệu cho bảng `tai khoan`
---
+CREATE TABLE `taikhoan` (
+  `MaTaiKhoan`   VARCHAR(10)   NOT NULL PRIMARY KEY,
+  `TenTaiKhoan`  VARCHAR(100)  NOT NULL,
+  `MatKhau`      VARCHAR(100)  NOT NULL,
+  `VaiTro`       VARCHAR(50)   NOT NULL
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `tai khoan` (`MaTaiKhoan`, `TenTaiKhoan`, `MatKhau`, `VaiTro`) VALUES
-('TK001', 'nguyenvana', 'matkhau123', 'Admin'),
-('TK002', 'tranthingoc', 'ngoc2024', 'NhanVien'),
-('TK003', 'lebaoduy', 'duy_quat123', 'KhachHang');
+-- Thêm dữ liệu mẫu
+INSERT INTO `taikhoan` (`MaTaiKhoan`, `TenTaiKhoan`, `MatKhau`, `VaiTro`) VALUES
+  ('TK001', 'nguyenvana', 'matkhau123', 'Admin'),
+  ('TK002', 'tranthingoc', 'ngoc2024',    'NhanVien'),
+  ('TK003', 'lebaoduy',   'duy_quat123',  'KhachHang');
 
 --
 -- Chỉ mục cho các bảng đã đổ
