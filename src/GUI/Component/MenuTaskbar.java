@@ -1,7 +1,8 @@
 package GUI.Component;
 
 import GUI.LoginFrame;
-import GUI.Main;
+import GUI.ManagerMainFrame;
+import GUI.EmployeeMainFrame;
 import GUI.Panel.TrangChu;
 import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuatPanel;
@@ -9,9 +10,9 @@ import GUI.Panel.QuanLyThuocTinhSP;
 import GUI.Panel.HoaDonPanel;
 import GUI.Panel.KhuyenMaiPanel;
 import GUI.Panel.KhachHangPanel;
-import GUI.Panel.NhaCungCapPanel;
 import GUI.Panel.PhieuNhapPanel;
 import GUI.Panel.PhieuXuatPanel;
+import GUI.Panel.NhaCungCapPanel;
 import GUI.Panel.NhanVienPanel;
 import GUI.Panel.TaiKhoanPanel;
 import GUI.Panel.PhanQuyenPanel;
@@ -23,10 +24,16 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class MenuTaskbar extends JPanel {
-    private final Main mainFrame;
+    private final JFrame parent;
+    private final boolean isManager;
 
-    public MenuTaskbar(Main main) {
-        this.mainFrame = main;
+    /**
+     * @param parent    cửa sổ chính để gọi setPanel(...)
+     * @param isManager true = hiển thị đủ menu, false = chỉ home, bán quạt, nhập xuất phiếu
+     */
+    public MenuTaskbar(JFrame parent, boolean isManager) {
+        this.parent    = parent;
+        this.isManager = isManager;
         initComponent();
     }
 
@@ -34,59 +41,70 @@ public class MenuTaskbar extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        // User info panel
-        JPanel userPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
-        userPanel.setBackground(Color.WHITE);
-        JLabel lblUserName = new JLabel("Nhân viên: Lê Nguyễn Nhất Tâm");
-        lblUserName.setFont(lblUserName.getFont().deriveFont(Font.BOLD, 14f));
-        userPanel.add(lblUserName);
-        add(userPanel, BorderLayout.NORTH);
+        // Thông tin user
+        JLabel lblUser = new JLabel(
+            parent instanceof ManagerMainFrame
+                ? "Nhân viên: Admin"
+                : "Nhân viên: NV01"
+        );
+        lblUser.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        add(lblUser, BorderLayout.NORTH);
 
-        // Menu buttons
-        JPanel menuPanel = new JPanel(new GridLayout(0, 1, 0, 5));
-        menuPanel.setBackground(Color.WHITE);
+        // Panel chứa các nút
+        JPanel menu = new JPanel(new GridLayout(0, 1, 0, 5));
+        menu.setBackground(Color.WHITE);
 
-        addMenuButton(menuPanel, "Trang chủ", e -> mainFrame.setPanel(new TrangChu()));
-        addMenuButton(menuPanel, "Bán quạt", e -> mainFrame.setPanel(new BanQuatPanel()));
-        addMenuButton(menuPanel, "Quản lý quạt", e -> mainFrame.setPanel(new QuatPanel()));
-        addMenuButton(menuPanel, "Quản lý thuộc tính", e -> mainFrame.setPanel(new QuanLyThuocTinhSP(mainFrame)));
-        addMenuButton(menuPanel, "Hóa đơn", e -> mainFrame.setPanel(new HoaDonPanel()));
-        addMenuButton(menuPanel, "Khuyến mãi", e -> mainFrame.setPanel(new KhuyenMaiPanel()));
-        addMenuButton(menuPanel, "Khách hàng", e -> mainFrame.setPanel(new KhachHangPanel()));
-        addMenuButton(menuPanel, "Phiếu nhập", e -> mainFrame.setPanel(new PhieuNhapPanel()));
-        addMenuButton(menuPanel, "Phiếu xuất", e -> mainFrame.setPanel(new PhieuXuatPanel()));
-        addMenuButton(menuPanel, "Nhà cung cấp", e -> mainFrame.setPanel(new NhaCungCapPanel()));
-        addMenuButton(menuPanel, "Nhân viên", e -> mainFrame.setPanel(new NhanVienPanel()));
-        addMenuButton(menuPanel, "Tài khoản", e -> mainFrame.setPanel(new TaiKhoanPanel()));
-        addMenuButton(menuPanel, "Phân quyền", e -> mainFrame.setPanel(new PhanQuyenPanel()));
-        addMenuButton(menuPanel, "Thống kê", e -> mainFrame.setPanel(new ThongKePanel()));
+        // Các chức năng chung cho cả Manager và Employee
+        addButton(menu, "Trang chủ",    e -> swap(new TrangChu()));
+        addButton(menu, "Bán quạt",     e -> swap(new BanQuatPanel()));
+        addButton(menu, "Phiếu nhập",   e -> swap(new PhieuNhapPanel()));
+        addButton(menu, "Phiếu xuất",   e -> swap(new PhieuXuatPanel()));
 
-        // Logout button
-        JButton btnDangXuat = new JButton("Đăng xuất");
-        btnDangXuat.setHorizontalAlignment(SwingConstants.LEFT);
-        btnDangXuat.setForeground(Color.RED);
-        btnDangXuat.addActionListener(e -> {
-            int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn có chắc chắn muốn đăng xuất?",
-                "Đăng xuất",
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.INFORMATION_MESSAGE
-            );
-            if (choice == JOptionPane.OK_OPTION) {
-                new LoginFrame().setVisible(true);
-                mainFrame.dispose();
-            }
+        // Chỉ manager mới có các mục dưới đây
+        if (isManager) {
+            addButton(menu, "Quản lý quạt",        e -> swap(new QuatPanel()));
+            addButton(menu, "Quản lý thuộc tính",  e -> swap(new QuanLyThuocTinhSP((ManagerMainFrame) parent)));
+            addButton(menu, "Hóa đơn",             e -> swap(new HoaDonPanel()));
+            addButton(menu, "Khuyến mãi",          e -> swap(new KhuyenMaiPanel()));
+            addButton(menu, "Khách hàng",          e -> swap(new KhachHangPanel()));
+            addButton(menu, "Nhà cung cấp",        e -> swap(new NhaCungCapPanel()));
+            addButton(menu, "Nhân viên",           e -> swap(new NhanVienPanel()));
+            addButton(menu, "Tài khoản",           e -> swap(new TaiKhoanPanel()));
+            addButton(menu, "Phân quyền",          e -> swap(new PhanQuyenPanel()));
+            addButton(menu, "Thống kê",            e -> swap(new ThongKePanel()));
+        }
+
+        // Nút đăng xuất luôn có
+        JButton btnLogout = new JButton("Đăng xuất");
+        btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
+        btnLogout.setForeground(Color.RED);
+        btnLogout.addActionListener(e -> {
+            parent.dispose();
+            new LoginFrame().setVisible(true);
         });
-        menuPanel.add(btnDangXuat);
+        menu.add(btnLogout);
 
-        add(menuPanel, BorderLayout.CENTER);
+        add(menu, BorderLayout.CENTER);
     }
 
-    private void addMenuButton(JPanel parent, String text, ActionListener action) {
+    /**
+     * Tiện ích thêm nút vào panel
+     */
+    private void addButton(JPanel menu, String text, ActionListener action) {
         JButton btn = new JButton(text);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.addActionListener(action);
-        parent.add(btn);
+        menu.add(btn);
+    }
+
+    /**
+     * Chuyển panel chính của cửa sổ
+     */
+    private void swap(JPanel panel) {
+        if (parent instanceof ManagerMainFrame) {
+            ((ManagerMainFrame) parent).setPanel(panel);
+        } else if (parent instanceof EmployeeMainFrame) {
+            ((EmployeeMainFrame) parent).setPanel(panel);
+        }
     }
 }

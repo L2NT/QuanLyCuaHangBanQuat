@@ -1,7 +1,7 @@
 package GUI.Panel;
 
 import GUI.Component.ItemTaskbar;
-import GUI.Main;
+import GUI.ManagerMainFrame;
 
 import java.awt.*;
 import javax.swing.*;
@@ -9,7 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class QuanLyThuocTinhSP extends JPanel {
-    private final Main mainFrame; // Main Frame chính
+    private final ManagerMainFrame mainFrame; // ManagerMainFrame Frame chính
 
     private JPanel contentCenter;
     private final ItemTaskbar[] listitem;
@@ -26,7 +26,7 @@ public class QuanLyThuocTinhSP extends JPanel {
     // Màu nền giao diện
     private static final Color BACKGROUND_COLOR = new Color(240, 247, 250);
 
-    public QuanLyThuocTinhSP(Main mainFrame) {
+    public QuanLyThuocTinhSP(ManagerMainFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.listitem = new ItemTaskbar[header.length];
         initComponent();

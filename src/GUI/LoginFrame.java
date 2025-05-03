@@ -139,13 +139,11 @@ public class LoginFrame extends JFrame implements KeyListener {
 
     if (user.isEmpty() || pass.isEmpty()) {
         JOptionPane.showMessageDialog(this,
-            "Vui lòng nhập đầy đủ thông tin",
-            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            "Vui lòng nhập đầy đủ thông tin","Cảnh báo",JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    // SỬA LẠI tên cột cho khớp với cấu trúc bảng
-    String sql = "SELECT * FROM taikhoan WHERE TenTaiKhoan = ? AND MatKhau = ?";
+    String sql = "SELECT * FROM taikhoan WHERE TenTaiKhoan=? AND MatKhau=?";
     try (Connection conn = DBConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -153,21 +151,25 @@ public class LoginFrame extends JFrame implements KeyListener {
         ps.setString(2, pass);
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                new Main().setVisible(true);
+                String role = rs.getString("VaiTro");   // đọc vai trò từ CSDL
+                if ("Admin".equalsIgnoreCase(role)) {
+                    new ManagerMainFrame().setVisible(true);
+                } else {
+                    new EmployeeMainFrame().setVisible(true);
+                }
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Đăng nhập thất bại: user hoặc password không đúng",
-                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    "Đăng nhập thất bại","Lỗi",JOptionPane.ERROR_MESSAGE);
             }
         }
-
     } catch (SQLException ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this,
-            "Lỗi kết nối CSDL", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            "Lỗi kết nối CSDL","Lỗi",JOptionPane.ERROR_MESSAGE);
     }
 }
+
 
 
     @Override
