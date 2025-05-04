@@ -1,23 +1,29 @@
 package DTO;
 
 public class TaiKhoan {
-    private String maTaiKhoan;
-    private String tenTaiKhoan;
+    private String maTK;
+    private String tenTK;
     private String matKhau;
     private String vaiTro;
-    private String maNhanVien; // có thể null nếu là Admin
+    private String maNhanVien;
 
-    public TaiKhoan(String maTaiKhoan, String tenTaiKhoan, String matKhau, String vaiTro, String maNhanVien) {
-        this.maTaiKhoan = maTaiKhoan;
-        this.tenTaiKhoan = tenTaiKhoan;
-        this.matKhau = matKhau;
-        this.vaiTro = vaiTro;
-        this.maNhanVien = maNhanVien;
+    public TaiKhoan(String maTK, String tenTK, String matKhau, String vaiTro, String maNhanVien) {
+        this.maTK         = maTK;
+        this.tenTK        = tenTK;
+        this.matKhau      = matKhau;
+        this.vaiTro       = vaiTro;
+        this.maNhanVien   = maNhanVien;
     }
 
-    public String getMaTaiKhoan() { return maTaiKhoan; }
-    public String getTenTaiKhoan() { return tenTaiKhoan; }
-    public String getMatKhau()      { return matKhau; }
-    public String getVaiTro()       { return vaiTro; }
-    public String getMaNhanVien()   { return maNhanVien; }
+    // getters / setters
+    public String getMaTK()            { return maTK; }
+    public void   setMaTK(String v)    { maTK = v; }
+    public String getTenTK()           { return tenTK; }
+    public void   setTenTK(String v)   { tenTK = v; }
+    public String getMatKhau()         { return matKhau; }
+    public void   setMatKhau(String v) { matKhau = v; }
+    public String getVaiTro()          { return vaiTro; }
+    public void   setVaiTro(String v)  { vaiTro = v; }
+    public String getMaNhanVien()      { return maNhanVien; }
+    public void   setMaNhanVien(String v) { maNhanVien = v; }
 }

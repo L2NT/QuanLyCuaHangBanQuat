@@ -3,34 +3,39 @@ package BLL;
 import DAO.TaiKhoanDAO;
 import DTO.TaiKhoan;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class TaiKhoanBLL {
-    private final TaiKhoanDAO dao = new TaiKhoanDAO();
+    private TaiKhoanDAO dao = new TaiKhoanDAO();
 
     public List<TaiKhoan> layTatCa() {
-        return dao.getAll();
+        try { return dao.getAll(); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 
     public TaiKhoan layTheoMa(String maTK) {
-        return dao.getById(maTK);
+        try { return dao.getByMa(maTK); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 
-    public void them(String user, String pass, String role, String maNV) {
-        // tự phát sinh MaTaiKhoan mới, ví dụ TK + timestamp hoặc từ sequence
-        String maTK = "TK" + System.currentTimeMillis();
-        dao.insert(new TaiKhoan(maTK, user, pass, role, maNV));
+    public void them(TaiKhoan tk) {
+        try { dao.insert(tk); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 
-    public void capNhat(String maTK, String user, String pass, String role, String maNV) {
-        dao.update(new TaiKhoan(maTK, user, pass, role, maNV));
+    public void capNhat(TaiKhoan tk) {
+        try { dao.update(tk); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 
     public void xoa(String maTK) {
-        dao.delete(maTK);
+        try { dao.delete(maTK); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 
     public List<String> layDanhSachNhanVienChuaCoTaiKhoan() {
-        return dao.getNhanVienChuaCoTaiKhoan();
+        try { return dao.listNhanVienChuaCoTK(); }
+        catch(SQLException e) { throw new RuntimeException(e); }
     }
 }
