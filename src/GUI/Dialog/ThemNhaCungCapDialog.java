@@ -1,31 +1,23 @@
 package GUI.Dialog;
 
+import bll.NhaCungCapBLL;
+import dto.NhaCungCap;
+
 import javax.swing.*;
 import java.awt.*;
 
 public class ThemNhaCungCapDialog extends JDialog {
-    private JTextField txtMaNCC, txtTenNCC, txtSDT, txtDiaChi, txtEmail;
+
+    private JTextField txtMaNCC, txtTenNCC, txtDiaChi, txtSDT;
     private JButton btnLuu, btnHuy;
+    private boolean added = false;
 
-    // Biến này có thể dùng để biết user có bấm "Lưu" không
-    private boolean isSaved = false;
+    private NhaCungCapBLL nhaCungCapBLL;
 
-    // Constructor để thêm mới
     public ThemNhaCungCapDialog(Window owner) {
         super(owner, "Thêm Nhà Cung Cấp", Dialog.ModalityType.APPLICATION_MODAL);
+        nhaCungCapBLL = new NhaCungCapBLL();
         initComponent();
-    }
-
-    // Constructor để sửa (nạp dữ liệu sẵn)
-    public ThemNhaCungCapDialog(Window owner, String maNCC, String tenNCC, String sdt, String diaChi, String email) {
-        super(owner, "Sửa Nhà Cung Cấp", Dialog.ModalityType.APPLICATION_MODAL);
-        initComponent();
-        // nạp dữ liệu cũ
-        txtMaNCC.setText(maNCC);
-        txtTenNCC.setText(tenNCC);
-        txtSDT.setText(sdt);
-        txtDiaChi.setText(diaChi);
-        txtEmail.setText(email);
     }
 
     private void initComponent() {
@@ -33,7 +25,8 @@ public class ThemNhaCungCapDialog extends JDialog {
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout(10, 10));
 
-        JPanel pnlForm = new JPanel(new GridLayout(5, 2, 5, 5));
+        JPanel pnlForm = new JPanel(new GridLayout(4, 2, 5, 5));
+
         pnlForm.add(new JLabel("Mã NCC:"));
         txtMaNCC = new JTextField();
         pnlForm.add(txtMaNCC);
@@ -42,17 +35,13 @@ public class ThemNhaCungCapDialog extends JDialog {
         txtTenNCC = new JTextField();
         pnlForm.add(txtTenNCC);
 
-        pnlForm.add(new JLabel("SĐT:"));
-        txtSDT = new JTextField();
-        pnlForm.add(txtSDT);
-
         pnlForm.add(new JLabel("Địa chỉ:"));
         txtDiaChi = new JTextField();
         pnlForm.add(txtDiaChi);
 
-        pnlForm.add(new JLabel("Email:"));
-        txtEmail = new JTextField();
-        pnlForm.add(txtEmail);
+        pnlForm.add(new JLabel("Số điện thoại:"));
+        txtSDT = new JTextField();
+        pnlForm.add(txtSDT);
 
         this.add(pnlForm, BorderLayout.CENTER);
 
@@ -64,32 +53,30 @@ public class ThemNhaCungCapDialog extends JDialog {
 
         this.add(pnlButton, BorderLayout.SOUTH);
 
-        // Sự kiện nút Lưu
         btnLuu.addActionListener(e -> {
-            // Ở đây chỉ demo -> hiển thị thông báo
-            isSaved = true;
-            JOptionPane.showMessageDialog(this, "Đã lưu nhà cung cấp (demo).");
-            dispose();
+            String ma = txtMaNCC.getText().trim();
+            String ten = txtTenNCC.getText().trim();
+            String diaChi = txtDiaChi.getText().trim();
+            String sdt = txtSDT.getText().trim();
+
+            if (ma.isEmpty() || ten.isEmpty() || diaChi.isEmpty() || sdt.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.");
+                return;
+            }
+
+            if (nhaCungCapBLL.them(ma, ten, diaChi, sdt)) {
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công.");
+                added = true;
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại.");
+            }
         });
 
-        // Nút Hủy
-        btnHuy.addActionListener(e -> {
-            dispose();
-        });
+        btnHuy.addActionListener(e -> dispose());
     }
 
-    public boolean isSaved() {
-        return isSaved;
-    }
-
-    // Trả về mảng Object để thêm/sửa row trong bảng
-    public Object[] getNewNCC() {
-        return new Object[] {
-            txtMaNCC.getText(),
-            txtTenNCC.getText(),
-            txtSDT.getText(),
-            txtDiaChi.getText(),
-            txtEmail.getText()
-        };
+    public boolean isAdded() {
+        return added;
     }
 }

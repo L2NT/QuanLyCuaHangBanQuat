@@ -33,10 +33,9 @@ public class LoginFrame extends JFrame implements KeyListener {
     public LoginFrame() {
         initLookAndFeel();
         initComponent();
-
-        // mặc định để test, có thể xóa
-        txtUsername.setText("tranthingoc");
-        txtPassword.setPass("ngoc2024");
+        // Dùng để test nhanh, khi deploy xóa 2 dòng này
+        txtUsername.setText("admin");
+        txtPassword.setPass("123");
     }
 
     private void initLookAndFeel() {
@@ -70,11 +69,9 @@ public class LoginFrame extends JFrame implements KeyListener {
         lblTitle.setFont(new Font(FlatRobotoFont.FAMILY_SEMIBOLD, Font.BOLD, 20));
         pnlMain.add(lblTitle);
 
-
-        // Form đăng nhập
-        JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-        formPanel.setBackground(Color.white);
-
+        // Form Username / Password
+        JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 10));
+        formPanel.setBackground(Color.BLACK);
         formPanel.setPreferredSize(new Dimension(400, 200));
 
         txtUsername = new InputForm("Tên đăng nhập");

@@ -62,7 +62,7 @@ public class KhachHangPanel extends JPanel implements ItemListener, KeyListener 
 
         // ========== Bảng hiển thị khách hàng ==========
         // Cột: Mã KH, Tên KH, SĐT, Email, Loại KH, Điểm tích lũy
-        String[] columns = {"Mã KH", "Tên KH", "SĐT", "Địa chỉ", "Tổng tiền", "Điểm tích lũy"};
+        String[] columns = {"Mã KH", "Tên KH", "SĐT", "Email", "Loại KH", "Điểm tích lũy"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
 
