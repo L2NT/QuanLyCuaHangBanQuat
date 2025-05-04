@@ -1,98 +1,136 @@
 package DAO;
 
-import DTO.TaiKhoan;
 import Database.DBConnection;
+import DTO.TaiKhoan;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TaiKhoanDAO {
-
+    // Lấy tất cả TK
     public List<TaiKhoan> getAll() throws SQLException {
         List<TaiKhoan> list = new ArrayList<>();
-        String sql = "SELECT * FROM taikhoan";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql);
-             ResultSet r = p.executeQuery()) {
-            while (r.next()) {
+        String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
                 list.add(new TaiKhoan(
-                    r.getString("MaTaiKhoan"),
-                    r.getString("TenTaiKhoan"),
-                    r.getString("MatKhau"),
-                    r.getString("VaiTro"),
-                    r.getString("MaNhanVien")
+                    rs.getString("MaTaiKhoan"),
+                    rs.getString("MaNhanVien"),
+                    rs.getString("TenTaiKhoan"),
+                    rs.getString("MatKhau"),
+                    rs.getString("VaiTro")
                 ));
             }
         }
         return list;
     }
 
-    public TaiKhoan getByMa(String maTK) throws SQLException {
-        String sql = "SELECT * FROM taikhoan WHERE MaTaiKhoan=?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql)) {
-            p.setString(1, maTK);
-            try (ResultSet r = p.executeQuery()) {
-                if (r.next())
+    // Lấy 1 TK theo mã
+    public TaiKhoan getByMa(String ma) throws SQLException {
+        String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan WHERE MaTaiKhoan=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, ma);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
                     return new TaiKhoan(
-                      r.getString("MaTaiKhoan"),
-                      r.getString("TenTaiKhoan"),
-                      r.getString("MatKhau"),
-                      r.getString("VaiTro"),
-                      r.getString("MaNhanVien")
+                        rs.getString("MaTaiKhoan"),
+                        rs.getString("MaNhanVien"),
+                        rs.getString("TenTaiKhoan"),
+                        rs.getString("MatKhau"),
+                        rs.getString("VaiTro")
                     );
+                }
             }
         }
         return null;
     }
 
-    public void insert(TaiKhoan tk) throws SQLException {
-        String sql = "INSERT INTO taikhoan(MaTaiKhoan,TenTaiKhoan,MatKhau,VaiTro,MaNhanVien) VALUES(?,?,?,?,?)";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql)) {
-            p.setString(1, tk.getMaTK());
-            p.setString(2, tk.getTenTK());
-            p.setString(3, tk.getMatKhau());
-            p.setString(4, tk.getVaiTro());
-            p.setString(5, tk.getMaNhanVien());
-            p.executeUpdate();
+    // Lấy TK theo username (để check trùng)
+    public TaiKhoan getByUsername(String user) throws SQLException {
+        String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan WHERE TenTaiKhoan=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, user);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new TaiKhoan(
+                        rs.getString("MaTaiKhoan"),
+                        rs.getString("MaNhanVien"),
+                        rs.getString("TenTaiKhoan"),
+                        rs.getString("MatKhau"),
+                        rs.getString("VaiTro")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    // Thêm TK
+    public boolean insert(TaiKhoan tk) throws SQLException {
+        String sql = "INSERT INTO taikhoan (MaTaiKhoan, TenTaiKhoan, MatKhau, VaiTro, MaNhanVien) VALUES (?,?,?,?,?)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tk.getMaTaiKhoan());
+            ps.setString(2, tk.getUsername());
+            ps.setString(3, tk.getPassword());
+            ps.setString(4, tk.getVaiTro());
+            ps.setString(5, tk.getMaNhanVien());
+            return ps.executeUpdate() > 0;
         }
     }
 
-    public void update(TaiKhoan tk) throws SQLException {
-        String sql = "UPDATE taikhoan SET TenTaiKhoan=?,MatKhau=?,VaiTro=?,MaNhanVien=? WHERE MaTaiKhoan=?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql)) {
-            p.setString(1, tk.getTenTK());
-            p.setString(2, tk.getMatKhau());
-            p.setString(3, tk.getVaiTro());
-            p.setString(4, tk.getMaNhanVien());
-            p.setString(5, tk.getMaTK());
-            p.executeUpdate();
+    // Cập nhật TK
+    public boolean update(TaiKhoan tk) throws SQLException {
+        String sql = "UPDATE taikhoan SET TenTaiKhoan=?, MatKhau=?, VaiTro=?, MaNhanVien=? WHERE MaTaiKhoan=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, tk.getUsername());
+            ps.setString(2, tk.getPassword());
+            ps.setString(3, tk.getVaiTro());
+            ps.setString(4, tk.getMaNhanVien());
+            ps.setString(5, tk.getMaTaiKhoan());
+            return ps.executeUpdate() > 0;
         }
     }
 
-    public void delete(String maTK) throws SQLException {
+    // Xóa TK
+    public boolean delete(String ma) throws SQLException {
         String sql = "DELETE FROM taikhoan WHERE MaTaiKhoan=?";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql)) {
-            p.setString(1, maTK);
-            p.executeUpdate();
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, ma);
+            return ps.executeUpdate() > 0;
         }
     }
 
-    /** Trả về list mã NV chưa có TK */
-    public List<String> listNhanVienChuaCoTK() throws SQLException {
-        List<String> lst = new ArrayList<>();
-        String sql =
-          "SELECT MaNhanVien FROM nhanvien " +
-          "WHERE MaNhanVien NOT IN (SELECT MaNhanVien FROM taikhoan WHERE MaNhanVien IS NOT NULL)";
-        try (Connection c = DBConnection.getConnection();
-             PreparedStatement p = c.prepareStatement(sql);
-             ResultSet r = p.executeQuery()) {
-            while (r.next()) lst.add(r.getString(1));
+    // DS nhân viên chưa có TK (cho dialog Thêm)
+    public List<String> getNhanVienWithoutAccount() throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT nv.MaNhanVien FROM nhanvien nv "
+                   + "LEFT JOIN taikhoan tk ON nv.MaNhanVien = tk.MaNhanVien "
+                   + "WHERE tk.MaTaiKhoan IS NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(rs.getString("MaNhanVien"));
         }
-        return lst;
+        return list;
+    }
+
+    // DS nhân viên đã có TK (cho dialog Chỉnh sửa)
+    public List<String> getNhanVienWithAccount() throws SQLException {
+        List<String> list = new ArrayList<>();
+        String sql = "SELECT MaNhanVien FROM taikhoan WHERE MaTaiKhoan <> 'TK000' AND MaNhanVien IS NOT NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) list.add(rs.getString("MaNhanVien"));
+        }
+        return list;
     }
 }
