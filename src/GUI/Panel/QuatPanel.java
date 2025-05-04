@@ -1,7 +1,7 @@
 package GUI.Panel;
 import GUI.Dialog.ThemQuatDialog;
 import Database.DBConnection;
-import bll.QuatBLL;
+import BUS.QuatBUS;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -81,7 +81,7 @@ public class QuatPanel extends JPanel {
                 return;
             }
             String maQuat = table.getValueAt(selectedRow, 0).toString();
-            QuatBLL bll = new QuatBLL();
+            QuatBUS bll = new QuatBUS();
             if (bll.xoa(maQuat)) {
                 JOptionPane.showMessageDialog(this, "Xóa quạt thành công.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
                 loadDataFromDatabase();
@@ -136,7 +136,7 @@ public class QuatPanel extends JPanel {
             private void search() {
                 String keyword = txtSearch.getText().trim();
                 String filter = cbbFilter.getSelectedItem().toString();
-                QuatBLL quatBLL = new QuatBLL();
+                QuatBUS quatBLL = new QuatBUS();
 
                 List<Quat> results = new ArrayList<>();
                     if (keyword.isEmpty()) {

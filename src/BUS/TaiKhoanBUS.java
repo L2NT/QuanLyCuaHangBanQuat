@@ -1,4 +1,4 @@
-package BLL;
+package BUS;
 
 import DAO.TaiKhoanDAO;
 import DTO.TaiKhoan;
@@ -6,7 +6,7 @@ import DTO.TaiKhoan;
 import java.sql.SQLException;
 import java.util.List;
 
-public class TaiKhoanBLL {
+public class TaiKhoanBUS {
     private final TaiKhoanDAO dao = new TaiKhoanDAO();
 
     public List<TaiKhoan> layTatCa() {

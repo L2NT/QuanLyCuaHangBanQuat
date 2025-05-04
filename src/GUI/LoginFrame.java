@@ -71,7 +71,7 @@ public class LoginFrame extends JFrame implements KeyListener {
 
         // Form Username / Password
         JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 10));
-        formPanel.setBackground(Color.BLACK);
+        formPanel.setBackground(Color.white);
         formPanel.setPreferredSize(new Dimension(400, 200));
 
         txtUsername = new InputForm("Tên đăng nhập");

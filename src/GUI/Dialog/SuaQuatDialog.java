@@ -1,7 +1,7 @@
 package GUI.Dialog;
 
 import dto.Quat;
-import bll.QuatBLL;
+import BUS.QuatBUS;
 
 import javax.swing.*;
 import java.awt.*;
@@ -117,7 +117,7 @@ public class SuaQuatDialog extends JDialog {
             String thuongHieu = txtThuongHieu.getText();
             String maLoaiSP = txtMaLoaiSP.getText();
 
-            QuatBLL quatBLL = new QuatBLL();
+            QuatBUS quatBLL = new QuatBUS();
             boolean result = quatBLL.sua(maQuat, tenQuat, gia, soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP);
 
             if (result) {

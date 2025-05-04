@@ -10,7 +10,7 @@ public class AdminMainFrame extends JFrame {
     }
     private void initUI() {
         setTitle("Quản trị hệ thống");
-        setSize(800,600);
+        setSize(1000,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         // Chỉ còn 1 panel TK

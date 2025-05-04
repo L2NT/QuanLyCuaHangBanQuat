@@ -2,7 +2,7 @@ package GUI.Dialog;
 
 import dao.QuatDAO;
 import dto.Quat;
-import bll.QuatBLL;
+import BUS.QuatBUS;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,11 +14,11 @@ public class ThemQuatDialog extends JDialog {
     private JButton btnLuu, btnHuy;
     private boolean added = false;
 
-    private QuatBLL quatBLL;
+    private QuatBUS quatBLL;
 
     public ThemQuatDialog(Window owner) {
         super(owner, "Thêm Quạt", Dialog.ModalityType.APPLICATION_MODAL);
-        quatBLL = new QuatBLL(); // Khởi tạo QuatBLL
+        quatBLL = new QuatBUS(); // Khởi tạo QuatBUS
         initComponent();
     }
 
@@ -90,7 +90,7 @@ public class ThemQuatDialog extends JDialog {
             String maLoaiSP = txtMaLoaiSP.getText();
             int soLuongTon = Integer.parseInt(txtSoLuongTon.getText());  // Lấy giá trị số lượng tồn
 
-            // Gọi hàm them trong QuatBLL
+            // Gọi hàm them trong QuatBUS
             if (quatBLL.them(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP)) {
                 JOptionPane.showMessageDialog(this, "Đã lưu quạt.");
                 added = true;  // Đánh dấu là quạt đã được thêm

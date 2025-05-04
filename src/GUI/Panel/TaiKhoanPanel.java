@@ -1,9 +1,9 @@
 package GUI.Panel;
 
-import BLL.TaiKhoanBLL;
+import BUS.TaiKhoanBUS;
 import DTO.TaiKhoan;
 import GUI.Dialog.ThemTaiKhoanDialog;
-import GUI.Dialog.ChinhSuaTaiKhoanDialog;
+import GUI.Dialog.SuaTaiKhoanDialog;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class TaiKhoanPanel extends JPanel {
-    private final TaiKhoanBLL bll = new TaiKhoanBLL();
+    private final TaiKhoanBUS bll = new TaiKhoanBUS();
     private final DefaultTableModel model;
     private final JTable tbl;
     private final TableRowSorter<DefaultTableModel> sorter;
@@ -92,7 +92,7 @@ public class TaiKhoanPanel extends JPanel {
                                               "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            ChinhSuaTaiKhoanDialog dlg = new ChinhSuaTaiKhoanDialog(
+            SuaTaiKhoanDialog dlg = new SuaTaiKhoanDialog(
                 SwingUtilities.getWindowAncestor(this)
             );
             dlg.loadForEdit(maTK);

@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import bll.NhaCungCapBLL;
+import BUS.NhaCungCapBUS;
 import dto.NhaCungCap;
 
 import javax.swing.*;
@@ -12,11 +12,11 @@ public class ThemNhaCungCapDialog extends JDialog {
     private JButton btnLuu, btnHuy;
     private boolean added = false;
 
-    private NhaCungCapBLL nhaCungCapBLL;
+    private NhaCungCapBUS nhaCungCapBLL;
 
     public ThemNhaCungCapDialog(Window owner) {
         super(owner, "Thêm Nhà Cung Cấp", Dialog.ModalityType.APPLICATION_MODAL);
-        nhaCungCapBLL = new NhaCungCapBLL();
+        nhaCungCapBLL = new NhaCungCapBUS();
         initComponent();
     }
 

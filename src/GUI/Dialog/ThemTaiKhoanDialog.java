@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import BLL.TaiKhoanBLL;
+import BUS.TaiKhoanBUS;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -21,7 +21,7 @@ public class ThemTaiKhoanDialog extends JDialog {
         gbc.gridx=0; gbc.gridy=0; p.add(new JLabel("Nhân viên:"),gbc);
         gbc.gridx=1;
         cbbNV = new JComboBox<>();
-        new TaiKhoanBLL().layDanhSachNhanVienChuaCoTaiKhoan().forEach(cbbNV::addItem);
+        new TaiKhoanBUS().layDanhSachNhanVienChuaCoTaiKhoan().forEach(cbbNV::addItem);
         p.add(cbbNV,gbc);
 
         gbc.gridy=1; gbc.gridx=0; p.add(new JLabel("Tên đăng nhập:"),gbc);
@@ -46,7 +46,7 @@ public class ThemTaiKhoanDialog extends JDialog {
         btnH.addActionListener(e->dispose());
         btnL.addActionListener(e->{
             try {
-                new TaiKhoanBLL().them(
+                new TaiKhoanBUS().them(
                     txtUser.getText().trim(),
                     txtPass.getText().trim(),
                     (String)cbbRole.getSelectedItem(),

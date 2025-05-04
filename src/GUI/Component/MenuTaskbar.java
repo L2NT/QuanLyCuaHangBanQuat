@@ -6,7 +6,6 @@ import GUI.EmployeeMainFrame;
 import GUI.Panel.TrangChu;
 import GUI.Panel.BanQuatPanel;
 import GUI.Panel.QuatPanel;
-import GUI.Panel.QuanLyThuocTinhSP;
 import GUI.Panel.HoaDonPanel;
 import GUI.Panel.KhuyenMaiPanel;
 import GUI.Panel.KhachHangPanel;
@@ -17,6 +16,7 @@ import GUI.Panel.NhanVienPanel;
 import GUI.Panel.TaiKhoanPanel;
 import GUI.Panel.PhanQuyenPanel;
 import GUI.Panel.ThongKePanel;
+import GUI.Panel.LoaiSanPhamPanel;
 
 import javax.swing.*;
 import javax.swing.SwingConstants;
@@ -63,7 +63,6 @@ public class MenuTaskbar extends JPanel {
         // Chỉ manager mới có các mục dưới đây
         if (isManager) {
             addButton(menu, "Quản lý quạt",        e -> swap(new QuatPanel()));
-            addButton(menu, "Quản lý thuộc tính",  e -> swap(new QuanLyThuocTinhSP((ManagerMainFrame) parent)));
             addButton(menu, "Hóa đơn",             e -> swap(new HoaDonPanel()));
             addButton(menu, "Khuyến mãi",          e -> swap(new KhuyenMaiPanel()));
             addButton(menu, "Khách hàng",          e -> swap(new KhachHangPanel()));
@@ -72,6 +71,7 @@ public class MenuTaskbar extends JPanel {
             addButton(menu, "Tài khoản",           e -> swap(new TaiKhoanPanel()));
             addButton(menu, "Phân quyền",          e -> swap(new PhanQuyenPanel()));
             addButton(menu, "Thống kê",            e -> swap(new ThongKePanel()));
+            addButton(menu, "Loại Sản Phẩm",       e -> swap(new LoaiSanPhamPanel()));
         }
 
         // Nút đăng xuất luôn có

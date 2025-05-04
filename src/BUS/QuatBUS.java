@@ -1,4 +1,4 @@
-package bll;
+package BUS;
 
 import dao.QuatDAO;
 import dto.Quat;
@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 
-public class QuatBLL {
+public class QuatBUS {
     private final QuatDAO dao = new QuatDAO();
 
     // Lấy tất cả các quạt

@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import bll.NhaCungCapBLL;
+import BUS.NhaCungCapBUS;
 import dto.NhaCungCap;
 
 import javax.swing.*;
@@ -87,7 +87,7 @@ public class SuaNhaCungCapDialog extends JDialog {
             String diaChi = txtDiaChi.getText();
             String sdt = txtSDT.getText();
             
-            NhaCungCapBLL nhaCungCapBLL = new NhaCungCapBLL();
+            NhaCungCapBUS nhaCungCapBLL = new NhaCungCapBUS();
             boolean result = nhaCungCapBLL.sua(maNCC, tenNCC, diaChi, sdt);
 
             if (result) {

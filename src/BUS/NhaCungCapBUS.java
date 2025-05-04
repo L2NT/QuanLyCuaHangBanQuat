@@ -1,4 +1,4 @@
-package bll;
+package BUS;
 
 import dao.NhaCungCapDAO;
 import dto.NhaCungCap;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
 
-public class NhaCungCapBLL {
+public class NhaCungCapBUS {
     private final NhaCungCapDAO dao = new NhaCungCapDAO();
 
     // Lấy tất cả nhà cung cấp

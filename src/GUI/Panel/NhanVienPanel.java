@@ -1,209 +1,154 @@
+// src/GUI/Panel/NhanVienPanel.java
 package GUI.Panel;
 
+import BUS.NhanVienBUS;
+import DTO.NhanVien;
+import GUI.Dialog.ThemNhanVienDialog;
+import GUI.Dialog.SuaNhanVienDialog;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class NhanVienPanel extends JPanel implements ItemListener, KeyListener {
-    private JButton btnThem, btnXoa, btnSua, btnExcel, btnLamMoi;
-    private JComboBox<String> cbbChucVu;     // ComboBox để lọc (Tất cả, Quản lý, Nhân viên,...)
-    private JTextField txtSearch;           // Ô tìm kiếm
-    private JTable table;
-    private DefaultTableModel tableModel;
-
-    // Danh sách nhân viên gốc (dummy)
-    private List<NhanVien> listNV;
+public class NhanVienPanel extends JPanel {
+    private final DefaultTableModel model;
+    private final JTable tbl;
+    // Bỏ final để khởi tạo trong createButtonPanel()
+    private JComboBox<String> cbbFilter;
+    private JTextField txtSearch;
+    private final NhanVienBUS bll = new NhanVienBUS();
 
     public NhanVienPanel() {
-        initComponent();
-        initData();
-        loadDataToTable(listNV); // Ban đầu hiển thị toàn bộ
-    }
+        setLayout(new BorderLayout(10,10));
+        setBorder(new EmptyBorder(10,10,10,10));
 
-    private void initComponent() {
-        setLayout(new BorderLayout(10, 10));
-        setBackground(Color.WHITE);
-
-        // ========== Thanh công cụ (toolbar) ==========
-        JPanel toolbar = new JPanel(new BorderLayout());
-
-        // (A) Panel bên trái - nút Thêm, Xóa, Sửa, Xuất Excel
-        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        btnThem = new JButton("THÊM");
-        btnXoa = new JButton("XÓA");
-        btnSua = new JButton("SỬA");
-        btnExcel = new JButton("XUẤT EXCEL");
-        leftToolPanel.add(btnThem);
-        leftToolPanel.add(btnXoa);
-        leftToolPanel.add(btnSua);
-        leftToolPanel.add(btnExcel);
-
-        // (B) Panel bên phải - combo (chức vụ), ô tìm kiếm, nút làm mới
-        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
-        cbbChucVu = new JComboBox<>(new String[]{"Tất cả", "Quản lý", "Nhân viên"});
-        cbbChucVu.addItemListener(this);
-
-        txtSearch = new JTextField("Nhập nội dung tìm kiếm...", 15);
-        txtSearch.addKeyListener(this);
-
-        btnLamMoi = new JButton("LÀM MỚI");
-
-        rightToolPanel.add(cbbChucVu);
-        rightToolPanel.add(txtSearch);
-        rightToolPanel.add(btnLamMoi);
-
-        toolbar.add(leftToolPanel, BorderLayout.WEST);
-        toolbar.add(rightToolPanel, BorderLayout.EAST);
-
+        // Tạo toolbar (thiết lập cbbFilter và txtSearch trong đó)
+        JPanel toolbar = createButtonPanel();
         add(toolbar, BorderLayout.NORTH);
 
-        // ========== Bảng hiển thị nhân viên ==========
-        // Cột ví dụ: Mã NV, Tên NV, Chức vụ, SĐT, Email, Tình trạng
-        String[] columns = {"Mã NV", "Tên NV", "Chức vụ", "SĐT", "Email", "Tình trạng"};
-        tableModel = new DefaultTableModel(columns, 0);
-        table = new JTable(tableModel);
+        // Tạo table model
+        model = new DefaultTableModel(
+            new Object[]{"Mã NV","Họ tên","Chức vụ","SĐT","Địa chỉ"}, 0
+        ) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        tbl = new JTable(model);
+        tbl.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        JScrollPane scroll = new JScrollPane(table);
-        add(scroll, BorderLayout.CENTER);
+        // Lần đầu load dữ liệu
+        reloadData();
 
-        // ========== Sự kiện nút (demo) ==========
+        add(new JScrollPane(tbl), BorderLayout.CENTER);
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel toolbar = new JPanel(new BorderLayout());
+
+        // A) Nút bên trái
+        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT,10,5));
+        JButton btnThem = new JButton("THÊM");
+        JButton btnSua  = new JButton("CHỈNH SỬA");
+        JButton btnXoa  = new JButton("XÓA");
+        left.add(btnThem); left.add(btnSua); left.add(btnXoa);
+        toolbar.add(left, BorderLayout.WEST);
+
         btnThem.addActionListener(e -> {
-            // Mở dialog ThemNhanVienDialog (hoặc showMessageDialog)
-            JOptionPane.showMessageDialog(this, "Thêm nhân viên (demo)!");
-            // ThemNhanVienDialog dlg = new ThemNhanVienDialog(SwingUtilities.getWindowAncestor(this));
-            // dlg.setVisible(true);
-        });
-
-        btnXoa.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row >= 0) {
-                tableModel.removeRow(row);
-            }
+            ThemNhanVienDialog dlg = new ThemNhanVienDialog(
+                SwingUtilities.getWindowAncestor(this)
+            );
+            dlg.setVisible(true);
+            if (dlg.isSaved()) reloadData();
         });
 
         btnSua.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row < 0) {
-                JOptionPane.showMessageDialog(this, "Chưa chọn nhân viên để sửa!");
+            int r = tbl.getSelectedRow();
+            if (r<0) {
+                JOptionPane.showMessageDialog(this,
+                    "Chọn một nhân viên để chỉnh sửa",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            JOptionPane.showMessageDialog(this, "Sửa nhân viên (demo)!");
-            // Hoặc mở ThemNhanVienDialog, nạp data cũ
+            String maNV = model.getValueAt(r,0).toString();
+            SuaNhanVienDialog dlg = new SuaNhanVienDialog(
+                SwingUtilities.getWindowAncestor(this), maNV
+            );
+            dlg.setVisible(true);
+            if (dlg.isSaved()) reloadData();
         });
 
-        btnExcel.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Xuất Excel (demo)!");
+        btnXoa.addActionListener(e -> {
+            int r = tbl.getSelectedRow();
+            if (r<0) return;
+            if (JOptionPane.showConfirmDialog(this,
+                "Xóa nhân viên này?") == JOptionPane.YES_OPTION) {
+                String maNV = model.getValueAt(r,0).toString();
+                bll.xoa(maNV);
+                reloadData();
+            }
         });
 
+        // B) Filter + Search + Refresh bên phải
+        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,5));
+        right.add(new JLabel("Chức vụ:"));
+        cbbFilter = new JComboBox<>(new String[]{"Tất cả","Quản lý","Nhân viên"});
+        right.add(cbbFilter);
+
+        right.add(new JLabel("Tìm kiếm:"));
+        txtSearch = new JTextField(15);
+        right.add(txtSearch);
+
+        JButton btnLamMoi = new JButton("LÀM MỚI");
+        right.add(btnLamMoi);
+
+        // Kịch bản lọc & tìm kiếm
+        ActionListener doFilter = e -> reloadData();
+        cbbFilter.addActionListener(doFilter);
+        txtSearch.addActionListener(doFilter);
         btnLamMoi.addActionListener(e -> {
-            // Xoá bảng rồi load lại danh sách gốc
-            loadDataToTable(listNV);
+            cbbFilter.setSelectedIndex(0);
+            txtSearch.setText("");
+            reloadData();
         });
+
+        toolbar.add(right, BorderLayout.EAST);
+        return toolbar;
     }
 
-    /**
-     * Tạo dữ liệu mẫu cho nhân viên
-     */
-    private void initData() {
-        listNV = new ArrayList<>();
-        // (maNV, tenNV, chucVu, sdt, email, tinhTrang)
-        listNV.add(new NhanVien("NV001", "Nguyễn Văn A", "Quản lý", "0909123456", "nva@quat.vn", "Hoạt động"));
-        listNV.add(new NhanVien("NV002", "Trần Thị B", "Nhân viên", "0818111222", "ttb@quat.vn", "Hoạt động"));
-        listNV.add(new NhanVien("NV003", "Lê Hoàng C", "Nhân viên", "0799887766", "lhc@quat.vn", "Nghỉ việc"));
-        // Thêm tùy ý
-    }
+    /** Tải lại data từ BLL, áp dụng filter và tìm kiếm */
+    private void reloadData() {
+        List<NhanVien> all = bll.layTatCa();
 
-    /**
-     * Đổ danh sách nhân viên vào bảng
-     */
-    private void loadDataToTable(List<NhanVien> data) {
-        tableModel.setRowCount(0);
-        for (NhanVien nv : data) {
-            tableModel.addRow(new Object[]{
-                nv.getMaNV(),
-                nv.getTenNV(),
-                nv.getChucVu(),
-                nv.getSdt(),
-                nv.getEmail(),
-                nv.getTinhTrang()
+        // 1) Lọc theo chức vụ
+        String cv = (String)cbbFilter.getSelectedItem();
+        if (!"Tất cả".equals(cv)) {
+            all = all.stream()
+                     .filter(n -> n.getChucVu().equalsIgnoreCase(cv))
+                     .collect(Collectors.toList());
+        }
+
+        // 2) Tìm kiếm theo mã hoặc họ tên
+        String kw = txtSearch.getText().trim().toLowerCase();
+        if (!kw.isEmpty()) {
+            all = all.stream()
+                     .filter(n -> n.getMaNV().toLowerCase().contains(kw)
+                               || n.getHoTen().toLowerCase().contains(kw))
+                     .collect(Collectors.toList());
+        }
+
+        // Đổ lên bảng
+        model.setRowCount(0);
+        for (NhanVien n : all) {
+            model.addRow(new Object[]{
+                n.getMaNV(),
+                n.getHoTen(),
+                n.getChucVu(),
+                n.getSdt(),
+                n.getDiaChi()
             });
         }
-    }
-
-    /**
-     * Lọc theo combo (chức vụ) + ô tìm kiếm
-     */
-    private void filterData() {
-        String selectedChucVu = (String) cbbChucVu.getSelectedItem(); // "Tất cả", "Quản lý", "Nhân viên"
-        String searchText = txtSearch.getText().trim().toLowerCase();
-
-        List<NhanVien> result = new ArrayList<>();
-        for (NhanVien nv : listNV) {
-            // 1. Kiểm tra chức vụ
-            boolean matchCV = true;
-            if (!selectedChucVu.equals("Tất cả")) {
-                matchCV = nv.getChucVu().equalsIgnoreCase(selectedChucVu);
-            }
-            // 2. Kiểm tra search text (Mã NV, Tên NV, SĐT, Email)
-            boolean matchSearch = searchText.isEmpty()
-                    || nv.getMaNV().toLowerCase().contains(searchText)
-                    || nv.getTenNV().toLowerCase().contains(searchText)
-                    || nv.getSdt().toLowerCase().contains(searchText)
-                    || nv.getEmail().toLowerCase().contains(searchText);
-
-            if (matchCV && matchSearch) {
-                result.add(nv);
-            }
-        }
-        loadDataToTable(result);
-    }
-
-    // =========== ItemListener cho ComboBox (chức vụ) ===========
-    @Override
-    public void itemStateChanged(ItemEvent e) {
-        if (e.getStateChange() == ItemEvent.SELECTED) {
-            filterData();
-        }
-    }
-
-    // =========== KeyListener cho ô tìm kiếm ===========
-    @Override
-    public void keyReleased(KeyEvent e) {
-        filterData();
-    }
-    @Override
-    public void keyTyped(KeyEvent e) { }
-    @Override
-    public void keyPressed(KeyEvent e) { }
-
-    // =========== Lớp NhanVien (dummy) ===========
-    class NhanVien {
-        private String maNV;
-        private String tenNV;
-        private String chucVu;     // Quản lý / Nhân viên / ...
-        private String sdt;
-        private String email;
-        private String tinhTrang;  // "Hoạt động", "Nghỉ việc", ...
-
-        public NhanVien(String maNV, String tenNV, String chucVu,
-                        String sdt, String email, String tinhTrang) {
-            this.maNV = maNV;
-            this.tenNV = tenNV;
-            this.chucVu = chucVu;
-            this.sdt = sdt;
-            this.email = email;
-            this.tinhTrang = tinhTrang;
-        }
-
-        public String getMaNV() { return maNV; }
-        public String getTenNV() { return tenNV; }
-        public String getChucVu() { return chucVu; }
-        public String getSdt() { return sdt; }
-        public String getEmail() { return email; }
-        public String getTinhTrang() { return tinhTrang; }
     }
 }

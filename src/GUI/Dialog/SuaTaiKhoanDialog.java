@@ -1,12 +1,12 @@
 package GUI.Dialog;
 
-import BLL.TaiKhoanBLL;
+import BUS.TaiKhoanBUS;
 import DTO.TaiKhoan;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class ChinhSuaTaiKhoanDialog extends JDialog {
+public class SuaTaiKhoanDialog extends JDialog {
     private final JComboBox<String> cbbNhanVien;
     private final JTextField txtUsername, txtPassword;
     private final JComboBox<String> cbbVaiTro;
@@ -14,7 +14,7 @@ public class ChinhSuaTaiKhoanDialog extends JDialog {
     private boolean saved = false;
     private String editingMaTK;
 
-    public ChinhSuaTaiKhoanDialog(Window owner) {
+    public SuaTaiKhoanDialog(Window owner) {
         super(owner, "Chỉnh sửa tài khoản", ModalityType.APPLICATION_MODAL);
 
         JPanel pnl = new JPanel(new GridBagLayout());
@@ -28,7 +28,7 @@ public class ChinhSuaTaiKhoanDialog extends JDialog {
         gbc.gridx = 1;
         cbbNhanVien = new JComboBox<>();
         // Nạp danh sách NV đã có TK (trừ Admin)
-        new TaiKhoanBLL().layDanhSachNhanVienCoTaiKhoan()
+        new TaiKhoanBUS().layDanhSachNhanVienCoTaiKhoan()
                          .forEach(cbbNhanVien::addItem);
         pnl.add(cbbNhanVien, gbc);
 
@@ -74,7 +74,7 @@ public class ChinhSuaTaiKhoanDialog extends JDialog {
             String pass   = txtPassword.getText().trim();
             String role   = (String) cbbVaiTro.getSelectedItem();
 
-            new TaiKhoanBLL().capNhat(editingMaTK, user, pass, role, maNV);
+            new TaiKhoanBUS().capNhat(editingMaTK, user, pass, role, maNV);
             saved = true;
             dispose();
         });
@@ -84,7 +84,7 @@ public class ChinhSuaTaiKhoanDialog extends JDialog {
     public void loadForEdit(String maTK) {
         this.editingMaTK = maTK;
         setTitle("Chỉnh sửa tài khoản");
-        TaiKhoan tk = new TaiKhoanBLL().layTheoMa(maTK);
+        TaiKhoan tk = new TaiKhoanBUS().layTheoMa(maTK);
         cbbNhanVien.setSelectedItem(tk.getMaNhanVien());
         cbbNhanVien.setEnabled(false);  // KHÓA không cho đổi NV
         txtUsername.setText(tk.getUsername());
