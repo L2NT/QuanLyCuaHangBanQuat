@@ -56,7 +56,9 @@ public class MenuTaskbar extends JPanel {
 
         // Các chức năng chung cho cả Manager và Employee
         addButton(menu, "Trang chủ",    e -> swap(new TrangChu()));
-        addButton(menu, "Bán quạt",     e -> swap(new BanQuatPanel()));
+        addButton(menu, "Sản phẩm ",     e -> swap(new BanQuatPanel()));
+        addButton(menu, "Hóa đơn",             e -> swap(new HoaDonPanel()));
+        addButton(menu, "Khách hàng",          e -> swap(new KhachHangPanel()));
         addButton(menu, "Phiếu nhập",   e -> swap(new PhieuNhapPanel()));
         addButton(menu, "Phiếu xuất",   e -> swap(new PhieuXuatPanel()));
 
