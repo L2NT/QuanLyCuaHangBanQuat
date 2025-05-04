@@ -1,19 +1,25 @@
-package dto;
+
+package DTO;
+
+import java.util.Date;
 
 public class Quat {
     private String maQuat;
     private String tenQuat;
     private int gia;
     private String maNSX;
-    private String ngaySanXuat;
+
+    private Date ngaySanXuat;
     private String chatLieu;
     private String thuongHieu;
     private String maLoaiSP;
 
-    public Quat() { }
 
-    public Quat(String maQuat, String tenQuat, int gia, String maNSX,
-                String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
+    public Quat() {
+    }
+
+    public Quat(String maQuat, String tenQuat, int gia, String maNSX, Date ngaySanXuat,
+                String chatLieu, String thuongHieu, String maLoaiSP) {
         this.maQuat = maQuat;
         this.tenQuat = tenQuat;
         this.gia = gia;
@@ -56,11 +62,12 @@ public class Quat {
         this.maNSX = maNSX;
     }
 
-    public String getNgaySanXuat() {
+
+    public Date getNgaySanXuat() {
         return ngaySanXuat;
     }
 
-    public void setNgaySanXuat(String ngaySanXuat) {
+    public void setNgaySanXuat(Date ngaySanXuat) {
         this.ngaySanXuat = ngaySanXuat;
     }
 
@@ -86,5 +93,19 @@ public class Quat {
 
     public void setMaLoaiSP(String maLoaiSP) {
         this.maLoaiSP = maLoaiSP;
+    }
+
+    @Override
+    public String toString() {
+        return "Quat{" +
+                "maQuat='" + maQuat + '\'' +
+                ", tenQuat='" + tenQuat + '\'' +
+                ", gia=" + gia +
+                ", maNSX='" + maNSX + '\'' +
+                ", ngaySanXuat=" + ngaySanXuat +
+                ", chatLieu='" + chatLieu + '\'' +
+                ", thuongHieu='" + thuongHieu + '\'' +
+                ", maLoaiSP='" + maLoaiSP + '\'' +
+                '}';
     }
 }
