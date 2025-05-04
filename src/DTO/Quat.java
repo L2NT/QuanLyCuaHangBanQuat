@@ -1,3 +1,4 @@
+
 package DTO;
 
 import java.util.Date;
@@ -7,10 +8,12 @@ public class Quat {
     private String tenQuat;
     private int gia;
     private String maNSX;
+
     private Date ngaySanXuat;
     private String chatLieu;
     private String thuongHieu;
     private String maLoaiSP;
+
 
     public Quat() {
     }
@@ -58,6 +61,7 @@ public class Quat {
     public void setMaNSX(String maNSX) {
         this.maNSX = maNSX;
     }
+
 
     public Date getNgaySanXuat() {
         return ngaySanXuat;
