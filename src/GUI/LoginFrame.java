@@ -1,6 +1,9 @@
 package GUI;
 
 import Database.DBConnection;
+import GUI.AdminMainFrame;
+import GUI.ManagerMainFrame;
+import GUI.EmployeeMainFrame;
 import GUI.Component.InputForm;
 import GUI.Dialog.QuenMatKhau;
 import com.formdev.flatlaf.FlatClientProperties;
@@ -11,7 +14,10 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,6 +33,7 @@ public class LoginFrame extends JFrame implements KeyListener {
     public LoginFrame() {
         initLookAndFeel();
         initComponent();
+
         // mặc định để test, có thể xóa
         txtUsername.setText("tranthingoc");
         txtPassword.setPass("ngoc2024");
@@ -52,19 +59,22 @@ public class LoginFrame extends JFrame implements KeyListener {
 
         imgIntro();
 
-        // Panel chứa form
+        // Panel chính chứa form
         pnlMain = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         pnlMain.setBackground(Color.WHITE);
         pnlMain.setBorder(new EmptyBorder(20, 0, 0, 0));
         pnlMain.setPreferredSize(new Dimension(500, 500));
 
+        // Tiêu đề
         lblTitle = new JLabel("ĐĂNG NHẬP VÀO HỆ THỐNG");
         lblTitle.setFont(new Font(FlatRobotoFont.FAMILY_SEMIBOLD, Font.BOLD, 20));
         pnlMain.add(lblTitle);
 
+
         // Form đăng nhập
         JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         formPanel.setBackground(Color.white);
+
         formPanel.setPreferredSize(new Dimension(400, 200));
 
         txtUsername = new InputForm("Tên đăng nhập");
@@ -133,17 +143,23 @@ public class LoginFrame extends JFrame implements KeyListener {
         add(imgPanel, BorderLayout.WEST);
     }
 
+    /**
+     * Thực hiện xác thực với CSDL. Nếu đúng:
+     *   - Vai trò = Admin → mở AdminMainFrame
+     *   - Vai trò = NhanVien → mở EmployeeMainFrame(maNhanVien)
+     */
     private void checkLogin() {
     String user = txtUsername.getText().trim();
     String pass = txtPassword.getPass().trim();
 
     if (user.isEmpty() || pass.isEmpty()) {
         JOptionPane.showMessageDialog(this,
-            "Vui lòng nhập đầy đủ thông tin","Cảnh báo",JOptionPane.WARNING_MESSAGE);
+            "Vui lòng nhập đầy đủ thông tin",
+            "Cảnh báo", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    String sql = "SELECT * FROM taikhoan WHERE TenTaiKhoan=? AND MatKhau=?";
+    String sql = "SELECT * FROM taikhoan WHERE TenTaiKhoan = ? AND MatKhau = ?";
     try (Connection conn = DBConnection.getConnection();
          PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -151,25 +167,35 @@ public class LoginFrame extends JFrame implements KeyListener {
         ps.setString(2, pass);
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                String role = rs.getString("VaiTro");   // đọc vai trò từ CSDL
+                String role   = rs.getString("VaiTro");
+                String maNV   = rs.getString("MaNhanVien"); // có thể null nếu admin
+
                 if ("Admin".equalsIgnoreCase(role)) {
-                    new ManagerMainFrame().setVisible(true);
+                    // Admin‐only interface
+                    new AdminMainFrame().setVisible(true);
+
+                } else if ("QuanLy".equalsIgnoreCase(role)) {
+                
+                    new ManagerMainFrame(maNV).setVisible(true);
+
                 } else {
-                    new EmployeeMainFrame().setVisible(true);
+                    // Nhân viên thường
+                    new EmployeeMainFrame(maNV).setVisible(true);
                 }
                 dispose();
+
             } else {
                 JOptionPane.showMessageDialog(this,
-                    "Đăng nhập thất bại","Lỗi",JOptionPane.ERROR_MESSAGE);
+                    "Đăng nhập thất bại: sai user hoặc mật khẩu",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         }
     } catch (SQLException ex) {
         ex.printStackTrace();
         JOptionPane.showMessageDialog(this,
-            "Lỗi kết nối CSDL","Lỗi",JOptionPane.ERROR_MESSAGE);
+            "Lỗi kết nối CSDL", "Lỗi", JOptionPane.ERROR_MESSAGE);
     }
 }
-
 
 
     @Override
@@ -178,7 +204,7 @@ public class LoginFrame extends JFrame implements KeyListener {
             checkLogin();
         }
     }
-    @Override public void keyTyped(KeyEvent e) { }
+    @Override public void keyTyped(KeyEvent e)  { }
     @Override public void keyReleased(KeyEvent e) { }
 
     public static void main(String[] args) {
