@@ -1,4 +1,4 @@
--- phpMyAdmin SQL Dump
+quanlycuahangquatkhachhang-- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
@@ -467,7 +467,7 @@ INSERT INTO `skkhuyenmai` (`MaSKKhuyenMai`, `PhanTramGiam`, `TenKhuyenMai`, `Nga
 -- Cấu trúc bảng cho bảng `tai khoan`
 --
 
-CREATE TABLE `tai khoan` (
+CREATE TABLE `taikhoan` (
   `MaTaiKhoan` varchar(50) NOT NULL,
   `TenTaiKhoan` varchar(200) NOT NULL,
   `MatKhau` varchar(200) NOT NULL,
@@ -478,7 +478,7 @@ CREATE TABLE `tai khoan` (
 -- Đang đổ dữ liệu cho bảng `tai khoan`
 --
 
-INSERT INTO `tai khoan` (`MaTaiKhoan`, `TenTaiKhoan`, `MatKhau`, `VaiTro`) VALUES
+INSERT INTO `taikhoan` (`MaTaiKhoan`, `TenTaiKhoan`, `MatKhau`, `VaiTro`) VALUES
 ('TK001', 'nguyenvana', 'matkhau123', 'Admin'),
 ('TK002', 'tranthingoc', 'ngoc2024', 'NhanVien'),
 ('TK003', 'lebaoduy', 'duy_quat123', 'KhachHang');
@@ -562,7 +562,7 @@ ALTER TABLE `skkhuyenmai`
 --
 -- Chỉ mục cho bảng `tai khoan`
 --
-ALTER TABLE `tai khoan`
+ALTER TABLE `taikhoan`
   ADD PRIMARY KEY (`MaTaiKhoan`);
 COMMIT;
 

@@ -8,7 +8,7 @@ public class DBConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/quanlycuahangquat"
         + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC";
     private static String USER = "root";      // mặc định
-    private static String PASS = "";          // mặc định
+    private static String PASS = "marigold";          // mặc định
 
     private static Connection conn;
 

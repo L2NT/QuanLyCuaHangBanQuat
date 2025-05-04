@@ -28,8 +28,8 @@ public class LoginFrame extends JFrame implements KeyListener {
         initLookAndFeel();
         initComponent();
         // mặc định để test, có thể xóa
-        txtUsername.setText("admin");
-        txtPassword.setPass("123");
+        txtUsername.setText("tranthingoc");
+        txtPassword.setPass("ngoc2024");
     }
 
     private void initLookAndFeel() {
@@ -63,8 +63,8 @@ public class LoginFrame extends JFrame implements KeyListener {
         pnlMain.add(lblTitle);
 
         // Form đăng nhập
-        JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 10));
-        formPanel.setBackground(Color.BLACK);
+        JPanel formPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        formPanel.setBackground(Color.white);
         formPanel.setPreferredSize(new Dimension(400, 200));
 
         txtUsername = new InputForm("Tên đăng nhập");
