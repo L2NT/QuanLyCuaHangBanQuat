@@ -1,24 +1,23 @@
-package dto;
+package DTO;
 
 public class TaiKhoan {
-    private int id;
-    private String username;
-    private String password;
+    private String maTaiKhoan;
+    private String tenTaiKhoan;
+    private String matKhau;
+    private String vaiTro;
+    private String maNhanVien; // có thể null nếu là Admin
 
-    public TaiKhoan() { }
-
-    public TaiKhoan(int id, String username, String password) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
+    public TaiKhoan(String maTaiKhoan, String tenTaiKhoan, String matKhau, String vaiTro, String maNhanVien) {
+        this.maTaiKhoan = maTaiKhoan;
+        this.tenTaiKhoan = tenTaiKhoan;
+        this.matKhau = matKhau;
+        this.vaiTro = vaiTro;
+        this.maNhanVien = maNhanVien;
     }
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getMaTaiKhoan() { return maTaiKhoan; }
+    public String getTenTaiKhoan() { return tenTaiKhoan; }
+    public String getMatKhau()      { return matKhau; }
+    public String getVaiTro()       { return vaiTro; }
+    public String getMaNhanVien()   { return maNhanVien; }
 }
