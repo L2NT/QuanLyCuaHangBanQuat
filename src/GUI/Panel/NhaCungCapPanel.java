@@ -1,16 +1,22 @@
 package GUI.Panel;
 
+import Database.DBConnection;
 import bll.NhaCungCapBLL;
 import dto.NhaCungCap;
 import GUI.Dialog.ThemNhaCungCapDialog;
 import GUI.Dialog.SuaNhaCungCapDialog;
-
+import java.sql.Statement;
+import java.sql.*;
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
 import java.awt.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class NhaCungCapPanel extends JPanel {
@@ -24,132 +30,173 @@ public class NhaCungCapPanel extends JPanel {
         add(createButtonPanel(), BorderLayout.NORTH);
         add(createTablePanel(), BorderLayout.CENTER);
 
-        loadData();
+        loadDataFromDatabase();
     }
 
     private JPanel createButtonPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
+        JPanel toolbar = new JPanel(new BorderLayout());
 
-        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
         JButton btnThem = new JButton("THÊM");
-        JButton btnSua = new JButton("SỬA");
         JButton btnXoa = new JButton("XÓA");
-        leftPanel.add(btnThem);
-        leftPanel.add(btnSua);
-        leftPanel.add(btnXoa);
+        JButton btnSua = new JButton("SỬA");
+        JButton btnExcel = new JButton("XUẤT EXCEL");
+        leftToolPanel.add(btnThem);
+        leftToolPanel.add(btnXoa);
+        leftToolPanel.add(btnSua);
+        leftToolPanel.add(btnExcel);
 
-        JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        JComboBox<String> cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Mã NCC", "Tên NCC"});
+        JLabel lblSearch = new JLabel("Tìm kiếm:");
         JTextField txtSearch = new JTextField(15);
-        JButton btnTim = new JButton("TÌM KIẾM");
         JButton btnLamMoi = new JButton("LÀM MỚI");
-        rightPanel.add(new JLabel("Tìm theo mã:"));
-        rightPanel.add(txtSearch);
-        rightPanel.add(btnTim);
-        rightPanel.add(btnLamMoi);
 
-        panel.add(leftPanel, BorderLayout.WEST);
-        panel.add(rightPanel, BorderLayout.EAST);
+        rightToolPanel.add(cbbFilter);
+        rightToolPanel.add(lblSearch);
+        rightToolPanel.add(txtSearch);
+        rightToolPanel.add(btnLamMoi);
+
+        toolbar.add(leftToolPanel, BorderLayout.WEST);
+        toolbar.add(rightToolPanel, BorderLayout.EAST);
 
         btnThem.addActionListener(e -> {
             ThemNhaCungCapDialog dialog = new ThemNhaCungCapDialog((Window) SwingUtilities.getWindowAncestor(this));
             dialog.setVisible(true);
-            if (dialog.isAdded()) loadData();
-        });
-
-        btnSua.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn nhà cung cấp để sửa.");
-                return;
-            }
-
-            String ma = table.getValueAt(row, 0).toString();
-            String ten = table.getValueAt(row, 1).toString();
-            String diachi = table.getValueAt(row, 2).toString();
-            String sdt = table.getValueAt(row, 3).toString();
-
-            NhaCungCap ncc = new NhaCungCap(ma, ten, diachi, sdt);
-            SuaNhaCungCapDialog dialog = new SuaNhaCungCapDialog((Window) SwingUtilities.getWindowAncestor(this), ncc);
-            dialog.setVisible(true);
-            if (dialog.isUpdated()) loadData();
+            if (dialog.isAdded()) loadDataFromDatabase();
         });
 
         btnXoa.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row == -1) {
-                JOptionPane.showMessageDialog(this, "Vui lòng chọn nhà cung cấp để xóa.");
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhà cung cấp để xóa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            String ma = table.getValueAt(row, 0).toString();
-            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn xóa?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-            if (confirm == JOptionPane.YES_OPTION) {
-                NhaCungCapBLL bll = new NhaCungCapBLL();
-                if (bll.xoa(ma)) {
-                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
-                    loadData();
-                } else {
-                    JOptionPane.showMessageDialog(this, "Xóa thất bại!");
-                }
+
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhà cung cấp này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm != JOptionPane.YES_OPTION) return;
+
+            String maNCC = table.getValueAt(selectedRow, 0).toString();
+            NhaCungCapBLL bll = new NhaCungCapBLL();
+            if (bll.xoa(maNCC)) {
+                JOptionPane.showMessageDialog(this, "Xóa thành công.", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                loadDataFromDatabase();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
 
-        btnTim.addActionListener(e -> {
-            String keyword = txtSearch.getText().trim();
-            if (keyword.isEmpty()) return;
-            NhaCungCapBLL bll = new NhaCungCapBLL();
-            NhaCungCap result = bll.timTheoMa(keyword);
-            if (result != null) {
-                tableModel.setRowCount(0);
-                tableModel.addRow(new Object[]{
-                    result.getMaNCC(),
-                    result.getTenNCC(),
-                    result.getDiaChiNCC(),
-                    result.getSdtNCC()
-                });
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy!");
+        btnSua.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một nhà cung cấp để sửa.", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String ma = tableModel.getValueAt(selectedRow, 0).toString();
+            String ten = tableModel.getValueAt(selectedRow, 1).toString();
+            String diachi = tableModel.getValueAt(selectedRow, 2).toString();
+            String sdt = tableModel.getValueAt(selectedRow, 3).toString();
+            NhaCungCap ncc = new NhaCungCap(ma, ten, diachi, sdt);
+
+            SuaNhaCungCapDialog dialog = new SuaNhaCungCapDialog((Window) SwingUtilities.getWindowAncestor(this), ncc);
+            dialog.setVisible(true);
+            if (dialog.isUpdated()) loadDataFromDatabase();
+        });
+
+        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) { search(); }
+            public void removeUpdate(DocumentEvent e) { search(); }
+            public void changedUpdate(DocumentEvent e) { search(); }
+
+            private void search() {
+                String keyword = txtSearch.getText().trim();
+                String filter = cbbFilter.getSelectedItem().toString();
+                NhaCungCapBLL bll = new NhaCungCapBLL();
+                List<NhaCungCap> results = new ArrayList<>();
+
+                switch (filter) {
+                    case "Mã NCC":
+                        NhaCungCap ncc = bll.timTheoMa(keyword);
+                        if (ncc != null) results.add(ncc);
+                        break;
+                    case "Tên NCC":
+                        results = bll.timTheoTen(keyword);
+                        break;
+                    case "Tất cả":
+                        NhaCungCap ncc1 = bll.timTheoMa(keyword);
+                        List<NhaCungCap> list2 = bll.timTheoTen(keyword);
+                        if (ncc1 != null) results.add(ncc1);
+                        for (NhaCungCap item : list2) {
+                            if (!results.contains(item)) results.add(item);
+                        }
+                        break;
+                }
+
+                loadDataToTable(results);
             }
         });
 
         btnLamMoi.addActionListener(e -> {
             txtSearch.setText("");
-            loadData();
+            cbbFilter.setSelectedIndex(0);
+            loadDataFromDatabase();
         });
 
-        return panel;
+        return toolbar;
     }
 
     private JScrollPane createTablePanel() {
-        tableModel = new DefaultTableModel(new Object[]{"Mã NCC", "Tên NCC", "Địa Chỉ", "SĐT"}, 0) {
-            public boolean isCellEditable(int r, int c) {
+        tableModel = new DefaultTableModel(new Object[] {
+            "Mã NCC", "Tên NCC", "Địa chỉ", "SĐT"
+        }, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
 
         table = new JTable(tableModel);
+        setTableCellAlignment();
         table.setFont(new Font("Arial", Font.PLAIN, 14));
-        table.setRowHeight(28);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(30);
 
         JTableHeader header = table.getTableHeader();
         header.setFont(new Font("Arial", Font.BOLD, 14));
-        header.setPreferredSize(new Dimension(header.getWidth(), 40));
+        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 50));
 
-        DefaultTableCellRenderer center = new DefaultTableCellRenderer();
-        center.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(center);
-        }
+        table.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                adjustTableColumnWidth();
+            }
+        });
 
         return new JScrollPane(table);
     }
 
-    private void loadData() {
+    private void setTableCellAlignment() {
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnCount(); i++) {
+            if (i != 1) {
+                table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+        }
+    }
+
+    private void adjustTableColumnWidth() {
+        int w = table.getWidth();
+        table.getColumnModel().getColumn(0).setPreferredWidth((int)(w * 0.15));
+        table.getColumnModel().getColumn(1).setPreferredWidth((int)(w * 0.35));
+        table.getColumnModel().getColumn(2).setPreferredWidth((int)(w * 0.30));
+        table.getColumnModel().getColumn(3).setPreferredWidth((int)(w * 0.20));
+    }
+
+    private void loadDataToTable(List<NhaCungCap> list) {
         tableModel.setRowCount(0);
-        NhaCungCapBLL bll = new NhaCungCapBLL();
-        List<NhaCungCap> ds = bll.layTatCa();
-        for (NhaCungCap ncc : ds) {
-            tableModel.addRow(new Object[]{
+        for (NhaCungCap ncc : list) {
+            tableModel.addRow(new Object[] {
                 ncc.getMaNCC(),
                 ncc.getTenNCC(),
                 ncc.getDiaChiNCC(),
@@ -157,4 +204,32 @@ public class NhaCungCapPanel extends JPanel {
             });
         }
     }
+
+       private void loadDataFromDatabase() {
+          tableModel.setRowCount(0); 
+
+          String sql = "SELECT * FROM nha_cung_cap";
+          try (Connection conn = DBConnection.getConnection();
+               Statement stmt = conn.createStatement();
+               ResultSet rs = stmt.executeQuery(sql)) {
+
+              while (rs.next()) {
+                  tableModel.addRow(new Object[] {
+                      rs.getString("MaNCC"),
+                      rs.getString("TenNCC"),
+                      rs.getString("DiaChiNCC"),
+                      rs.getString("Sdt_NCC")
+                  });
+              }
+
+          } catch (SQLException e) {
+              JOptionPane.showMessageDialog(
+                  this,
+                  "Lỗi khi tải dữ liệu từ CSDL!\n" + e.getMessage(),
+                  "Lỗi", JOptionPane.ERROR_MESSAGE
+              );
+              e.printStackTrace();
+          }
+      }
+
 }

@@ -20,6 +20,7 @@ public class QuatDAO {
                     rs.getString("MaQuat"),
                     rs.getString("TenQuat"),
                     rs.getInt("Gia"),
+                    rs.getInt("SoLuongTon"), // ✅ thêm dòng này
                     rs.getString("MaNSX"),
                     rs.getString("NgaySanXuat"),
                     rs.getString("ChatLieu"),
@@ -32,18 +33,19 @@ public class QuatDAO {
     }
 
     public void insert(Quat quat) throws SQLException {
-        String sql = "INSERT INTO quat (MaQuat, TenQuat, Gia, MaNSX, NgaySanXuat, ChatLieu, ThuongHieu, MaLoaiSP) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO quat (MaQuat, TenQuat, Gia, SoLuongTon, MaNSX, NgaySanXuat, ChatLieu, ThuongHieu, MaLoaiSP) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, quat.getMaQuat());
             ps.setString(2, quat.getTenQuat());
             ps.setInt(3, quat.getGia());
-            ps.setString(4, quat.getMaNSX());
-            ps.setString(5, quat.getNgaySanXuat());
-            ps.setString(6, quat.getChatLieu());
-            ps.setString(7, quat.getThuongHieu());
-            ps.setString(8, quat.getMaLoaiSP());
+            ps.setInt(4, quat.getSoLuongTon()); // ✅ thêm dòng này
+            ps.setString(5, quat.getMaNSX());
+            ps.setString(6, quat.getNgaySanXuat());
+            ps.setString(7, quat.getChatLieu());
+            ps.setString(8, quat.getThuongHieu());
+            ps.setString(9, quat.getMaLoaiSP());
             ps.executeUpdate();
         }
     }
@@ -58,17 +60,18 @@ public class QuatDAO {
     }
 
     public void update(Quat quat) throws SQLException {
-        String sql = "UPDATE quat SET TenQuat = ?, Gia = ?, MaNSX = ?, NgaySanXuat = ?, ChatLieu = ?, ThuongHieu = ?, MaLoaiSP = ? WHERE MaQuat = ?";
+        String sql = "UPDATE quat SET TenQuat = ?, Gia = ?, SoLuongTon = ?, MaNSX = ?, NgaySanXuat = ?, ChatLieu = ?, ThuongHieu = ?, MaLoaiSP = ? WHERE MaQuat = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, quat.getTenQuat());
             ps.setInt(2, quat.getGia());
-            ps.setString(3, quat.getMaNSX());
-            ps.setString(4, quat.getNgaySanXuat());
-            ps.setString(5, quat.getChatLieu());
-            ps.setString(6, quat.getThuongHieu());
-            ps.setString(7, quat.getMaLoaiSP());
-            ps.setString(8, quat.getMaQuat());
+            ps.setInt(3, quat.getSoLuongTon()); // ✅ thêm dòng này
+            ps.setString(4, quat.getMaNSX());
+            ps.setString(5, quat.getNgaySanXuat());
+            ps.setString(6, quat.getChatLieu());
+            ps.setString(7, quat.getThuongHieu());
+            ps.setString(8, quat.getMaLoaiSP());
+            ps.setString(9, quat.getMaQuat());
             ps.executeUpdate();
         }
     }
@@ -84,6 +87,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
+                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -95,6 +99,7 @@ public class QuatDAO {
         }
         return null;
     }
+
     public List<Quat> findByTenQuat(String keyword) throws SQLException {
         List<Quat> list = new ArrayList<>();
         String sql = "SELECT * FROM quat WHERE TenQuat LIKE ?";
@@ -107,6 +112,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
+                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -118,6 +124,7 @@ public class QuatDAO {
         }
         return list;
     }
+
     public List<Quat> findByThuongHieu(String keyword) throws SQLException {
         List<Quat> list = new ArrayList<>();
         String sql = "SELECT * FROM quat WHERE ThuongHieu LIKE ?";
@@ -130,6 +137,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
+                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -141,6 +149,4 @@ public class QuatDAO {
         }
         return list;
     }
-
-
 }

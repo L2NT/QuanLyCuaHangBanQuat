@@ -4,6 +4,7 @@ public class Quat {
     private String maQuat;
     private String tenQuat;
     private int gia;
+    private int soLuongTon;
     private String maNSX;
     private String ngaySanXuat;
     private String chatLieu;
@@ -12,11 +13,12 @@ public class Quat {
 
     public Quat() { }
 
-    public Quat(String maQuat, String tenQuat, int gia, String maNSX,
+    public Quat(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, // ✅ thêm soLuongTon vào constructor
                 String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
         this.maQuat = maQuat;
         this.tenQuat = tenQuat;
         this.gia = gia;
+        this.soLuongTon = soLuongTon;
         this.maNSX = maNSX;
         this.ngaySanXuat = ngaySanXuat;
         this.chatLieu = chatLieu;
@@ -46,6 +48,14 @@ public class Quat {
 
     public void setGia(int gia) {
         this.gia = gia;
+    }
+
+    public int getSoLuongTon() {  
+        return soLuongTon;
+    }
+
+    public void setSoLuongTon(int soLuongTon) {  
+        this.soLuongTon = soLuongTon;
     }
 
     public String getMaNSX() {

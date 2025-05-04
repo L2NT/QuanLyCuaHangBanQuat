@@ -14,6 +14,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class QuatPanel extends JPanel {
     private JTable table;
@@ -98,13 +100,14 @@ public class QuatPanel extends JPanel {
             String maQuat = tableModel.getValueAt(selectedRow, 0).toString();
             String tenQuat = tableModel.getValueAt(selectedRow, 1).toString();
             int gia = Integer.parseInt(tableModel.getValueAt(selectedRow, 2).toString());
-            String maNSX = tableModel.getValueAt(selectedRow, 3).toString();
-            String ngaySanXuat = tableModel.getValueAt(selectedRow, 4).toString();
-            String chatLieu = tableModel.getValueAt(selectedRow, 5).toString();
-            String thuongHieu = tableModel.getValueAt(selectedRow, 6).toString();
-            String maLoaiSP = tableModel.getValueAt(selectedRow, 7).toString();
+            int soLuongTon= Integer.parseInt(tableModel.getValueAt(selectedRow, 3).toString());
+            String maNSX = tableModel.getValueAt(selectedRow, 4).toString();
+            String ngaySanXuat = tableModel.getValueAt(selectedRow, 5).toString();
+            String chatLieu = tableModel.getValueAt(selectedRow, 6).toString();
+            String thuongHieu = tableModel.getValueAt(selectedRow, 7).toString();
+            String maLoaiSP = tableModel.getValueAt(selectedRow, 8).toString();
 
-            Quat quat = new Quat(maQuat, tenQuat, gia, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP);
+            Quat quat = new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP);
             SuaQuatDialog dialog = new SuaQuatDialog((Window) SwingUtilities.getWindowAncestor(this), quat);
             dialog.setVisible(true);
 
@@ -136,33 +139,38 @@ public class QuatPanel extends JPanel {
                 QuatBLL quatBLL = new QuatBLL();
 
                 List<Quat> results = new ArrayList<>();
+                    if (keyword.isEmpty()) {
+                   
+                        results = quatBLL.layTatCa(); 
+               } else {
+                   switch (filter) {
+                       case "Mã Quạt":
+                           Quat q = quatBLL.timTheoMaQuat(keyword);
+                           if (q != null) results.add(q);
+                           break;
+                       case "Tên Quạt":
+                           results = quatBLL.timTheoTenQuat(keyword);
+                           break;
+                       case "Thương Hiệu":
+                           results = quatBLL.timTheoThuongHieu(keyword);
+                           break;
+                      case "Tất cả":
+                        Set<Quat> resultSet = new LinkedHashSet<>(); // Giữ thứ tự và tự loại trùng
 
-                switch (filter) {
-                    case "Mã Quạt":
-                        Quat q = quatBLL.timTheoMaQuat(keyword);
-                        if (q != null) results.add(q);
-                        break;
-                    case "Tên Quạt":
-                        results = quatBLL.timTheoTenQuat(keyword);
-                        break;
-                    case "Thương Hiệu":
-                        results = quatBLL.timTheoThuongHieu(keyword);
-                        break;
-                    case "Tất cả":
-                        // Nếu bạn muốn tìm ở cả 3 mục, có thể gộp kết quả tại đây
                         Quat q1 = quatBLL.timTheoMaQuat(keyword);
+                        if (q1 != null) resultSet.add(q1);
+
                         List<Quat> q2 = quatBLL.timTheoTenQuat(keyword);
                         List<Quat> q3 = quatBLL.timTheoThuongHieu(keyword);
-                        if (q1 != null) results.add(q1);
-                        for (Quat item : q2) {
-                            if (!results.contains(item)) results.add(item);
-                        }
-                        for (Quat item : q3) {
-                            if (!results.contains(item)) results.add(item);
-                        }
-                        break;
-                }
 
+                        resultSet.addAll(q2);
+                        resultSet.addAll(q3);
+
+                        results = new ArrayList<>(resultSet); // Chuyển về lại List nếu cần
+                        break;
+
+                   }
+               }
                 loadDataToTable(results);
             }
         });
@@ -178,10 +186,11 @@ public class QuatPanel extends JPanel {
 
         return toolbar;
     }
+    
 
     private JScrollPane createTablePanel() {
      tableModel = new DefaultTableModel(new Object[] {
-         "Mã Quạt", "Tên Quạt", "Giá", "Mã NSX", "Ngày Sản Xuất", "Chất liệu", "Thương Hiệu", "Mã Loại"
+         "Mã Quạt", "Tên Quạt", "Giá","Số Lương Tồn", "Mã NSX", "Ngày Sản Xuất", "Chất liệu", "Thương Hiệu", "Mã Loại"
      }, 0) {
          @Override
          public boolean isCellEditable(int row, int column) {
@@ -222,14 +231,16 @@ public class QuatPanel extends JPanel {
 
     private void adjustTableColumnWidth() {
         int w = table.getWidth();
-        table.getColumnModel().getColumn(0).setPreferredWidth((int)(w * 0.08));
+        table.getColumnModel().getColumn(0).setPreferredWidth((int)(w * 0.06));
         table.getColumnModel().getColumn(1).setPreferredWidth((int)(w * 0.25));
-        table.getColumnModel().getColumn(2).setPreferredWidth((int)(w * 0.10));
+        table.getColumnModel().getColumn(2).setPreferredWidth((int)(w * 0.06));
+
         table.getColumnModel().getColumn(3).setPreferredWidth((int)(w * 0.10));
-        table.getColumnModel().getColumn(4).setPreferredWidth((int)(w * 0.12));
-        table.getColumnModel().getColumn(5).setPreferredWidth((int)(w * 0.13));
-        table.getColumnModel().getColumn(6).setPreferredWidth((int)(w * 0.12));
-        table.getColumnModel().getColumn(7).setPreferredWidth((int)(w * 0.10));
+        table.getColumnModel().getColumn(4).setPreferredWidth((int)(w * 0.10));
+        table.getColumnModel().getColumn(5).setPreferredWidth((int)(w * 0.10));
+        table.getColumnModel().getColumn(6).setPreferredWidth((int)(w * 0.13));
+        table.getColumnModel().getColumn(7).setPreferredWidth((int)(w * 0.12));
+        table.getColumnModel().getColumn(8).setPreferredWidth((int)(w * 0.10));
     }
 
     private void loadDataToTable(List<Quat> list) {
@@ -240,6 +251,7 @@ public class QuatPanel extends JPanel {
                 q.getMaQuat(),
                 q.getTenQuat(),
                 q.getGia(),
+                q.getSoLuongTon(),
                 q.getMaNSX(),
                 q.getNgaySanXuat(),
                 q.getChatLieu(),
@@ -262,6 +274,7 @@ public class QuatPanel extends JPanel {
                     rs.getString("MaQuat"),
                     rs.getString("TenQuat"),
                     rs.getInt("Gia"),
+                    rs.getInt("soLuongTon"),
                     rs.getString("MaNSX"),
                     rs.getDate("NgaySanXuat"),
                     rs.getString("ChatLieu"),

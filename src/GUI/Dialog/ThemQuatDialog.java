@@ -8,13 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 
-// Trong ThemQuatDialog.java
-
-// Trong ThemQuatDialog.java
-
 public class ThemQuatDialog extends JDialog {
 
-    private JTextField txtMaQuat, txtTenQuat, txtGia, txtMaNSX, txtNgaySanXuat, txtChatLieu, txtThuongHieu, txtMaLoaiSP;
+    private JTextField txtMaQuat, txtTenQuat, txtGia, txtMaNSX, txtNgaySanXuat, txtChatLieu, txtThuongHieu, txtMaLoaiSP, txtSoLuongTon;
     private JButton btnLuu, btnHuy;
     private boolean added = false;
 
@@ -27,11 +23,11 @@ public class ThemQuatDialog extends JDialog {
     }
 
     private void initComponent() {
-        this.setSize(500, 400);
+        this.setSize(500, 450); // Điều chỉnh kích thước để chứa thêm trường
         this.setLocationRelativeTo(null);
         this.setLayout(new BorderLayout(10, 10));
 
-        JPanel pnlForm = new JPanel(new GridLayout(9, 2, 5, 5));
+        JPanel pnlForm = new JPanel(new GridLayout(10, 2, 5, 5)); // Tăng số dòng lên 10
         pnlForm.add(new JLabel("Mã quạt:"));
         txtMaQuat = new JTextField();
         pnlForm.add(txtMaQuat);
@@ -43,6 +39,10 @@ public class ThemQuatDialog extends JDialog {
         pnlForm.add(new JLabel("Giá:"));
         txtGia = new JTextField();
         pnlForm.add(txtGia);
+        
+        pnlForm.add(new JLabel("Số lượng tồn:"));
+        txtSoLuongTon = new JTextField();
+        pnlForm.add(txtSoLuongTon);
 
         pnlForm.add(new JLabel("Mã NSX:"));
         txtMaNSX = new JTextField();
@@ -64,6 +64,10 @@ public class ThemQuatDialog extends JDialog {
         txtMaLoaiSP = new JTextField();
         pnlForm.add(txtMaLoaiSP);
 
+        pnlForm.add(new JLabel("Số lượng tồn:"));
+        txtSoLuongTon = new JTextField();
+        pnlForm.add(txtSoLuongTon);
+
         this.add(pnlForm, BorderLayout.CENTER);
 
         JPanel pnlButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -84,9 +88,10 @@ public class ThemQuatDialog extends JDialog {
             String chatLieu = txtChatLieu.getText();
             String thuongHieu = txtThuongHieu.getText();
             String maLoaiSP = txtMaLoaiSP.getText();
+            int soLuongTon = Integer.parseInt(txtSoLuongTon.getText());  // Lấy giá trị số lượng tồn
 
             // Gọi hàm them trong QuatBLL
-            if (quatBLL.them(maQuat, tenQuat, gia, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP)) {
+            if (quatBLL.them(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP)) {
                 JOptionPane.showMessageDialog(this, "Đã lưu quạt.");
                 added = true;  // Đánh dấu là quạt đã được thêm
                 dispose();  // Đóng dialog

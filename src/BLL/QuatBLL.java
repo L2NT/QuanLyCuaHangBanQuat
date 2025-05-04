@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.swing.JOptionPane;
 
-
 public class QuatBLL {
     private final QuatDAO dao = new QuatDAO();
 
@@ -24,34 +23,36 @@ public class QuatBLL {
             return List.of();
         }
     }
+
+    // Chuyển đổi định dạng ngày
     private String convertDateFormat(String inputDate) {
-    SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");  
-    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");  
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd-MM-yyyy");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    try {
-        return outputFormat.format(inputFormat.parse(inputDate));  
-    } catch (ParseException e) {
-        e.printStackTrace(); 
-        return null;  
+        try {
+            return outputFormat.format(inputFormat.parse(inputDate));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
-}
-   
-  public boolean them(String maQuat, String tenQuat, int gia, String maNSX, String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
-    try {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate localDate = LocalDate.parse(ngaySanXuat, inputFormatter);
-        String formattedDate = localDate.toString();  // yyyy-MM-dd
 
-        dao.insert(new Quat(maQuat, tenQuat, gia, maNSX, formattedDate, chatLieu, thuongHieu, maLoaiSP));
-        return true;
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Lỗi khi lưu quạt: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        return false;
+    // Thêm quạt
+    public boolean them(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
+        try {
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate localDate = LocalDate.parse(ngaySanXuat, inputFormatter);
+            String formattedDate = localDate.toString();  // yyyy-MM-dd
+
+            dao.insert(new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, formattedDate, chatLieu, thuongHieu, maLoaiSP ));
+            return true;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Lỗi khi lưu quạt: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
     }
-}
 
-
-    // Xóa quạt theo mã quạt
+    // Xóa quạt
     public boolean xoa(String maQuat) {
         try {
             dao.delete(maQuat);
@@ -63,9 +64,9 @@ public class QuatBLL {
     }
 
     // Sửa thông tin quạt
-    public boolean sua(String maQuat, String tenQuat, int gia, String maNSX, String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
+    public boolean sua(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
         try {
-            dao.update(new Quat(maQuat, tenQuat, gia, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP));
+            dao.update(new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP));
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
