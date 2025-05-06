@@ -5,7 +5,6 @@ import GUI.AdminMainFrame;
 import GUI.ManagerMainFrame;
 import GUI.EmployeeMainFrame;
 import GUI.Component.InputForm;
-import GUI.Dialog.QuenMatKhau;
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
@@ -26,7 +25,7 @@ import java.sql.SQLException;
 public class LoginFrame extends JFrame implements KeyListener {
 
     private JPanel pnlMain, pnlLogIn;
-    private JLabel lblImage, lblTitle, lblLoginBtn, lblForgot;
+    private JLabel lblImage, lblTitle, lblLoginBtn;
     private InputForm txtUsername, txtPassword;
     private final Color hoverColor = new Color(96, 125, 139);
 
@@ -110,17 +109,7 @@ public class LoginFrame extends JFrame implements KeyListener {
         });
         pnlMain.add(pnlLogIn);
 
-        // Link Quên mật khẩu
-        lblForgot = new JLabel("Quên mật khẩu", SwingConstants.RIGHT);
-        lblForgot.setFont(new Font(FlatRobotoFont.FAMILY, Font.ITALIC, 18));
-        lblForgot.setPreferredSize(new Dimension(380, 30));
-        lblForgot.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                new QuenMatKhau(LoginFrame.this, true).setVisible(true);
-            }
-        });
-        pnlMain.add(lblForgot);
+        // Đã loại bỏ phần "Quên mật khẩu"
 
         add(pnlMain, BorderLayout.EAST);
     }

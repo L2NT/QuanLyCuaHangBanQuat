@@ -4,6 +4,7 @@ import BUS.TaiKhoanBUS;
 import DTO.TaiKhoanDTO;
 import GUI.Dialog.ThemTaiKhoanDialog;
 import GUI.Dialog.SuaTaiKhoanDialog;
+import GUI.LoginFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -25,7 +26,7 @@ public class TaiKhoanPanel extends JPanel {
 
     private JComboBox<String> cbbFilter;
     private JTextField txtSearch;
-    private JButton btnThem, btnSua, btnXoa, btnExcel, btnLamMoi;
+    private JButton btnThem, btnSua, btnXoa, btnExcel, btnLamMoi, btnDangXuat;
     
     // Thêm biến để xác định panel được mở từ Admin hay không
     private boolean isAdmin;
@@ -99,8 +100,6 @@ public class TaiKhoanPanel extends JPanel {
         toolbar.add(btnXoa, gbc);
         
         // Chỉ hiển thị nút XUẤT EXCEL nếu không phải Admin
-        //true là mở từ admin (bỏ excel)
-        //false là mở từ manager 
         if (!isAdmin) {
             gbc.gridx = 3;
             ImageIcon iconExcel = new ImageIcon(getClass().getResource("/icon/xuatexcel.png"));
@@ -108,6 +107,16 @@ public class TaiKhoanPanel extends JPanel {
             btnExcel.setHorizontalTextPosition(SwingConstants.CENTER);
             btnExcel.setVerticalTextPosition(SwingConstants.BOTTOM);
             toolbar.add(btnExcel, gbc);
+        }
+        
+        // Thêm nút đăng xuất nếu chạy từ Admin
+        if (isAdmin) {
+            gbc.gridx = 3;
+            ImageIcon iconLogout = new ImageIcon(getClass().getResource("/icon/logout.png"));
+            btnDangXuat = new JButton("ĐĂNG XUẤT", iconLogout);
+            btnDangXuat.setHorizontalTextPosition(SwingConstants.CENTER);
+            btnDangXuat.setVerticalTextPosition(SwingConstants.BOTTOM);
+            toolbar.add(btnDangXuat, gbc);
         }
         
         // Phần tìm kiếm bên phải
@@ -197,6 +206,15 @@ public class TaiKhoanPanel extends JPanel {
         if (!isAdmin && btnExcel != null) {
             btnExcel.addActionListener(e -> {
                 JOptionPane.showMessageDialog(this, "Chức năng xuất Excel đang phát triển");
+            });
+        }
+        
+        // Thêm sự kiện cho nút đăng xuất nếu là Admin
+        if (isAdmin && btnDangXuat != null) {
+            btnDangXuat.addActionListener(e -> {
+                Window owner = SwingUtilities.getWindowAncestor(this);
+                owner.dispose();
+                new LoginFrame().setVisible(true);
             });
         }
         

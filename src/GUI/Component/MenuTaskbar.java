@@ -24,11 +24,7 @@ public class MenuTaskbar extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        JLabel lblUser = new JLabel(
-                parent instanceof ManagerMainFrame ? "Nhân viên: Admin" : "Nhân viên: NV01"
-        );
-        lblUser.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        add(lblUser, BorderLayout.NORTH);
+        
 
         JPanel menu = new JPanel(new GridLayout(0, 1, 0, 5));
         menu.setBackground(Color.WHITE);
