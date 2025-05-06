@@ -1,188 +1,225 @@
 package GUI.Panel;
 
-import GUI.Dialog.ThemHoaDonDialog;
+import DAO.HoaDonDAO;
+import DTO.HoaDonDTO;
 import GUI.Dialog.ChiTietHoaDonDialog;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HoaDonPanel extends JPanel implements ItemListener, KeyListener {
-    private JButton btnThem, btnXoa, btnChiTiet, btnExcel, btnLamMoi;
-    private JComboBox<String> cbbFilter;  // ComboBox lọc theo Mã HD / Mã KH / Mã NV / Tất cả
-    private JTextField txtSearch;         // Ô tìm kiếm
+    private JButton btnXoa, btnChiTiet, btnExcel, btnLamMoi;
+    private JComboBox<String> cbbFilter;
+    private JTextField txtSearch;
     private JTable table;
     private DefaultTableModel tableModel;
-
-    // Danh sách hóa đơn gốc (dummy)
-    private List<HoaDon> listHD;
+    private List<HoaDonDTO> listHD;
 
     public HoaDonPanel() {
         initComponent();
-        initData();
-        loadDataToTable(listHD); // hiển thị tất cả ban đầu
+        loadDataFromDAO(); // Load data từ database
     }
 
     private void initComponent() {
         setLayout(new BorderLayout(10, 10));
         setBackground(Color.WHITE);
 
-        // ================== Thanh công cụ (toolbar) ==================
+        // ======= Toolbar ========
         JPanel toolbar = new JPanel(new BorderLayout());
-
-        // (A) Panel nút bên trái
+        
+        // Left tools
         JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        btnThem = new JButton("THÊM");
         btnXoa = new JButton("XÓA");
         btnChiTiet = new JButton("CHI TIẾT");
         btnExcel = new JButton("XUẤT EXCEL");
-        leftToolPanel.add(btnThem);
         leftToolPanel.add(btnXoa);
         leftToolPanel.add(btnChiTiet);
         leftToolPanel.add(btnExcel);
 
-        // (B) Panel filter + search + refresh bên phải
+        // Right tools
         JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Mã HĐ", "Mã NV", "Mã KH"});
         cbbFilter.addItemListener(this);
-
-        txtSearch = new JTextField("Nhập nội dung tìm kiếm...", 15);
+        
+        txtSearch = new JTextField(15);
         txtSearch.addKeyListener(this);
-
+        setupSearchPlaceholder(); // Xử lý placeholder
+        
         btnLamMoi = new JButton("LÀM MỚI");
-
+        
         rightToolPanel.add(cbbFilter);
         rightToolPanel.add(txtSearch);
         rightToolPanel.add(btnLamMoi);
 
         toolbar.add(leftToolPanel, BorderLayout.WEST);
         toolbar.add(rightToolPanel, BorderLayout.EAST);
-
         add(toolbar, BorderLayout.NORTH);
 
-        // ================== Bảng hiển thị hóa đơn ==================
+        // ======= Table ========
         String[] columns = {"Mã HĐ", "Mã NV", "Mã KH", "Ngày lập", "Mã KM", "Tổng tiền"};
-        tableModel = new DefaultTableModel(columns, 0);
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Không cho edit trực tiếp
+            }
+        };
         table = new JTable(tableModel);
         add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // ================== Sự kiện nút ==================
-        btnThem.addActionListener(e -> {
-            // Mở dialog ThemHoaDonDialog
-            ThemHoaDonDialog dlg = new ThemHoaDonDialog(SwingUtilities.getWindowAncestor(this));
-            dlg.setVisible(true);
-            // Sau khi đóng, có thể lấy dữ liệu mới từ dlg nếu muốn thêm vào bảng
-        });
+        // ======= Events ========
+        btnXoa.addActionListener(e -> deleteHoaDon());
+        btnChiTiet.addActionListener(e -> openChiTietDialog());
+        btnLamMoi.addActionListener(e -> refreshData());
+    }
 
-        btnXoa.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row >= 0) {
-                tableModel.removeRow(row);
+    private void setupSearchPlaceholder() {
+        txtSearch.setText("Nhập nội dung tìm kiếm...");
+        txtSearch.setForeground(Color.GRAY);
+        
+        txtSearch.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (txtSearch.getText().equals("Nhập nội dung tìm kiếm...")) {
+                    txtSearch.setText("");
+                    txtSearch.setForeground(Color.BLACK);
+                }
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (txtSearch.getText().isEmpty()) {
+                    txtSearch.setForeground(Color.GRAY);
+                    txtSearch.setText("Nhập nội dung tìm kiếm...");
+                }
             }
         });
+    }
 
-        btnChiTiet.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row < 0) {
-                JOptionPane.showMessageDialog(this, "Chưa chọn hóa đơn!");
-                return;
-            }
-            // Lấy mã HD từ bảng
-            String maHD = (String) tableModel.getValueAt(row, 0);
-            // Mở dialog Chi tiết hóa đơn
-            ChiTietHoaDonDialog dlg = new ChiTietHoaDonDialog(SwingUtilities.getWindowAncestor(this), maHD);
-            dlg.setVisible(true);
-        });
-
-        btnExcel.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Xuất Excel (demo)!");
-        });
-
-        btnLamMoi.addActionListener(e -> {
-            // Xóa bảng rồi load lại data gốc
+    private void loadDataFromDAO() {
+        try {
+            listHD = HoaDonDAO.selectAll(); // Lấy toàn bộ data từ database
             loadDataToTable(listHD);
-        });
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi tải dữ liệu: " + e.getMessage());
+        }
     }
 
-    /**
-     * Tạo dữ liệu mẫu cho hóa đơn
-     */
-    private void initData() {
-        listHD = new ArrayList<>();
-        // (maHD, maNV, maKH, ngayLap, maKM, tongTien)
-        listHD.add(new HoaDon("HD001", "NV01", "KH01", "2025-09-01", "KM001", 1500000));
-        listHD.add(new HoaDon("HD002", "NV02", "KH02", "2025-09-02", null, 500000));
-        listHD.add(new HoaDon("HD003", "NV01", "KH03", "2025-09-03", "KM002", 2000000));
-    }
-
-    /**
-     * Đổ danh sách hóa đơn vào bảng
-     */
-    private void loadDataToTable(List<HoaDon> data) {
-        tableModel.setRowCount(0);
-        for (HoaDon hd : data) {
+    private void loadDataToTable(List<HoaDonDTO> data) {
+        tableModel.setRowCount(0); // Xóa dữ liệu cũ
+        for (HoaDonDTO hd : data) {
             tableModel.addRow(new Object[]{
-                hd.getMaHD(),
-                hd.getMaNV(),
-                hd.getMaKH(),
+                hd.getMaHoaDon(),
+                hd.getMaNhanVien(),
+                hd.getMaKhachHang(),
                 hd.getNgayLap(),
-                hd.getMaKM() == null ? "" : hd.getMaKM(),
-                hd.getTongTien()
+                hd.getMaSuKienKM() != null ? hd.getMaSuKienKM() : "",
+                String.format("%,d VND", hd.getTongTien())
             });
         }
     }
 
-    /**
-     * Lọc dữ liệu theo combo (Mã HĐ, Mã NV, Mã KH, Tất cả) + từ khóa tìm kiếm
-     */
-    private void filterData() {
-        String selected = (String) cbbFilter.getSelectedItem();  // "Tất cả", "Mã HĐ", "Mã NV", "Mã KH"
-        String searchText = txtSearch.getText().trim().toLowerCase();
-
-        List<HoaDon> result = new ArrayList<>();
-        for (HoaDon hd : listHD) {
-            boolean matchSearch = false;
-            // Nếu searchText rỗng => matchSearch = true (không lọc)
-            if (searchText.isEmpty()) {
-                matchSearch = true;
-            } else {
-                // Tùy theo combo, ta so sánh
-                switch (selected) {
-                    case "Mã HĐ":
-                        matchSearch = hd.getMaHD().toLowerCase().contains(searchText);
-                        break;
-                    case "Mã NV":
-                        matchSearch = hd.getMaNV().toLowerCase().contains(searchText);
-                        break;
-                    case "Mã KH":
-                        matchSearch = hd.getMaKH().toLowerCase().contains(searchText);
-                        break;
-                    case "Tất cả":
-                    default:
-                        // Tìm trong cả MãHD, MãNV, MãKH, Ngày, MãKM
-                        if (hd.getMaHD().toLowerCase().contains(searchText)
-                            || hd.getMaNV().toLowerCase().contains(searchText)
-                            || hd.getMaKH().toLowerCase().contains(searchText)
-                            || (hd.getMaKM() != null && hd.getMaKM().toLowerCase().contains(searchText))
-                            || hd.getNgayLap().toLowerCase().contains(searchText)) {
-                            matchSearch = true;
-                        }
-                        break;
+    private void deleteHoaDon() {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn cần xóa!");
+            return;
+        }
+        
+        String maHD = (String) tableModel.getValueAt(row, 0);
+        int confirm = JOptionPane.showConfirmDialog(
+            this, 
+            "Xóa hóa đơn " + maHD + "?",
+            "Xác nhận xóa",
+            JOptionPane.YES_NO_OPTION
+        );
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                int result = HoaDonDAO.delete(maHD);
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                    refreshData();
                 }
-            }
-
-            if (matchSearch) {
-                result.add(hd);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xóa: " + e.getMessage());
             }
         }
-
-        loadDataToTable(result);
     }
 
-    // ========== ItemListener cho ComboBox ==========
+    private void openChiTietDialog() {
+        int row = table.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn hóa đơn!");
+            return;
+        }
+        
+        String maHD = (String) tableModel.getValueAt(row, 0);
+        ChiTietHoaDonDialog dlg = new ChiTietHoaDonDialog(
+            SwingUtilities.getWindowAncestor(this), 
+            maHD
+        );
+        dlg.setVisible(true);
+        
+        // Refresh data sau khi dialog đóng
+        if (dlg.isDataUpdated()) {
+            refreshData();
+        }
+    }
+
+    private void refreshData() {
+        loadDataFromDAO();
+        txtSearch.setText("Nhập nội dung tìm kiếm...");
+        txtSearch.setForeground(Color.GRAY);
+        cbbFilter.setSelectedIndex(0);
+    }
+
+    private void filterData() {
+        String searchText = txtSearch.getText().trim().toLowerCase();
+        if (searchText.equals("nhập nội dung tìm kiếm...")) {
+            searchText = "";
+        }
+        
+        String filterType = (String) cbbFilter.getSelectedItem();
+        List<HoaDonDTO> filteredList = new ArrayList<>();
+
+        for (HoaDonDTO hd : listHD) {
+            boolean match = false;
+            String maKM = hd.getMaSuKienKM() != null ? hd.getMaSuKienKM().toLowerCase() : "";
+            
+            switch (filterType) {
+                case "Mã HĐ":
+                    match = hd.getMaHoaDon().toLowerCase().contains(searchText);
+                    break;
+                case "Mã NV":
+                    match = hd.getMaNhanVien().toLowerCase().contains(searchText);
+                    break;
+                case "Mã KH":
+                    match = hd.getMaKhachHang().toLowerCase().contains(searchText);
+                    break;
+                case "Tất cả":
+                default:
+                    match = hd.getMaHoaDon().toLowerCase().contains(searchText) ||
+                            hd.getMaNhanVien().toLowerCase().contains(searchText) ||
+                            hd.getMaKhachHang().toLowerCase().contains(searchText) ||
+                            maKM.contains(searchText) ||
+                            hd.getNgayLap().toString().contains(searchText);
+                    break;
+            }
+            
+            if (match) {
+                filteredList.add(hd);
+            }
+        }
+        
+        loadDataToTable(filteredList);
+    }
+
+    // ======= Implement interfaces ========
     @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -190,40 +227,11 @@ public class HoaDonPanel extends JPanel implements ItemListener, KeyListener {
         }
     }
 
-    // ========== KeyListener cho ô tìm kiếm ==========
     @Override
     public void keyReleased(KeyEvent e) {
         filterData();
     }
-    @Override
-    public void keyTyped(KeyEvent e) { }
-    @Override
-    public void keyPressed(KeyEvent e) { }
 
-    // ========== Lớp HoaDon (dummy) ==========
-    class HoaDon {
-        private String maHD;
-        private String maNV;
-        private String maKH;
-        private String ngayLap;
-        private String maKM;  // có thể null
-        private int tongTien;
-
-        public HoaDon(String maHD, String maNV, String maKH, 
-                      String ngayLap, String maKM, int tongTien) {
-            this.maHD = maHD;
-            this.maNV = maNV;
-            this.maKH = maKH;
-            this.ngayLap = ngayLap;
-            this.maKM = maKM;
-            this.tongTien = tongTien;
-        }
-
-        public String getMaHD() { return maHD; }
-        public String getMaNV() { return maNV; }
-        public String getMaKH() { return maKH; }
-        public String getNgayLap() { return ngayLap; }
-        public String getMaKM() { return maKM; }
-        public int getTongTien() { return tongTien; }
-    }
+    @Override public void keyTyped(KeyEvent e) {}
+    @Override public void keyPressed(KeyEvent e) {}
 }

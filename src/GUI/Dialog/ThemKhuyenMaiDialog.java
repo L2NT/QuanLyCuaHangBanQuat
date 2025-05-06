@@ -1,7 +1,12 @@
 package GUI.Dialog;
 
+import DTO.KhuyenMaiDTO;
+import DAO.KhuyenMaiDAO;
+import java.util.Date;
 import javax.swing.*;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class ThemKhuyenMaiDialog extends JDialog {
 
@@ -18,16 +23,18 @@ public class ThemKhuyenMaiDialog extends JDialog {
     // Constructor dành cho sửa (nạp dữ liệu cũ)
     public ThemKhuyenMaiDialog(Window owner,
                                String maKM, String tenKM, int phanTram,
-                               String ngayBD, String ngayKT, String dieuKien) {
+                               Date ngayBD, Date ngayKT, String dieuKien,
+                               int minOrderAmount, int minQuantity) {
         super(owner, "Sửa Khuyến Mãi", ModalityType.APPLICATION_MODAL);
         initComponent();
         // Nạp dữ liệu cũ
         txtMaKM.setText(maKM);
         txtTenKM.setText(tenKM);
         txtPhanTram.setText(String.valueOf(phanTram));
-        txtNgayBD.setText(ngayBD);
-        txtNgayKT.setText(ngayKT);
+        txtNgayBD.setText(formatDate(ngayBD));
+        txtNgayKT.setText(formatDate(ngayKT));
         txtDieuKien.setText(dieuKien);
+        // Có thể lưu 2 tham số minOrderAmount và minQuantity nếu cần
     }
 
     private void initComponent() {
@@ -49,11 +56,11 @@ public class ThemKhuyenMaiDialog extends JDialog {
         txtPhanTram = new JTextField();
         pnlForm.add(txtPhanTram);
 
-        pnlForm.add(new JLabel("Ngày bắt đầu:"));
+        pnlForm.add(new JLabel("Ngày bắt đầu (yyyy-MM-dd):"));
         txtNgayBD = new JTextField();
         pnlForm.add(txtNgayBD);
 
-        pnlForm.add(new JLabel("Ngày kết thúc:"));
+        pnlForm.add(new JLabel("Ngày kết thúc (yyyy-MM-dd):"));
         txtNgayKT = new JTextField();
         pnlForm.add(txtNgayKT);
 
@@ -70,30 +77,59 @@ public class ThemKhuyenMaiDialog extends JDialog {
         pnlButton.add(btnHuy);
         add(pnlButton, BorderLayout.SOUTH);
 
-        // Sự kiện nút
+        // Sự kiện nút Lưu
         btnLuu.addActionListener(e -> {
-            isSaved = true;
-            JOptionPane.showMessageDialog(this, "Đã lưu khuyến mãi (demo).");
-            dispose();
+            try {
+                String maKM = txtMaKM.getText().trim();
+                String tenKM = txtTenKM.getText().trim();
+                int phanTram = Integer.parseInt(txtPhanTram.getText().trim());
+                Date dateBD = convertToDate(txtNgayBD.getText().trim());
+                Date dateKT = convertToDate(txtNgayKT.getText().trim());
+                String dieuKien = txtDieuKien.getText().trim();
+
+                // Ví dụ sử dụng giá trị mặc định cho MinOrder và MinQuantity
+                int minOrderAmount = 0;
+                int minQuantity = 0;
+                
+                KhuyenMaiDTO km = new KhuyenMaiDTO(
+                    maKM, tenKM, phanTram,
+                    dateBD, dateKT, dieuKien,
+                    minOrderAmount, minQuantity
+                );
+
+                boolean success = KhuyenMaiDAO.insert(km);
+                if (success) {
+                    isSaved = true;
+                    JOptionPane.showMessageDialog(this, "Thêm khuyến mãi thành công!");
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm thất bại, mã KM có thể đã tồn tại.");
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi thêm: " + ex.getMessage());
+            }
         });
-        btnHuy.addActionListener(e -> {
-            dispose();
-        });
+
+        // Sự kiện nút Hủy
+        btnHuy.addActionListener(e -> dispose());
     }
 
     public boolean isSaved() {
         return isSaved;
     }
 
-    // Trả về dữ liệu mới (nếu cần)
-    public Object[] getKhuyenMaiData() {
-        return new Object[]{
-            txtMaKM.getText().trim(),
-            txtTenKM.getText().trim(),
-            Integer.parseInt(txtPhanTram.getText().trim()),
-            txtNgayBD.getText().trim(),
-            txtNgayKT.getText().trim(),
-            txtDieuKien.getText().trim()
-        };
+    private Date convertToDate(String str) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.parse(str);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String formatDate(Date date) {
+        if (date == null) return "";
+        return new SimpleDateFormat("yyyy-MM-dd").format(date);
     }
 }

@@ -1,7 +1,7 @@
 package BUS;
 
 import dao.LoaiSanPhamDAO;
-import dto.LoaiSanPham;
+import dto.LoaiSanPhamDTO;
 
 import javax.swing.*;
 import java.sql.SQLException;
@@ -11,7 +11,7 @@ public class LoaiSanPhamBUS {
     private final LoaiSanPhamDAO dao = new LoaiSanPhamDAO();
 
     // Lấy tất cả loại sản phẩm
-    public List<LoaiSanPham> layTatCa() {
+    public List<LoaiSanPhamDTO> layTatCa() {
         try {
             return dao.getAll();
         } catch (SQLException e) {
@@ -23,7 +23,7 @@ public class LoaiSanPhamBUS {
     // Thêm loại sản phẩm
     public boolean them(String maLoai, String tenLoai, String trangThai, String moTa) {
         try {
-            dao.insert(new LoaiSanPham(maLoai, tenLoai, trangThai, moTa));
+            dao.insert(new LoaiSanPhamDTO(maLoai, tenLoai, trangThai, moTa));
             return true;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi khi thêm loại sản phẩm: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -45,7 +45,7 @@ public class LoaiSanPhamBUS {
     // Cập nhật loại sản phẩm
     public boolean sua(String maLoai, String tenLoai, String trangThai, String moTa) {
         try {
-            dao.update(new LoaiSanPham(maLoai, tenLoai, trangThai, moTa));
+            dao.update(new LoaiSanPhamDTO(maLoai, tenLoai, trangThai, moTa));
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,7 +54,7 @@ public class LoaiSanPhamBUS {
     }
 
     // Tìm theo mã
-    public LoaiSanPham timTheoMa(String maLoai) {
+    public LoaiSanPhamDTO timTheoMa(String maLoai) {
         try {
             return dao.findByMaLoai(maLoai);
         } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class LoaiSanPhamBUS {
     }
 
     // Tìm gần đúng theo tên
-    public List<LoaiSanPham> timTheoTen(String keyword) {
+    public List<LoaiSanPhamDTO> timTheoTen(String keyword) {
         try {
             return dao.findByTenLoai(keyword);
         } catch (SQLException e) {

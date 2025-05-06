@@ -1,7 +1,7 @@
 package GUI.Dialog;
 
 import dao.QuatDAO;
-import dto.Quat;
+import dto.QuatDTO;
 import BUS.QuatBUS;
 
 import javax.swing.*;

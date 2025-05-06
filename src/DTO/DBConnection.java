@@ -1,11 +1,11 @@
-package Database;
+package dto;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBConnection {
-    private static final String URL = "jdbc:mysql://localhost:3306/quanlycuahangquat?useUnicode=true&characterEncoding=UTF-8";
+    private static final String URL = "jdbc:mysql://localhost:3306/quanlycuahangquat";
     private static String USER = "root";      // mặc định
     private static String PASS = "";          // mặc định
 
@@ -32,4 +32,16 @@ public class DBConnection {
         }
         return conn;
     }
+     public static void closeConnection() {
+        if (conn != null) {
+            try {
+                conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                conn = null; // Đảm bảo kết nối được giải phóng
+            }
+        }
+    }
+    
 }

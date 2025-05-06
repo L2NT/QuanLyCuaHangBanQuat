@@ -1,7 +1,7 @@
 package BUS;
 
 import DAO.TaiKhoanDAO;
-import DTO.TaiKhoan;
+import DTO.TaiKhoanDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -9,12 +9,12 @@ import java.util.List;
 public class TaiKhoanBUS {
     private final TaiKhoanDAO dao = new TaiKhoanDAO();
 
-    public List<TaiKhoan> layTatCa() {
+    public List<TaiKhoanDTO> layTatCa() {
         try { return dao.getAll(); }
         catch(SQLException ex) { throw new RuntimeException(ex); }
     }
 
-    public TaiKhoan layTheoMa(String ma) {
+    public TaiKhoanDTO layTheoMa(String ma) {
         try { return dao.getByMa(ma); }
         catch(SQLException ex) { throw new RuntimeException(ex); }
     }
@@ -34,7 +34,7 @@ public class TaiKhoanBUS {
             if (dao.getByUsername(user) != null)
                 throw new IllegalArgumentException("Tên tài khoản đã tồn tại");
             String nextId = genNextId();
-            dao.insert(new TaiKhoan(nextId, maNV, user, pass, role));
+            dao.insert(new TaiKhoanDTO(nextId, maNV, user, pass, role));
         } catch(SQLException ex) { throw new RuntimeException(ex); }
     }
 
@@ -42,10 +42,10 @@ public class TaiKhoanBUS {
         if ("TK000".equals(maTK))
             throw new IllegalArgumentException("Không thể sửa tài khoản Admin");
         try {
-            TaiKhoan t = dao.getByUsername(user);
+            TaiKhoanDTO t = dao.getByUsername(user);
             if (t != null && !t.getMaTaiKhoan().equals(maTK))
                 throw new IllegalArgumentException("Tên tài khoản đã tồn tại");
-            dao.update(new TaiKhoan(maTK, maNV, user, pass, role));
+            dao.update(new TaiKhoanDTO(maTK, maNV, user, pass, role));
         } catch(SQLException ex) { throw new RuntimeException(ex); }
     }
 
@@ -58,7 +58,7 @@ public class TaiKhoanBUS {
 
     private String genNextId() throws SQLException {
         int max = 0;
-        for (TaiKhoan t : dao.getAll()) {
+        for (TaiKhoanDTO t : dao.getAll()) {
             String num = t.getMaTaiKhoan().replaceAll("\\D+", "");
             max = Math.max(max, Integer.parseInt(num));
         }

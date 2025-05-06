@@ -1,7 +1,7 @@
 package dao;
 
-import dto.Quat;
-import Database.DBConnection;
+import dto.QuatDTO;
+import dto.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,14 +9,14 @@ import java.util.List;
 
 public class QuatDAO {
 
-    public List<Quat> getAll() throws SQLException {
-        List<Quat> list = new ArrayList<>();
+    public List<QuatDTO> getAll() throws SQLException {
+        List<QuatDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM quat";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new Quat(
+                list.add(new QuatDTO(
                     rs.getString("MaQuat"),
                     rs.getString("TenQuat"),
                     rs.getInt("Gia"),
@@ -32,7 +32,7 @@ public class QuatDAO {
         return list;
     }
 
-    public void insert(Quat quat) throws SQLException {
+    public void insert(QuatDTO quat) throws SQLException {
         String sql = "INSERT INTO quat (MaQuat, TenQuat, Gia, SoLuongTon, MaNSX, NgaySanXuat, ChatLieu, ThuongHieu, MaLoaiSP) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection c = DBConnection.getConnection();
@@ -59,7 +59,7 @@ public class QuatDAO {
         }
     }
 
-    public void update(Quat quat) throws SQLException {
+    public void update(QuatDTO quat) throws SQLException {
         String sql = "UPDATE quat SET TenQuat = ?, Gia = ?, SoLuongTon = ?, MaNSX = ?, NgaySanXuat = ?, ChatLieu = ?, ThuongHieu = ?, MaLoaiSP = ? WHERE MaQuat = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -76,14 +76,14 @@ public class QuatDAO {
         }
     }
 
-    public Quat findByMaQuat(String maQuat) throws SQLException {
+    public QuatDTO findByMaQuat(String maQuat) throws SQLException {
         String sql = "SELECT * FROM quat WHERE MaQuat = ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, maQuat);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new Quat(
+                    return new QuatDTO(
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
@@ -100,15 +100,15 @@ public class QuatDAO {
         return null;
     }
 
-    public List<Quat> findByTenQuat(String keyword) throws SQLException {
-        List<Quat> list = new ArrayList<>();
+    public List<QuatDTO> findByTenQuat(String keyword) throws SQLException {
+        List<QuatDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM quat WHERE TenQuat LIKE ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new Quat(
+                    list.add(new QuatDTO(
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
@@ -125,15 +125,15 @@ public class QuatDAO {
         return list;
     }
 
-    public List<Quat> findByThuongHieu(String keyword) throws SQLException {
-        List<Quat> list = new ArrayList<>();
+    public List<QuatDTO> findByThuongHieu(String keyword) throws SQLException {
+        List<QuatDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM quat WHERE ThuongHieu LIKE ?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new Quat(
+                    list.add(new QuatDTO(
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),

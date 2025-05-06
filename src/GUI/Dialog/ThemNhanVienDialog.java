@@ -2,7 +2,7 @@
 package GUI.Dialog;
 
 import BUS.NhanVienBUS;
-import DTO.NhanVien;
+import DTO.NhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +64,7 @@ public class ThemNhanVienDialog extends JDialog {
 
         btnHuy.addActionListener(e -> dispose());
         btnLuu.addActionListener(e -> {
-            NhanVien nv = new NhanVien(
+            NhanVienDTO nv = new NhanVienDTO(
                 txtMa.getText().trim(),
                 txtTen.getText().trim(),
                 cbbChucVu.getSelectedItem().toString(),

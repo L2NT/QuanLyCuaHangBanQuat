@@ -1,14 +1,14 @@
 package BUS;
 
 import DAO.NhanVienDAO;
-import DTO.NhanVien;
+import DTO.NhanVienDTO;
 import java.sql.SQLException;
 import java.util.List;
 
 public class NhanVienBUS {
     private final NhanVienDAO dao = new NhanVienDAO();
 
-    public List<NhanVien> layTatCa() {
+    public List<NhanVienDTO> layTatCa() {
         try {
             return dao.getAll();
         } catch (SQLException ex) {
@@ -17,7 +17,7 @@ public class NhanVienBUS {
         }
     }
 
-    public boolean them(NhanVien nv) {
+    public boolean them(NhanVienDTO nv) {
         try {
             dao.insert(nv);
             return true;
@@ -27,7 +27,7 @@ public class NhanVienBUS {
         }
     }
 
-    public boolean sua(NhanVien nv) {
+    public boolean sua(NhanVienDTO nv) {
         try {
             dao.update(nv);
             return true;

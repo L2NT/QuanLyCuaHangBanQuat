@@ -1,7 +1,7 @@
 package GUI.Panel;
 
 import BUS.LoaiSanPhamBUS;
-import dto.LoaiSanPham;
+import dto.LoaiSanPhamDTO;
 import GUI.Dialog.ThemLoaiSanPhamDialog;
 import GUI.Dialog.SuaLoaiSanPhamDialog;
 
@@ -91,7 +91,7 @@ public class LoaiSanPhamPanel extends JPanel {
             String ten = tableModel.getValueAt(selectedRow, 1).toString();
             String trangthai = tableModel.getValueAt(selectedRow, 2).toString();
             String mota = tableModel.getValueAt(selectedRow, 3).toString();
-            LoaiSanPham lsp = new LoaiSanPham(ma, ten, trangthai, mota);
+            LoaiSanPhamDTO lsp = new LoaiSanPhamDTO(ma, ten, trangthai, mota);
 
             SuaLoaiSanPhamDialog dialog = new SuaLoaiSanPhamDialog((Window) SwingUtilities.getWindowAncestor(this), lsp);
             dialog.setVisible(true);
@@ -107,21 +107,21 @@ public class LoaiSanPhamPanel extends JPanel {
                 String keyword = txtSearch.getText().trim();
                 String filter = cbbFilter.getSelectedItem().toString();
                 LoaiSanPhamBUS bll = new LoaiSanPhamBUS();
-                List<LoaiSanPham> results = new ArrayList<>();
+                List<LoaiSanPhamDTO> results = new ArrayList<>();
 
                 switch (filter) {
                     case "Mã loại":
-                        LoaiSanPham lsp = bll.timTheoMa(keyword);
+                        LoaiSanPhamDTO lsp = bll.timTheoMa(keyword);
                         if (lsp != null) results.add(lsp);
                         break;
                     case "Tên loại":
                         results = bll.timTheoTen(keyword);
                         break;
                     case "Tất cả":
-                        LoaiSanPham lsp1 = bll.timTheoMa(keyword);
-                        List<LoaiSanPham> list2 = bll.timTheoTen(keyword);
+                        LoaiSanPhamDTO lsp1 = bll.timTheoMa(keyword);
+                        List<LoaiSanPhamDTO> list2 = bll.timTheoTen(keyword);
                         if (lsp1 != null) results.add(lsp1);
-                        for (LoaiSanPham item : list2) {
+                        for (LoaiSanPhamDTO item : list2) {
                             if (!results.contains(item)) results.add(item);
                         }
                         break;
@@ -185,9 +185,9 @@ public class LoaiSanPhamPanel extends JPanel {
         table.getColumnModel().getColumn(3).setPreferredWidth((int)(w * 0.40));
     }
 
-    private void loadDataToTable(List<LoaiSanPham> list) {
+    private void loadDataToTable(List<LoaiSanPhamDTO> list) {
         tableModel.setRowCount(0);
-        for (LoaiSanPham lsp : list) {
+        for (LoaiSanPhamDTO lsp : list) {
             tableModel.addRow(new Object[]{
                 lsp.getMaLoaiSanPham(),
                 lsp.getTenLoai(),
@@ -199,7 +199,7 @@ public class LoaiSanPhamPanel extends JPanel {
 
     private void loadDataFromDatabase() {
         LoaiSanPhamBUS bll = new LoaiSanPhamBUS();
-        List<LoaiSanPham> list = bll.layTatCa();
+        List<LoaiSanPhamDTO> list = bll.layTatCa();
         loadDataToTable(list);
     }
 }

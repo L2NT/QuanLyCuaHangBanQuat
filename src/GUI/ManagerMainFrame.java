@@ -1,6 +1,6 @@
 package GUI;
 
-import Database.DBConnection;
+import dto.DBConnection;
 import GUI.Component.MenuTaskbar;
 import GUI.Panel.TrangChu;
 import com.formdev.flatlaf.FlatIntelliJLaf;

@@ -1,14 +1,14 @@
 package DTO;
 
-public class NhanVien {
+public class NhanVienDTO {
     private String maNV;
     private String hoTen;
     private String chucVu;
     private String sdt;
     private String diaChi;
 
-    public NhanVien() { }
-    public NhanVien(String maNV, String hoTen, String chucVu, String sdt, String diaChi) {
+    public NhanVienDTO() { }
+    public NhanVienDTO(String maNV, String hoTen, String chucVu, String sdt, String diaChi) {
         this.maNV = maNV;
         this.hoTen = hoTen;
         this.chucVu = chucVu;

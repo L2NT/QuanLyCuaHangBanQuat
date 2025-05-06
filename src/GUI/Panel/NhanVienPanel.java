@@ -2,7 +2,7 @@
 package GUI.Panel;
 
 import BUS.NhanVienBUS;
-import DTO.NhanVien;
+import DTO.NhanVienDTO;
 import GUI.Dialog.ThemNhanVienDialog;
 import GUI.Dialog.SuaNhanVienDialog;
 
@@ -120,7 +120,7 @@ public class NhanVienPanel extends JPanel {
 
     /** Tải lại data từ BLL, áp dụng filter và tìm kiếm */
     private void reloadData() {
-        List<NhanVien> all = bll.layTatCa();
+        List<NhanVienDTO> all = bll.layTatCa();
 
         // 1) Lọc theo chức vụ
         String cv = (String)cbbFilter.getSelectedItem();
@@ -141,7 +141,7 @@ public class NhanVienPanel extends JPanel {
 
         // Đổ lên bảng
         model.setRowCount(0);
-        for (NhanVien n : all) {
+        for (NhanVienDTO n : all) {
             model.addRow(new Object[]{
                 n.getMaNV(),
                 n.getHoTen(),

@@ -1,6 +1,6 @@
 package GUI;
 
-import Database.DBConnection;            // ← thêm import này
+import dto.DBConnection;
 import GUI.Component.MenuTaskbar;
 import GUI.Panel.TrangChu;
 
@@ -17,6 +17,9 @@ public class EmployeeMainFrame extends JFrame {
     private final String maNhanVien;
     private MenuTaskbar menuTaskbar;
     private JPanel mainContent;
+    public String getMaNhanVien(){
+        return maNhanVien;
+    }
 
     public EmployeeMainFrame(String maNhanVien) {
         this.maNhanVien = maNhanVien;

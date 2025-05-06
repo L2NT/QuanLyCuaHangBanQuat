@@ -1,5 +1,9 @@
 package GUI.Panel;
 
+import DAO.KhachHangDAO;
+import DTO.KhachHangDTO;
+import GUI.Dialog.ThemKhachHangDialog;
+import GUI.Dialog.SuaKhachHangDialog;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -8,17 +12,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KhachHangPanel extends JPanel implements ItemListener, KeyListener {
+
     private JButton btnThem, btnXoa, btnSua, btnExcel, btnLamMoi;
-    private JComboBox<String> cbbLoaiKH;    // ComboBox để lọc theo loại khách (Tất cả, Thành viên, Vãng lai,...)
-    private JTextField txtSearch;           // Ô tìm kiếm
+    private JComboBox<String> cbbLoaiKH;
+    private JTextField txtSearch;
     private JTable table;
     private DefaultTableModel tableModel;
-
-    // Danh sách khách hàng gốc (dummy)
-    private List<KhachHang> listKH;
+    private KhachHangDAO khachHangDAO = new KhachHangDAO();
+    private List<KhachHangDTO> listKH;
 
     public KhachHangPanel() {
         initComponent();
+        loadDataFromDB();
         initData();
         loadDataToTable(listKH); // ban đầu hiển thị tất cả
     }
@@ -61,37 +66,38 @@ public class KhachHangPanel extends JPanel implements ItemListener, KeyListener 
         add(toolbar, BorderLayout.NORTH);
 
         // ========== Bảng hiển thị khách hàng ==========
-        // Cột: Mã KH, Tên KH, SĐT, Email, Loại KH, Điểm tích lũy
-        String[] columns = {"Mã KH", "Tên KH", "SĐT", "Email", "Loại KH", "Điểm tích lũy"};
+        String[] columns = {"Mã KH", "Tên KH", "SĐT", "Địa chỉ", "Tổng tiền đã mua"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
 
         JScrollPane scroll = new JScrollPane(table);
         add(scroll, BorderLayout.CENTER);
 
-        // ========== Sự kiện nút (demo) ==========
         btnThem.addActionListener(e -> {
-            // Mở dialog ThemKhachHangDialog (hoặc showMessageDialog)
-            JOptionPane.showMessageDialog(this, "Thêm khách hàng (demo)!");
-            // ThemKhachHangDialog dlg = new ThemKhachHangDialog(SwingUtilities.getWindowAncestor(this));
-            // dlg.setVisible(true);
+            // Mở dialog thêm khách hàng và sử dụng DTO/DAO
+            ThemKhachHangDialog dialog = new ThemKhachHangDialog();
+            dialog.setVisible(true);
+            if (dialog.isSaved()) {
+                listKH = khachHangDAO.selectAll();
+                loadDataToTable(listKH);
+            }
         });
 
         btnXoa.addActionListener(e -> {
             int row = table.getSelectedRow();
             if (row >= 0) {
-                tableModel.removeRow(row);
+                String maKH = (String) tableModel.getValueAt(row, 0);
+                KhachHangDAO dao = new KhachHangDAO();
+                if (dao.delete(maKH)) {
+                    JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                    listKH = khachHangDAO.selectAll();
+                    loadDataToTable(listKH);
+                }
             }
         });
 
         btnSua.addActionListener(e -> {
-            int row = table.getSelectedRow();
-            if (row < 0) {
-                JOptionPane.showMessageDialog(this, "Chưa chọn khách hàng để sửa!");
-                return;
-            }
-            JOptionPane.showMessageDialog(this, "Sửa khách hàng (demo)!");
-            // Hoặc mở ThemKhachHangDialog, nạp data cũ
+            openSuaKhachHangDialog();
         });
 
         btnExcel.addActionListener(e -> {
@@ -99,65 +105,94 @@ public class KhachHangPanel extends JPanel implements ItemListener, KeyListener 
         });
 
         btnLamMoi.addActionListener(e -> {
-            // Xóa bảng rồi load lại danh sách gốc
-            loadDataToTable(listKH);
+            loadDataFromDB();
         });
     }
 
-    /**
-     * Tạo dữ liệu mẫu cho khách hàng
-     */
     private void initData() {
-        listKH = new ArrayList<>();
-        // (maKH, tenKH, sdt, email, loaiKH, diemTichLuy)
-        listKH.add(new KhachHang("KH001", "Lê Nguyễn Nhất Tâm", "3122410369", "nva@gmail.com", "Thành viên", 100));
-        listKH.add(new KhachHang("KH002", "Lưu Hồng Phúc", "3123456789", "ttb@gmail.com", "Thành viên", 0));
-        
+        KhachHangDAO dao = new KhachHangDAO();
+        listKH = dao.selectAll(); // Load danh sách KH từ CSDL
     }
 
     /**
      * Đổ danh sách khách hàng lên bảng
      */
-    private void loadDataToTable(List<KhachHang> data) {
+    private void loadDataFromDB() {
+        listKH = KhachHangDAO.selectAll();
+        loadDataToTable(listKH);
+    }
+
+    private void loadDataToTable(List<KhachHangDTO> data) {
         tableModel.setRowCount(0);
-        for (KhachHang kh : data) {
+        for (KhachHangDTO kh : data) {
             tableModel.addRow(new Object[]{
-                kh.getMaKH(),
-                kh.getTenKH(),
-                kh.getSdt(),
-                kh.getEmail(),
-                kh.getLoaiKH(),
-                kh.getDiemTichLuy()
+                kh.getMaKhachHang(),
+                kh.getHoTenKH(),
+                kh.getSdtKH(), // Sửa từ getSdt() → getSdtKH()
+                kh.getDiaChiKH(), // Thêm địa chỉ
+                kh.getTongTienDaMua() // Thêm tổng tiền
             });
         }
     }
 
-    /**
-     * Lọc theo combo (loại KH) + ô tìm kiếm
-     */
+    // Mở dialog thêm khách hàng
+    private void openThemKhachHangDialog() {
+        ThemKhachHangDialog dlg = new ThemKhachHangDialog();
+        dlg.setVisible(true);
+        if (dlg.isSaved()) {
+            loadDataFromDB(); // Load lại dữ liệu sau khi thêm
+        }
+    }
+
+    // Xóa khách hàng
+    private void deleteKhachHang() {
+        int row = table.getSelectedRow();
+        if (row >= 0) {
+            String maKH = (String) tableModel.getValueAt(row, 0);
+            if (khachHangDAO.delete(maKH)) {
+                JOptionPane.showMessageDialog(this, "Xóa thành công!");
+                loadDataFromDB();
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa thất bại!");
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng!");
+        }
+    }
+
+    // Mở dialog sửa khách hàng
+    private void openSuaKhachHangDialog() {
+        int row = table.getSelectedRow();
+        if (row >= 0) {
+            String maKH = (String) tableModel.getValueAt(row, 0);
+            KhachHangDTO kh = khachHangDAO.selectById(maKH);
+            SuaKhachHangDialog dlg = new SuaKhachHangDialog((JFrame) SwingUtilities.getWindowAncestor(this), kh);
+            dlg.setVisible(true);
+            if (dlg.isSaved()) {
+                loadDataFromDB();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn khách hàng!");
+        }
+    }
+
     private void filterData() {
-        String selectedLoai = (String) cbbLoaiKH.getSelectedItem(); // "Tất cả", "Thành viên", "Vãng lai"
+        String selectedLoai = (String) cbbLoaiKH.getSelectedItem();
         String searchText = txtSearch.getText().trim().toLowerCase();
 
-        List<KhachHang> result = new ArrayList<>();
-        for (KhachHang kh : listKH) {
-            // 1. Kiểm tra loại KH
-            boolean matchLoai = true;
-            if (!selectedLoai.equals("Tất cả")) {
-                matchLoai = kh.getLoaiKH().equalsIgnoreCase(selectedLoai);
-            }
-            // 2. Kiểm tra search text (trong Mã KH, Tên KH, SĐT, Email)
-            boolean matchSearch = searchText.isEmpty()
-                    || kh.getMaKH().toLowerCase().contains(searchText)
-                    || kh.getTenKH().toLowerCase().contains(searchText)
-                    || kh.getSdt().toLowerCase().contains(searchText)
-                    || kh.getEmail().toLowerCase().contains(searchText);
+        List<KhachHangDTO> result = new ArrayList<>();
+        for (KhachHangDTO kh : listKH) {
+            boolean matchSearch
+                    = kh.getMaKhachHang().toLowerCase().contains(searchText)
+                    || kh.getHoTenKH().toLowerCase().contains(searchText)
+                    || kh.getSdtKH().contains(searchText)
+                    || // Sửa từ getSdt() → getSdtKH()
+                    kh.getDiaChiKH().toLowerCase().contains(searchText);
 
-            if (matchLoai && matchSearch) {
+            if (matchSearch) {
                 result.add(kh);
             }
         }
-        // Cập nhật bảng
         loadDataToTable(result);
     }
 
@@ -174,34 +209,12 @@ public class KhachHangPanel extends JPanel implements ItemListener, KeyListener 
     public void keyReleased(KeyEvent e) {
         filterData();
     }
+
     @Override
-    public void keyTyped(KeyEvent e) { }
+    public void keyTyped(KeyEvent e) {
+    }
+
     @Override
-    public void keyPressed(KeyEvent e) { }
-
-    // =========== Lớp KhachHang (dummy) ===========
-    class KhachHang {
-        private String maKH;
-        private String tenKH;
-        private String sdt;
-        private String email;
-        private String loaiKH;       // "Thành viên" / "Vãng lai" / ...
-        private int diemTichLuy;
-
-        public KhachHang(String maKH, String tenKH, String sdt, String email, String loaiKH, int diem) {
-            this.maKH = maKH;
-            this.tenKH = tenKH;
-            this.sdt = sdt;
-            this.email = email;
-            this.loaiKH = loaiKH;
-            this.diemTichLuy = diem;
-        }
-
-        public String getMaKH() { return maKH; }
-        public String getTenKH() { return tenKH; }
-        public String getSdt() { return sdt; }
-        public String getEmail() { return email; }
-        public String getLoaiKH() { return loaiKH; }
-        public int getDiemTichLuy() { return diemTichLuy; }
+    public void keyPressed(KeyEvent e) {
     }
 }

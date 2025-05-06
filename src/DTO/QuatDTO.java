@@ -1,6 +1,6 @@
 package dto;
 
-public class Quat {
+public class QuatDTO {
     private String maQuat;
     private String tenQuat;
     private int gia;
@@ -11,9 +11,9 @@ public class Quat {
     private String thuongHieu;
     private String maLoaiSP;
 
-    public Quat() { }
+    public QuatDTO() { }
 
-    public Quat(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, // ✅ thêm soLuongTon vào constructor
+    public QuatDTO(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, // ✅ thêm soLuongTon vào constructor
                 String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
         this.maQuat = maQuat;
         this.tenQuat = tenQuat;
@@ -97,4 +97,19 @@ public class Quat {
     public void setMaLoaiSP(String maLoaiSP) {
         this.maLoaiSP = maLoaiSP;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        QuatDTO quat = (QuatDTO) o;
+
+        return maQuat != null ? maQuat.equals(quat.maQuat) : quat.maQuat == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return maQuat != null ? maQuat.hashCode() : 0;
+    }
+
 }

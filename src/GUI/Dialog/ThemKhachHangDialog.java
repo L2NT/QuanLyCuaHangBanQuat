@@ -1,79 +1,56 @@
 package GUI.Dialog;
 
+import DTO.KhachHangDTO;
+import DAO.KhachHangDAO;
 import javax.swing.*;
 import java.awt.*;
 
 public class ThemKhachHangDialog extends JDialog {
-    private JTextField txtMaKH, txtTenKH, txtSdt, txtEmail, txtDiem;
-    private JComboBox<String> cbbLoaiKH;
+    private JTextField txtMa, txtTen, txtSdt, txtDiaChi;
     private JButton btnLuu, btnHuy;
-    private boolean isSaved = false;
+    private boolean saved = false;
 
-    public ThemKhachHangDialog(Window owner) {
-        super(owner, "Thêm Khách Hàng", ModalityType.APPLICATION_MODAL);
-        initComponent();
-    }
-
-    private void initComponent() {
-        setSize(400, 350);
+    public ThemKhachHangDialog() {
+        setTitle("Thêm khách hàng");
+        setModal(true);
+        setSize(350, 300);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout(10, 10));
+        setLayout(new GridLayout(5, 2, 10, 10));
 
-        JPanel pnlForm = new JPanel(new GridLayout(6, 2, 5, 5));
-        pnlForm.add(new JLabel("Mã KH:"));
-        txtMaKH = new JTextField();
-        pnlForm.add(txtMaKH);
-
-        pnlForm.add(new JLabel("Tên KH:"));
-        txtTenKH = new JTextField();
-        pnlForm.add(txtTenKH);
-
-        pnlForm.add(new JLabel("SĐT:"));
+        txtMa = new JTextField();
+        txtTen = new JTextField();
         txtSdt = new JTextField();
-        pnlForm.add(txtSdt);
+        txtDiaChi = new JTextField();
 
-        pnlForm.add(new JLabel("Email:"));
-        txtEmail = new JTextField();
-        pnlForm.add(txtEmail);
-
-        pnlForm.add(new JLabel("Loại KH:"));
-        cbbLoaiKH = new JComboBox<>(new String[]{"Thành viên", "Vãng lai"});
-        pnlForm.add(cbbLoaiKH);
-
-        pnlForm.add(new JLabel("Điểm tích lũy:"));
-        txtDiem = new JTextField("0");
-        pnlForm.add(txtDiem);
-
-        add(pnlForm, BorderLayout.CENTER);
-
-        JPanel pnlButton = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         btnLuu = new JButton("Lưu");
         btnHuy = new JButton("Hủy");
-        pnlButton.add(btnLuu);
-        pnlButton.add(btnHuy);
-        add(pnlButton, BorderLayout.SOUTH);
 
-        // Sự kiện nút
+        add(new JLabel("Mã KH:"));
+        add(txtMa);
+        add(new JLabel("Tên KH:"));
+        add(txtTen);
+        add(new JLabel("SĐT:"));
+        add(txtSdt);
+        add(new JLabel("Địa chỉ:"));
+        add(txtDiaChi);
+        add(btnLuu);
+        add(btnHuy);
+
         btnLuu.addActionListener(e -> {
-            isSaved = true;
-            JOptionPane.showMessageDialog(this, "Đã lưu khách hàng (demo).");
-            dispose();
+            KhachHangDTO kh = new KhachHangDTO(txtMa.getText(), txtTen.getText(), txtSdt.getText(), txtDiaChi.getText(), 0);
+            if (new KhachHangDAO().insert(kh)) {
+                JOptionPane.showMessageDialog(this, "Thêm thành công!");
+                saved = true;
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+            }
         });
+
         btnHuy.addActionListener(e -> dispose());
     }
 
     public boolean isSaved() {
-        return isSaved;
-    }
-
-    public Object[] getNewKhachHang() {
-        return new Object[]{
-            txtMaKH.getText().trim(),
-            txtTenKH.getText().trim(),
-            txtSdt.getText().trim(),
-            txtEmail.getText().trim(),
-            cbbLoaiKH.getSelectedItem(),
-            Integer.parseInt(txtDiem.getText().trim())
-        };
+        return saved;
     }
 }

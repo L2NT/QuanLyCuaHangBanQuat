@@ -1,7 +1,7 @@
 package BUS;
 
 import dao.QuatDAO;
-import dto.Quat;
+import dto.QuatDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,7 +15,7 @@ public class QuatBUS {
     private final QuatDAO dao = new QuatDAO();
 
     // Lấy tất cả các quạt
-    public List<Quat> layTatCa() {
+    public List<QuatDTO> layTatCa() {
         try {
             return dao.getAll();
         } catch (SQLException e) {
@@ -44,7 +44,7 @@ public class QuatBUS {
             LocalDate localDate = LocalDate.parse(ngaySanXuat, inputFormatter);
             String formattedDate = localDate.toString();  // yyyy-MM-dd
 
-            dao.insert(new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, formattedDate, chatLieu, thuongHieu, maLoaiSP ));
+            dao.insert(new QuatDTO(maQuat, tenQuat, gia,soLuongTon, maNSX, formattedDate, chatLieu, thuongHieu, maLoaiSP ));
             return true;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Lỗi khi lưu quạt: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -66,7 +66,7 @@ public class QuatBUS {
     // Sửa thông tin quạt
     public boolean sua(String maQuat, String tenQuat, int gia, int soLuongTon, String maNSX, String ngaySanXuat, String chatLieu, String thuongHieu, String maLoaiSP) {
         try {
-            dao.update(new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP));
+            dao.update(new QuatDTO(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP));
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,7 +75,7 @@ public class QuatBUS {
     }
 
     // Tìm kiếm quạt theo mã quạt
-    public Quat timTheoMaQuat(String maQuat) {
+    public QuatDTO timTheoMaQuat(String maQuat) {
         try {
             return dao.findByMaQuat(maQuat);
         } catch (SQLException e) {
@@ -85,7 +85,7 @@ public class QuatBUS {
     }
 
     // Tìm kiếm gần đúng theo tên quạt
-    public List<Quat> timTheoTenQuat(String keyword) {
+    public List<QuatDTO> timTheoTenQuat(String keyword) {
         try {
             return dao.findByTenQuat(keyword);
         } catch (SQLException e) {
@@ -95,7 +95,7 @@ public class QuatBUS {
     }
 
     // Tìm kiếm gần đúng theo thương hiệu
-    public List<Quat> timTheoThuongHieu(String keyword) {
+    public List<QuatDTO> timTheoThuongHieu(String keyword) {
         try {
             return dao.findByThuongHieu(keyword);
         } catch (SQLException e) {

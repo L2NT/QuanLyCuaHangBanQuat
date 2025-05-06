@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import dto.LoaiSanPham;
+import dto.LoaiSanPhamDTO;
 import BUS.LoaiSanPhamBUS;
 
 import javax.swing.*;
@@ -8,14 +8,14 @@ import java.awt.*;
 
 public class SuaLoaiSanPhamDialog extends JDialog {
     private JTextField txtMaLoaiSP, txtTenLoai, txtTrangThai, txtMoTa;
-    private LoaiSanPham loaiSanPhamCu;
+    private LoaiSanPhamDTO loaiSanPhamCu;
     private boolean isUpdated = false;
 
     public boolean isUpdated() {
         return isUpdated;
     }
 
-    public SuaLoaiSanPhamDialog(Window owner, LoaiSanPham loaiSanPham) {
+    public SuaLoaiSanPhamDialog(Window owner, LoaiSanPhamDTO loaiSanPham) {
         super(owner, "Sửa Loại Sản Phẩm", ModalityType.APPLICATION_MODAL);
         this.loaiSanPhamCu = loaiSanPham;
         initComponent();

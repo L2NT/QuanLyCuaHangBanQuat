@@ -1,7 +1,7 @@
 package DAO;
 
-import Database.DBConnection;
-import DTO.TaiKhoan;
+import dto.DBConnection;
+import DTO.TaiKhoanDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,14 +9,14 @@ import java.util.List;
 
 public class TaiKhoanDAO {
     // Lấy tất cả TK
-    public List<TaiKhoan> getAll() throws SQLException {
-        List<TaiKhoan> list = new ArrayList<>();
+    public List<TaiKhoanDTO> getAll() throws SQLException {
+        List<TaiKhoanDTO> list = new ArrayList<>();
         String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new TaiKhoan(
+                list.add(new TaiKhoanDTO(
                     rs.getString("MaTaiKhoan"),
                     rs.getString("MaNhanVien"),
                     rs.getString("TenTaiKhoan"),
@@ -29,14 +29,14 @@ public class TaiKhoanDAO {
     }
 
     // Lấy 1 TK theo mã
-    public TaiKhoan getByMa(String ma) throws SQLException {
+    public TaiKhoanDTO getByMa(String ma) throws SQLException {
         String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan WHERE MaTaiKhoan=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, ma);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new TaiKhoan(
+                    return new TaiKhoanDTO(
                         rs.getString("MaTaiKhoan"),
                         rs.getString("MaNhanVien"),
                         rs.getString("TenTaiKhoan"),
@@ -50,14 +50,14 @@ public class TaiKhoanDAO {
     }
 
     // Lấy TK theo username (để check trùng)
-    public TaiKhoan getByUsername(String user) throws SQLException {
+    public TaiKhoanDTO getByUsername(String user) throws SQLException {
         String sql = "SELECT MaTaiKhoan, MaNhanVien, TenTaiKhoan, MatKhau, VaiTro FROM taikhoan WHERE TenTaiKhoan=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, user);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new TaiKhoan(
+                    return new TaiKhoanDTO(
                         rs.getString("MaTaiKhoan"),
                         rs.getString("MaNhanVien"),
                         rs.getString("TenTaiKhoan"),
@@ -71,7 +71,7 @@ public class TaiKhoanDAO {
     }
 
     // Thêm TK
-    public boolean insert(TaiKhoan tk) throws SQLException {
+    public boolean insert(TaiKhoanDTO tk) throws SQLException {
         String sql = "INSERT INTO taikhoan (MaTaiKhoan, TenTaiKhoan, MatKhau, VaiTro, MaNhanVien) VALUES (?,?,?,?,?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class TaiKhoanDAO {
     }
 
     // Cập nhật TK
-    public boolean update(TaiKhoan tk) throws SQLException {
+    public boolean update(TaiKhoanDTO tk) throws SQLException {
         String sql = "UPDATE taikhoan SET TenTaiKhoan=?, MatKhau=?, VaiTro=?, MaNhanVien=? WHERE MaTaiKhoan=?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

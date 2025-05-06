@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import dto.Quat;
+import dto.QuatDTO;
 import BUS.QuatBUS;
 
 import javax.swing.*;
@@ -8,14 +8,14 @@ import java.awt.*;
 
 public class SuaQuatDialog extends JDialog {
     private JTextField txtMaQuat, txtTenQuat, txtGia, txtsoLuongTon, txtMaNSX, txtNgaySanXuat, txtChatLieu, txtThuongHieu, txtMaLoaiSP;
-    private Quat quatCu;
+    private QuatDTO quatCu;
     private boolean isUpdated = false;
 
     public boolean isUpdated() {
         return isUpdated;
     }
 
-    public SuaQuatDialog(Window owner, Quat quat) {
+    public SuaQuatDialog(Window owner, QuatDTO quat) {
         super(owner, "Sửa Quạt", ModalityType.APPLICATION_MODAL);
         this.quatCu = quat;
         initComponent();

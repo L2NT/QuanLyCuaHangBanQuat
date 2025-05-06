@@ -1,19 +1,19 @@
 package DAO;
 
-import DTO.NhanVien;
+import DTO.NhanVienDTO;
 import java.sql.*;
 import java.util.*;
-import Database.DBConnection;
+import dto.DBConnection;
 
 public class NhanVienDAO {
-    public List<NhanVien> getAll() throws SQLException {
-        List<NhanVien> list = new ArrayList<>();
+    public List<NhanVienDTO> getAll() throws SQLException {
+        List<NhanVienDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM `nhanvien`";
         try (Connection c = DBConnection.getConnection();
              Statement s = c.createStatement();
              ResultSet rs = s.executeQuery(sql)) {
             while (rs.next()) {
-                list.add(new NhanVien(
+                list.add(new NhanVienDTO(
                     rs.getString("MaNhanVien"),
                     rs.getString("HoTenNV"),
                     rs.getString("ChucVu"),
@@ -25,7 +25,7 @@ public class NhanVienDAO {
         return list;
     }
 
-    public void insert(NhanVien nv) throws SQLException {
+    public void insert(NhanVienDTO nv) throws SQLException {
         String sql = "INSERT INTO `nhanvien` VALUES (?,?,?,?,?)";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement p = c.prepareStatement(sql)) {
@@ -38,7 +38,7 @@ public class NhanVienDAO {
         }
     }
 
-    public void update(NhanVien nv) throws SQLException {
+    public void update(NhanVienDTO nv) throws SQLException {
         String sql = "UPDATE `nhanvien` SET HoTenNV=?, ChucVu=?, Sdt_NV=?, DiaChiNV=? WHERE MaNhanVien=?";
         try (Connection c = DBConnection.getConnection();
              PreparedStatement p = c.prepareStatement(sql)) {

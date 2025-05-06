@@ -2,7 +2,7 @@
 package GUI.Dialog;
 
 import BUS.NhanVienBUS;
-import DTO.NhanVien;
+import DTO.NhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +22,7 @@ public class SuaNhanVienDialog extends JDialog {
         gbc.anchor = GridBagConstraints.WEST;
 
         // Load dữ liệu
-        NhanVien n = bll.layTatCa().stream()
+        NhanVienDTO n = bll.layTatCa().stream()
                         .filter(x -> x.getMaNV().equals(maNV))
                         .findFirst()
                         .orElseThrow();
@@ -72,7 +72,7 @@ public class SuaNhanVienDialog extends JDialog {
 
         btnHuy.addActionListener(e -> dispose());
         btnLuu.addActionListener(e -> {
-            NhanVien nv = new NhanVien(
+            NhanVienDTO nv = new NhanVienDTO(
                 n.getMaNV(),
                 txtTen.getText().trim(),
                 cbbChucVu.getSelectedItem().toString(),

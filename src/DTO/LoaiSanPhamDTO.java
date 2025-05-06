@@ -1,14 +1,14 @@
 package dto;
 
-public class LoaiSanPham {
+public class LoaiSanPhamDTO {
     private String maLoaiSanPham;
     private String tenLoai;
     private String trangThai;
     private String moTa;
 
-    public LoaiSanPham() { }
+    public LoaiSanPhamDTO() { }
 
-    public LoaiSanPham(String maLoaiSanPham, String tenLoai, String trangThai, String moTa) {
+    public LoaiSanPhamDTO(String maLoaiSanPham, String tenLoai, String trangThai, String moTa) {
         this.maLoaiSanPham = maLoaiSanPham;
         this.tenLoai = tenLoai;
         this.trangThai = trangThai;

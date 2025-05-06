@@ -3,6 +3,12 @@ package GUI.Panel;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import bus.PhieuNhapBUS;
+import dto.PhieuNhapDTO;
+import java.util.List;
+import java.util.Map;
+import GUI.Dialog.ThemPhieuNhapDialog;
+
 
 public class PhieuNhapPanel extends JPanel {
 
@@ -20,7 +26,7 @@ public class PhieuNhapPanel extends JPanel {
 
     public PhieuNhapPanel() {
         initComponent();
-        addDummyData(); // thêm dữ liệu mẫu vào bảng
+      loadData();
     }
 
     private void initComponent() {
@@ -115,9 +121,12 @@ public class PhieuNhapPanel extends JPanel {
         add(scroll, BorderLayout.CENTER);
 
         // ==================== Sự kiện mẫu này nọ ====================
-        btnThem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Thêm phiếu nhập!");
-        });
+       btnThem.addActionListener(e -> {
+    ThemPhieuNhapDialog dialog = new ThemPhieuNhapDialog((Frame) SwingUtilities.getWindowAncestor(this), true);
+    dialog.setLocationRelativeTo(this); // Căn giữa với frame cha
+    dialog.setVisible(true);
+});
+
         btnChiTiet.addActionListener(e -> {
             JOptionPane.showMessageDialog(this, "Chi tiết phiếu nhập!");
         });
@@ -130,14 +139,31 @@ public class PhieuNhapPanel extends JPanel {
         btnLamMoi.addActionListener(e -> {
             // Xoá bảng rồi thêm lại
             tableModel.setRowCount(0);
-            addDummyData();
+        loadData();
         });
     }
 
-    private void addDummyData() {
-        // dự liệu mẫu
-        tableModel.addRow(new Object[]{1, "PN001", "Công ty X", "NV01", "2025-03-25 10:00", "2.000.000"});
-        tableModel.addRow(new Object[]{2, "PN002", "Công ty Y", "NV02", "2025-03-26 15:30", "1.500.000"});
-        tableModel.addRow(new Object[]{3, "PN003", "Công ty Z", "NV03", "2025-03-27 09:00", "4.000.000"});
+private void loadData() {
+    // Xóa dữ liệu cũ
+    tableModel.setRowCount(0);
+
+    // Lấy danh sách phiếu nhập và map MaNCC -> TenNCC
+    List<PhieuNhapDTO> danhSach = new PhieuNhapBUS().getAllPhieuNhap();
+    Map<String, String> nhaCungCapMap = PhieuNhapBUS.getTenNhaCungCapMap();
+
+    int stt = 1;
+    for (PhieuNhapDTO pn : danhSach) {
+        String tenNCC = nhaCungCapMap.getOrDefault(pn.getMaNCC(), "Không rõ");
+        tableModel.addRow(new Object[]{
+            stt++,
+            pn.getMaPhieuNhap(),
+            tenNCC,
+            pn.getMaNhanVien(), // hoặc map tên nhân viên nếu cần
+            pn.getNgayNhap(),
+            pn.getTongTien()
+        });
     }
+}
+
+
 }

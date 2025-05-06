@@ -54,4 +54,8 @@ public class ChiTietHoaDonDialog extends JDialog {
             tableModel.addRow(new Object[]{"Q004", 1, 500000, 500000, "BH007"});
         }
     }
+
+    public boolean isDataUpdated() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

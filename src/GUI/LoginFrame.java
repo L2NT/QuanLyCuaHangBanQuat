@@ -1,6 +1,6 @@
 package GUI;
 
-import Database.DBConnection;
+import dto.DBConnection;
 import GUI.AdminMainFrame;
 import GUI.ManagerMainFrame;
 import GUI.EmployeeMainFrame;

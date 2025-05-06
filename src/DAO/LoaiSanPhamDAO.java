@@ -1,7 +1,7 @@
 package dao;
 
-import dto.LoaiSanPham;
-import Database.DBConnection;
+import dto.LoaiSanPhamDTO;
+import dto.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,14 +9,14 @@ import java.util.List;
 
 public class LoaiSanPhamDAO {
 
-    public List<LoaiSanPham> getAll() throws SQLException {
-        List<LoaiSanPham> list = new ArrayList<>();
+    public List<LoaiSanPhamDTO> getAll() throws SQLException {
+        List<LoaiSanPhamDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM loaisanpham";
         try (Connection c = DBConnection.getConnection(); 
              PreparedStatement ps = c.prepareStatement(sql); 
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new LoaiSanPham(
+                list.add(new LoaiSanPhamDTO(
                         rs.getString("MaLoaiSanPham"),
                         rs.getString("TenLoai"),
                         rs.getString("TrangThai"),
@@ -27,7 +27,7 @@ public class LoaiSanPhamDAO {
         return list;
     }
 
-    public void insert(LoaiSanPham lsp) throws SQLException {
+    public void insert(LoaiSanPhamDTO lsp) throws SQLException {
         String sql = "INSERT INTO loaisanpham (MaLoaiSanPham, TenLoai, TrangThai, MoTa) VALUES (?, ?, ?, ?)";
         try (Connection c = DBConnection.getConnection(); 
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -48,7 +48,7 @@ public class LoaiSanPhamDAO {
         }
     }
 
-    public void update(LoaiSanPham lsp) throws SQLException {
+    public void update(LoaiSanPhamDTO lsp) throws SQLException {
         String sql = "UPDATE loaisanpham SET TenLoai = ?, TrangThai = ?, MoTa = ? WHERE MaLoaiSanPham = ?";
         try (Connection c = DBConnection.getConnection(); 
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -60,14 +60,14 @@ public class LoaiSanPhamDAO {
         }
     }
 
-    public LoaiSanPham findByMaLoai(String maLoai) throws SQLException {
+    public LoaiSanPhamDTO findByMaLoai(String maLoai) throws SQLException {
         String sql = "SELECT * FROM loaisanpham WHERE MaLoaiSanPham = ?";
         try (Connection c = DBConnection.getConnection(); 
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, maLoai);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new LoaiSanPham(
+                    return new LoaiSanPhamDTO(
                             rs.getString("MaLoaiSanPham"),
                             rs.getString("TenLoai"),
                             rs.getString("TrangThai"),
@@ -79,15 +79,15 @@ public class LoaiSanPhamDAO {
         return null;
     }
 
-    public List<LoaiSanPham> findByTenLoai(String keyword) throws SQLException {
-        List<LoaiSanPham> list = new ArrayList<>();
+    public List<LoaiSanPhamDTO> findByTenLoai(String keyword) throws SQLException {
+        List<LoaiSanPhamDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM loaisanpham WHERE TenLoai LIKE ?";
         try (Connection c = DBConnection.getConnection(); 
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new LoaiSanPham(
+                    list.add(new LoaiSanPhamDTO(
                             rs.getString("MaLoaiSanPham"),
                             rs.getString("TenLoai"),
                             rs.getString("TrangThai"),

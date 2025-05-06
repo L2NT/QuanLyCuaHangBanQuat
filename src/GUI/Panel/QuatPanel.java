@@ -1,6 +1,6 @@
 package GUI.Panel;
 import GUI.Dialog.ThemQuatDialog;
-import Database.DBConnection;
+import dto.DBConnection;
 import BUS.QuatBUS;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,7 +8,7 @@ import java.awt.*;
 import java.sql.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import dto.Quat;
+import dto.QuatDTO;
 import GUI.Dialog.SuaQuatDialog;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -32,19 +32,52 @@ public class QuatPanel extends JPanel {
     }
 
     private JPanel createButtonPanel() {
-       JPanel toolbar = new JPanel(new BorderLayout());
+        // Panel chính dùng BorderLayout
+        JPanel toolbar = new JPanel(new BorderLayout());
+        toolbar.setBackground(Color.WHITE);
+        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        JButton btnThem = new JButton("THÊM");
-        JButton btnXoa = new JButton("XÓA");
-        JButton btnSua = new JButton("SỬA");
-        JButton btnExcel = new JButton("XUẤT EXCEL");
+        // ---- LEFT TOOL PANEL (THÊM XÓA SỬA XUẤT EXCEL) ----
+        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        leftToolPanel.setOpaque(false);
+
+        ImageIcon iconThem = new ImageIcon(getClass().getResource("/icon/them.png"));
+        JButton btnThem = new JButton("THÊM", iconThem);
+        btnThem.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnThem.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+        ImageIcon iconXoa = new ImageIcon(getClass().getResource("/icon/xoa.png"));
+        JButton btnXoa = new JButton("XÓA", iconXoa);
+        btnXoa.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnXoa.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+        ImageIcon iconSua = new ImageIcon(getClass().getResource("/icon/sua.png"));
+        JButton btnSua = new JButton("SỬA", iconSua);
+        btnSua.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnSua.setVerticalTextPosition(SwingConstants.BOTTOM);
+
+        ImageIcon iconExcel = new ImageIcon(getClass().getResource("/icon/xuatexcel.png"));
+        JButton btnExcel = new JButton("XUẤT EXCEL", iconExcel);
+        btnExcel.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnExcel.setVerticalTextPosition(SwingConstants.BOTTOM);
+
         leftToolPanel.add(btnThem);
         leftToolPanel.add(btnXoa);
         leftToolPanel.add(btnSua);
         leftToolPanel.add(btnExcel);
 
-        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
+        // Wrapper để căn giữa theo chiều dọc
+        JPanel leftWrapper = new JPanel();
+        leftWrapper.setLayout(new BoxLayout(leftWrapper, BoxLayout.Y_AXIS));
+        leftWrapper.setOpaque(false);
+        leftWrapper.add(Box.createVerticalGlue());
+        leftWrapper.add(leftToolPanel);
+        leftWrapper.add(Box.createVerticalGlue());
+
+        // ---- RIGHT TOOL PANEL (FILTER + SEARCH + LÀM MỚI) ----
+        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        rightToolPanel.setOpaque(false);
+
         JComboBox<String> cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Mã Quạt", "Tên Quạt", "Thương Hiệu"});
         JLabel lblSearch = new JLabel("Tìm kiếm:");
         JTextField txtSearch = new JTextField(15);
@@ -55,8 +88,18 @@ public class QuatPanel extends JPanel {
         rightToolPanel.add(txtSearch);
         rightToolPanel.add(btnLamMoi);
 
-        toolbar.add(leftToolPanel, BorderLayout.WEST);
-        toolbar.add(rightToolPanel, BorderLayout.EAST);
+        // Wrapper để căn giữa theo chiều dọc
+        JPanel rightWrapper = new JPanel();
+        rightWrapper.setLayout(new BoxLayout(rightWrapper, BoxLayout.Y_AXIS));
+        rightWrapper.setOpaque(false);
+        rightWrapper.add(Box.createVerticalGlue());
+        rightWrapper.add(rightToolPanel);
+        rightWrapper.add(Box.createVerticalGlue());
+
+        // Đưa vào toolbar
+        toolbar.add(leftWrapper, BorderLayout.WEST);
+        toolbar.add(rightWrapper, BorderLayout.EAST);
+        toolbar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 5, true));
 
         btnThem.addActionListener(e -> {
             ThemQuatDialog dialog = new ThemQuatDialog((Window) SwingUtilities.getWindowAncestor(this)); // Khởi tạo dialog
@@ -107,7 +150,7 @@ public class QuatPanel extends JPanel {
             String thuongHieu = tableModel.getValueAt(selectedRow, 7).toString();
             String maLoaiSP = tableModel.getValueAt(selectedRow, 8).toString();
 
-            Quat quat = new Quat(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP);
+            QuatDTO quat = new QuatDTO(maQuat, tenQuat, gia,soLuongTon, maNSX, ngaySanXuat, chatLieu, thuongHieu, maLoaiSP);
             SuaQuatDialog dialog = new SuaQuatDialog((Window) SwingUtilities.getWindowAncestor(this), quat);
             dialog.setVisible(true);
 
@@ -138,14 +181,14 @@ public class QuatPanel extends JPanel {
                 String filter = cbbFilter.getSelectedItem().toString();
                 QuatBUS quatBLL = new QuatBUS();
 
-                List<Quat> results = new ArrayList<>();
+                List<QuatDTO> results = new ArrayList<>();
                     if (keyword.isEmpty()) {
                    
                         results = quatBLL.layTatCa(); 
                } else {
                    switch (filter) {
                        case "Mã Quạt":
-                           Quat q = quatBLL.timTheoMaQuat(keyword);
+                           QuatDTO q = quatBLL.timTheoMaQuat(keyword);
                            if (q != null) results.add(q);
                            break;
                        case "Tên Quạt":
@@ -155,18 +198,18 @@ public class QuatPanel extends JPanel {
                            results = quatBLL.timTheoThuongHieu(keyword);
                            break;
                       case "Tất cả":
-                        Set<Quat> resultSet = new LinkedHashSet<>(); // Giữ thứ tự và tự loại trùng
+                        Set<QuatDTO> resultSet = new LinkedHashSet<>(); 
 
-                        Quat q1 = quatBLL.timTheoMaQuat(keyword);
+                        QuatDTO q1 = quatBLL.timTheoMaQuat(keyword);
                         if (q1 != null) resultSet.add(q1);
 
-                        List<Quat> q2 = quatBLL.timTheoTenQuat(keyword);
-                        List<Quat> q3 = quatBLL.timTheoThuongHieu(keyword);
+                        List<QuatDTO> q2 = quatBLL.timTheoTenQuat(keyword);
+                        List<QuatDTO> q3 = quatBLL.timTheoThuongHieu(keyword);
 
                         resultSet.addAll(q2);
                         resultSet.addAll(q3);
 
-                        results = new ArrayList<>(resultSet); // Chuyển về lại List nếu cần
+                        results = new ArrayList<>(resultSet); 
                         break;
 
                    }
@@ -243,10 +286,10 @@ public class QuatPanel extends JPanel {
         table.getColumnModel().getColumn(8).setPreferredWidth((int)(w * 0.10));
     }
 
-    private void loadDataToTable(List<Quat> list) {
+    private void loadDataToTable(List<QuatDTO> list) {
         tableModel.setRowCount(0);  // Xóa dữ liệu cũ
 
-        for (Quat q : list) {
+        for (QuatDTO q : list) {
             tableModel.addRow(new Object[]{
                 q.getMaQuat(),
                 q.getTenQuat(),
@@ -261,35 +304,25 @@ public class QuatPanel extends JPanel {
         }
     }
 
+    private QuatBUS quatBUS = new QuatBUS(); // Thêm dòng này ở đầu class
+
     private void loadDataFromDatabase() {
-        tableModel.setRowCount(0); 
+        tableModel.setRowCount(0);
 
-        String sql = "SELECT * FROM quat";
-        try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        List<QuatDTO> danhSachQuat = quatBUS.layTatCa(); // Gọi qua đối tượng
 
-            while (rs.next()) {
-                tableModel.addRow(new Object[] {
-                    rs.getString("MaQuat"),
-                    rs.getString("TenQuat"),
-                    rs.getInt("Gia"),
-                    rs.getInt("soLuongTon"),
-                    rs.getString("MaNSX"),
-                    rs.getDate("NgaySanXuat"),
-                    rs.getString("ChatLieu"),
-                    rs.getString("ThuongHieu"),
-                    rs.getString("MaLoaiSP")
-                });
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(
-                this,
-                "Lỗi khi tải dữ liệu từ CSDL!\n" + e.getMessage(),
-                "Lỗi", JOptionPane.ERROR_MESSAGE
-            );
-            e.printStackTrace();
+        for (QuatDTO quat : danhSachQuat) {
+            tableModel.addRow(new Object[] {
+                quat.getMaQuat(),
+                quat.getTenQuat(),
+                quat.getGia(),
+                quat.getSoLuongTon(),
+                quat.getMaNSX(),
+                quat.getNgaySanXuat(),
+                quat.getChatLieu(),
+                quat.getThuongHieu(),
+                quat.getMaLoaiSP()
+            });
         }
     }
 }

@@ -1,7 +1,7 @@
 package GUI.Panel;
 
 import BUS.TaiKhoanBUS;
-import DTO.TaiKhoan;
+import DTO.TaiKhoanDTO;
 import GUI.Dialog.ThemTaiKhoanDialog;
 import GUI.Dialog.SuaTaiKhoanDialog;
 
@@ -157,7 +157,7 @@ public class TaiKhoanPanel extends JPanel {
 
     private void reloadData() {
         model.setRowCount(0);
-        for (TaiKhoan t : bll.layTatCa()) {
+        for (TaiKhoanDTO t : bll.layTatCa()) {
             model.addRow(new Object[]{
                 t.getMaTaiKhoan(),
                 t.getMaNhanVien(),

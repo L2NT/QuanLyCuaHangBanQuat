@@ -1,7 +1,7 @@
 package BUS;
 
 import dao.NhaCungCapDAO;
-import dto.NhaCungCap;
+import dto.NhaCungCapDTO;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +11,7 @@ public class NhaCungCapBUS {
     private final NhaCungCapDAO dao = new NhaCungCapDAO();
 
     // Lấy tất cả nhà cung cấp
-    public List<NhaCungCap> layTatCa() {
+    public List<NhaCungCapDTO> layTatCa() {
         try {
             return dao.getAll();
         } catch (SQLException e) {
@@ -23,7 +23,7 @@ public class NhaCungCapBUS {
     // Thêm nhà cung cấp
     public boolean them(String maNCC, String tenNCC, String diaChiNCC, String sdtNCC) {
         try {
-            dao.insert(new NhaCungCap(maNCC, tenNCC, diaChiNCC, sdtNCC));
+            dao.insert(new NhaCungCapDTO(maNCC, tenNCC, diaChiNCC, sdtNCC));
             return true;
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Lỗi khi thêm nhà cung cấp: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -45,7 +45,7 @@ public class NhaCungCapBUS {
     // Cập nhật nhà cung cấp
     public boolean sua(String maNCC, String tenNCC, String diaChiNCC, String sdtNCC) {
         try {
-            dao.update(new NhaCungCap(maNCC, tenNCC, diaChiNCC, sdtNCC));
+            dao.update(new NhaCungCapDTO(maNCC, tenNCC, diaChiNCC, sdtNCC));
             return true;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -54,7 +54,7 @@ public class NhaCungCapBUS {
     }
 
     // Tìm theo mã nhà cung cấp
-    public NhaCungCap timTheoMa(String maNCC) {
+    public NhaCungCapDTO timTheoMa(String maNCC) {
         try {
             return dao.findByMaNCC(maNCC);
         } catch (SQLException e) {
@@ -64,7 +64,7 @@ public class NhaCungCapBUS {
     }
 
     // Tìm theo tên gần đúng
-    public List<NhaCungCap> timTheoTen(String keyword) {
+    public List<NhaCungCapDTO> timTheoTen(String keyword) {
         try {
             return dao.findByTenNCC(keyword);
         } catch (SQLException e) {

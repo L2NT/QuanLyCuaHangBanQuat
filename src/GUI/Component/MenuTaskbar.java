@@ -3,36 +3,19 @@ package GUI.Component;
 import GUI.LoginFrame;
 import GUI.ManagerMainFrame;
 import GUI.EmployeeMainFrame;
-import GUI.Panel.TrangChu;
-import GUI.Panel.BanQuatPanel;
-import GUI.Panel.QuatPanel;
-import GUI.Panel.HoaDonPanel;
-import GUI.Panel.KhuyenMaiPanel;
-import GUI.Panel.KhachHangPanel;
-import GUI.Panel.PhieuNhapPanel;
-import GUI.Panel.PhieuXuatPanel;
-import GUI.Panel.NhaCungCapPanel;
-import GUI.Panel.NhanVienPanel;
-import GUI.Panel.TaiKhoanPanel;
-import GUI.Panel.PhanQuyenPanel;
-import GUI.Panel.ThongKePanel;
-import GUI.Panel.LoaiSanPhamPanel;
+import GUI.Panel.*;
 
 import javax.swing.*;
-import javax.swing.SwingConstants;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
 public class MenuTaskbar extends JPanel {
+
     private final JFrame parent;
     private final boolean isManager;
 
-    /**
-     * @param parent    cửa sổ chính để gọi setPanel(...)
-     * @param isManager true = hiển thị đủ menu, false = chỉ home, bán quạt, nhập xuất phiếu
-     */
     public MenuTaskbar(JFrame parent, boolean isManager) {
-        this.parent    = parent;
+        this.parent = parent;
         this.isManager = isManager;
         initComponent();
     }
@@ -41,41 +24,65 @@ public class MenuTaskbar extends JPanel {
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
 
-        // Thông tin user
         JLabel lblUser = new JLabel(
-            parent instanceof ManagerMainFrame
-                ? "Nhân viên: Admin"
-                : "Nhân viên: NV01"
+                parent instanceof ManagerMainFrame ? "Nhân viên: Admin" : "Nhân viên: NV01"
         );
         lblUser.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(lblUser, BorderLayout.NORTH);
 
-        // Panel chứa các nút
         JPanel menu = new JPanel(new GridLayout(0, 1, 0, 5));
         menu.setBackground(Color.WHITE);
 
-        // Các chức năng chung cho cả Manager và Employee
-        addButton(menu, "Trang chủ",    e -> swap(new TrangChu()));
-        addButton(menu, "Bán quạt",     e -> swap(new BanQuatPanel()));
-        addButton(menu, "Phiếu nhập",   e -> swap(new PhieuNhapPanel()));
-        addButton(menu, "Phiếu xuất",   e -> swap(new PhieuXuatPanel()));
+        // Tải icon
+        ImageIcon homeIcon = new ImageIcon(getClass().getResource("/icon/trangchu.png"));
+        ImageIcon sellIcon = new ImageIcon(getClass().getResource("/icon/ban.png"));
+        ImageIcon quatIcon = new ImageIcon(getClass().getResource("/icon/fan.png"));
+        ImageIcon billIcon = new ImageIcon(getClass().getResource("/icon/bill.png"));
+        ImageIcon importIcon = new ImageIcon(getClass().getResource("/icon/in.png"));
+        ImageIcon exportIcon = new ImageIcon(getClass().getResource("/icon/out.png"));
+        ImageIcon promotionIcon = new ImageIcon(getClass().getResource("/icon/khuyenmai.png"));
+        ImageIcon customerIcon = new ImageIcon(getClass().getResource("/icon/khachhang.png"));
+        ImageIcon supplierIcon = new ImageIcon(getClass().getResource("/icon/nhacungcap.png"));
+        ImageIcon staffIcon = new ImageIcon(getClass().getResource("/icon/nhanvien.png"));
+        ImageIcon accountIcon = new ImageIcon(getClass().getResource("/icon/taikhoan.png"));
+        ImageIcon statisticIcon = new ImageIcon(getClass().getResource("/icon/thongke.png"));
+        ImageIcon logoutIcon = new ImageIcon(getClass().getResource("/icon/logout.png"));
 
-        // Chỉ manager mới có các mục dưới đây
+        // Các chức năng chung
+        addButton(menu, "Trang chủ", homeIcon, e -> swap(new TrangChu()));
+        addButton(menu, "Bán quạt", sellIcon, e -> {
+            String maNV = null;
+
+            if (parent instanceof EmployeeMainFrame) {
+                maNV = ((EmployeeMainFrame) parent).getMaNhanVien();
+            } else if (parent instanceof ManagerMainFrame) {
+                maNV = "Quản Lý"; 
+            }
+
+            if (maNV != null) {
+                swap(new BanQuatPanel(maNV));
+            } else {
+                JOptionPane.showMessageDialog(this, "Không xác định được mã nhân viên.");
+            }
+        });
+
+        addButton(menu, "Quản lý quạt", quatIcon, e -> swap(new QuatPanel()));
+        addButton(menu, "Hóa đơn", billIcon, e -> swap(new HoaDonPanel()));
+        addButton(menu, "Phiếu nhập", importIcon, e -> swap(new PhieuNhapPanel()));
+        addButton(menu, "Phiếu xuất", exportIcon, e -> swap(new PhieuXuatPanel()));
+
+        // Chức năng riêng cho quản lý
         if (isManager) {
-            addButton(menu, "Quản lý quạt",        e -> swap(new QuatPanel()));
-            addButton(menu, "Hóa đơn",             e -> swap(new HoaDonPanel()));
-            addButton(menu, "Khuyến mãi",          e -> swap(new KhuyenMaiPanel()));
-            addButton(menu, "Khách hàng",          e -> swap(new KhachHangPanel()));
-            addButton(menu, "Nhà cung cấp",        e -> swap(new NhaCungCapPanel()));
-            addButton(menu, "Nhân viên",           e -> swap(new NhanVienPanel()));
-            addButton(menu, "Tài khoản",           e -> swap(new TaiKhoanPanel()));
-            addButton(menu, "Phân quyền",          e -> swap(new PhanQuyenPanel()));
-            addButton(menu, "Thống kê",            e -> swap(new ThongKePanel()));
-            addButton(menu, "Loại Sản Phẩm",       e -> swap(new LoaiSanPhamPanel()));
+            addButton(menu, "Khuyến mãi", promotionIcon, e -> swap(new KhuyenMaiPanel()));
+            addButton(menu, "Khách hàng", customerIcon, e -> swap(new KhachHangPanel()));
+            addButton(menu, "Nhà cung cấp", supplierIcon, e -> swap(new NhaCungCapPanel()));
+            addButton(menu, "Nhân viên", staffIcon, e -> swap(new NhanVienPanel()));
+            addButton(menu, "Tài khoản", accountIcon, e -> swap(new TaiKhoanPanel()));
+            addButton(menu, "Thống kê", statisticIcon, e -> swap(new ThongKePanel()));
         }
 
-        // Nút đăng xuất luôn có
-        JButton btnLogout = new JButton("Đăng xuất");
+        // Nút đăng xuất
+        JButton btnLogout = new JButton("Đăng xuất", logoutIcon);
         btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
         btnLogout.setForeground(Color.RED);
         btnLogout.addActionListener(e -> {
@@ -85,11 +92,15 @@ public class MenuTaskbar extends JPanel {
         menu.add(btnLogout);
 
         add(menu, BorderLayout.CENTER);
+
+        for (Component comp : menu.getComponents()) {
+            if (comp instanceof JButton) {
+                comp.setFont(new Font("Arial", Font.PLAIN, 14));
+            }
+        }
     }
 
-    /**
-     * Tiện ích thêm nút vào panel
-     */
+    // Phiên bản gốc không có icon
     private void addButton(JPanel menu, String text, ActionListener action) {
         JButton btn = new JButton(text);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
@@ -97,9 +108,14 @@ public class MenuTaskbar extends JPanel {
         menu.add(btn);
     }
 
-    /**
-     * Chuyển panel chính của cửa sổ
-     */
+    // Phiên bản thêm icon
+    private void addButton(JPanel menu, String text, Icon icon, ActionListener action) {
+        JButton btn = new JButton(text, icon);
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.addActionListener(action);
+        menu.add(btn);
+    }
+
     private void swap(JPanel panel) {
         if (parent instanceof ManagerMainFrame) {
             ((ManagerMainFrame) parent).setPanel(panel);

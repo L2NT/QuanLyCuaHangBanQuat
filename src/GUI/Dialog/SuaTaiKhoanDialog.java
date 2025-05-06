@@ -1,7 +1,7 @@
 package GUI.Dialog;
 
 import BUS.TaiKhoanBUS;
-import DTO.TaiKhoan;
+import DTO.TaiKhoanDTO;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +84,7 @@ public class SuaTaiKhoanDialog extends JDialog {
     public void loadForEdit(String maTK) {
         this.editingMaTK = maTK;
         setTitle("Chỉnh sửa tài khoản");
-        TaiKhoan tk = new TaiKhoanBUS().layTheoMa(maTK);
+        TaiKhoanDTO tk = new TaiKhoanBUS().layTheoMa(maTK);
         cbbNhanVien.setSelectedItem(tk.getMaNhanVien());
         cbbNhanVien.setEnabled(false);  // KHÓA không cho đổi NV
         txtUsername.setText(tk.getUsername());

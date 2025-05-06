@@ -1,8 +1,8 @@
 package GUI.Panel;
 
-import Database.DBConnection;
+import dto.DBConnection;
 import BUS.NhaCungCapBUS;
-import dto.NhaCungCap;
+import dto.NhaCungCapDTO;
 import GUI.Dialog.ThemNhaCungCapDialog;
 import GUI.Dialog.SuaNhaCungCapDialog;
 import java.sql.Statement;
@@ -97,7 +97,7 @@ public class NhaCungCapPanel extends JPanel {
             String ten = tableModel.getValueAt(selectedRow, 1).toString();
             String diachi = tableModel.getValueAt(selectedRow, 2).toString();
             String sdt = tableModel.getValueAt(selectedRow, 3).toString();
-            NhaCungCap ncc = new NhaCungCap(ma, ten, diachi, sdt);
+            NhaCungCapDTO ncc = new NhaCungCapDTO(ma, ten, diachi, sdt);
 
             SuaNhaCungCapDialog dialog = new SuaNhaCungCapDialog((Window) SwingUtilities.getWindowAncestor(this), ncc);
             dialog.setVisible(true);
@@ -113,21 +113,21 @@ public class NhaCungCapPanel extends JPanel {
                 String keyword = txtSearch.getText().trim();
                 String filter = cbbFilter.getSelectedItem().toString();
                 NhaCungCapBUS bll = new NhaCungCapBUS();
-                List<NhaCungCap> results = new ArrayList<>();
+                List<NhaCungCapDTO> results = new ArrayList<>();
 
                 switch (filter) {
                     case "Mã NCC":
-                        NhaCungCap ncc = bll.timTheoMa(keyword);
+                        NhaCungCapDTO ncc = bll.timTheoMa(keyword);
                         if (ncc != null) results.add(ncc);
                         break;
                     case "Tên NCC":
                         results = bll.timTheoTen(keyword);
                         break;
                     case "Tất cả":
-                        NhaCungCap ncc1 = bll.timTheoMa(keyword);
-                        List<NhaCungCap> list2 = bll.timTheoTen(keyword);
+                        NhaCungCapDTO ncc1 = bll.timTheoMa(keyword);
+                        List<NhaCungCapDTO> list2 = bll.timTheoTen(keyword);
                         if (ncc1 != null) results.add(ncc1);
-                        for (NhaCungCap item : list2) {
+                        for (NhaCungCapDTO item : list2) {
                             if (!results.contains(item)) results.add(item);
                         }
                         break;
@@ -193,9 +193,9 @@ public class NhaCungCapPanel extends JPanel {
         table.getColumnModel().getColumn(3).setPreferredWidth((int)(w * 0.20));
     }
 
-    private void loadDataToTable(List<NhaCungCap> list) {
+    private void loadDataToTable(List<NhaCungCapDTO> list) {
         tableModel.setRowCount(0);
-        for (NhaCungCap ncc : list) {
+        for (NhaCungCapDTO ncc : list) {
             tableModel.addRow(new Object[] {
                 ncc.getMaNCC(),
                 ncc.getTenNCC(),

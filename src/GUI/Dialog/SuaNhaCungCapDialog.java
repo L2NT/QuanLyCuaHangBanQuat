@@ -1,21 +1,21 @@
 package GUI.Dialog;
 
 import BUS.NhaCungCapBUS;
-import dto.NhaCungCap;
+import dto.NhaCungCapDTO;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class SuaNhaCungCapDialog extends JDialog {
     private JTextField txtMaNCC, txtTenNCC, txtDiaChi, txtSDT;
-    private NhaCungCap nhaCungCapCu;
+    private NhaCungCapDTO nhaCungCapCu;
     private boolean isUpdated = false;
 
     public boolean isUpdated() {
         return isUpdated;
     }
 
-    public SuaNhaCungCapDialog(Window owner, NhaCungCap nhaCungCap) {
+    public SuaNhaCungCapDialog(Window owner, NhaCungCapDTO nhaCungCap) {
         super(owner, "Sửa Nhà Cung Cấp", ModalityType.APPLICATION_MODAL);
         this.nhaCungCapCu = nhaCungCap;
         initComponent();

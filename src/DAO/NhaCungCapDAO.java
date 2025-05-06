@@ -1,7 +1,7 @@
 package dao;
 
-import dto.NhaCungCap;
-import Database.DBConnection;
+import dto.NhaCungCapDTO;
+import dto.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -9,12 +9,12 @@ import java.util.List;
 
 public class NhaCungCapDAO {
 
-    public List<NhaCungCap> getAll() throws SQLException {
-        List<NhaCungCap> list = new ArrayList<>();
+    public List<NhaCungCapDTO> getAll() throws SQLException {
+        List<NhaCungCapDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM nha_cung_cap";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new NhaCungCap(
+                list.add(new NhaCungCapDTO(
                         rs.getString("MaNCC"),
                         rs.getString("TenNCC"),
                         rs.getString("DiaChiNCC"),
@@ -25,7 +25,7 @@ public class NhaCungCapDAO {
         return list;
     }
 
-    public void insert(NhaCungCap ncc) throws SQLException {
+    public void insert(NhaCungCapDTO ncc) throws SQLException {
         String sql = "INSERT INTO nha_cung_cap (MaNCC, TenNCC, DiaChiNCC, Sdt_NCC) VALUES (?, ?, ?, ?)";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, ncc.getMaNCC());
@@ -44,7 +44,7 @@ public class NhaCungCapDAO {
         }
     }
 
-    public void update(NhaCungCap ncc) throws SQLException {
+    public void update(NhaCungCapDTO ncc) throws SQLException {
         String sql = "UPDATE nha_cung_cap SET TenNCC = ?, DiaChiNCC = ?, Sdt_NCC = ? WHERE MaNCC = ?";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, ncc.getTenNCC());
@@ -55,13 +55,13 @@ public class NhaCungCapDAO {
         }
     }
 
-    public NhaCungCap findByMaNCC(String maNCC) throws SQLException {
+    public NhaCungCapDTO findByMaNCC(String maNCC) throws SQLException {
         String sql = "SELECT * FROM nha_cung_cap WHERE MaNCC = ?";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, maNCC);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return new NhaCungCap(
+                    return new NhaCungCapDTO(
                             rs.getString("MaNCC"),
                             rs.getString("TenNCC"),
                             rs.getString("DiaChiNCC"),
@@ -73,14 +73,14 @@ public class NhaCungCapDAO {
         return null;
     }
 
-    public List<NhaCungCap> findByTenNCC(String keyword) throws SQLException {
-        List<NhaCungCap> list = new ArrayList<>();
+    public List<NhaCungCapDTO> findByTenNCC(String keyword) throws SQLException {
+        List<NhaCungCapDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM nha_cung_cap WHERE TenNCC LIKE ?";
         try (Connection c = DBConnection.getConnection(); PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(new NhaCungCap(
+                    list.add(new NhaCungCapDTO(
                             rs.getString("MaNCC"),
                             rs.getString("TenNCC"),
                             rs.getString("DiaChiNCC"),
