@@ -6,6 +6,7 @@ import DTO.NhanVienDTO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.regex.Pattern;
 
 public class SuaNhanVienDialog extends JDialog {
     private final JTextField txtMa, txtTen, txtSdt, txtDiaChi;
@@ -31,7 +32,8 @@ public class SuaNhanVienDialog extends JDialog {
         add(new JLabel("Mã NV:"), gbc);
         gbc.gridx=1;
         txtMa = new JTextField(n.getMaNV(), 15);
-        txtMa.setEnabled(false);
+        txtMa.setEditable(false);
+        txtMa.setBackground(new Color(240, 240, 240)); // Gray background to indicate non-editable
         add(txtMa, gbc);
 
         gbc.gridy=1; gbc.gridx=0;
@@ -43,8 +45,9 @@ public class SuaNhanVienDialog extends JDialog {
         gbc.gridy=2; gbc.gridx=0;
         add(new JLabel("Chức vụ:"), gbc);
         gbc.gridx=1;
-        cbbChucVu = new JComboBox<>(new String[]{"Quản lý","Nhân viên"});
-        cbbChucVu.setSelectedItem(n.getChucVu());
+        cbbChucVu = new JComboBox<>(new String[]{"Nhân viên", "Quản lý"});
+        // Chọn đúng chức vụ hiện tại
+        cbbChucVu.setSelectedItem(n.getChucVu().equals("Quản lý") ? "Quản lý" : "Nhân viên");
         add(cbbChucVu, gbc);
 
         gbc.gridy=3; gbc.gridx=0;
@@ -72,20 +75,57 @@ public class SuaNhanVienDialog extends JDialog {
 
         btnHuy.addActionListener(e -> dispose());
         btnLuu.addActionListener(e -> {
-            NhanVienDTO nv = new NhanVienDTO(
-                n.getMaNV(),
-                txtTen.getText().trim(),
-                cbbChucVu.getSelectedItem().toString(),
-                txtSdt.getText().trim(),
-                txtDiaChi.getText().trim()
-            );
-            if (bll.sua(nv)) {
-                saved = true;
-                dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+            if (validateInput()) {
+                NhanVienDTO nv = new NhanVienDTO(
+                    n.getMaNV(),
+                    txtTen.getText().trim(),
+                    cbbChucVu.getSelectedItem().toString(),
+                    txtSdt.getText().trim(),
+                    txtDiaChi.getText().trim()
+                );
+                if (bll.sua(nv)) {
+                    saved = true;
+                    dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cập nhật thất bại!");
+                }
             }
         });
+    }
+    
+    private boolean validateInput() {
+        // Kiểm tra tên nhân viên
+        if (txtTen.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Họ tên không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtTen.requestFocus();
+            return false;
+        }
+        
+        // Kiểm tra số điện thoại
+        String sdt = txtSdt.getText().trim();
+        if (sdt.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtSdt.requestFocus();
+            return false;
+        }
+        
+        // Kiểm tra định dạng số điện thoại (10 số, bắt đầu bằng 0)
+        Pattern pattern = Pattern.compile("^0\\d{9}$");
+        if (!pattern.matcher(sdt).matches()) {
+            JOptionPane.showMessageDialog(this, "Số điện thoại phải có 10 số và bắt đầu bằng số 0!", 
+                                         "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtSdt.requestFocus();
+            return false;
+        }
+        
+        // Kiểm tra địa chỉ
+        if (txtDiaChi.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Địa chỉ không được để trống!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            txtDiaChi.requestFocus();
+            return false;
+        }
+        
+        return true;
     }
 
     public boolean isSaved() { return saved; }

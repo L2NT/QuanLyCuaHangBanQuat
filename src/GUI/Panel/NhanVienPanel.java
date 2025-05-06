@@ -47,14 +47,70 @@ public class NhanVienPanel extends JPanel {
 
     private JPanel createButtonPanel() {
         JPanel toolbar = new JPanel(new BorderLayout());
+        toolbar.setBackground(Color.WHITE);
+        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // A) Nút bên trái
-        JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT,10,5));
-        JButton btnThem = new JButton("THÊM");
-        JButton btnSua  = new JButton("CHỈNH SỬA");
-        JButton btnXoa  = new JButton("XÓA");
-        left.add(btnThem); left.add(btnSua); left.add(btnXoa);
-        toolbar.add(left, BorderLayout.WEST);
+        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,5));
+        leftToolPanel.setOpaque(false);
+        
+        // Tạo các buttons với icons
+        // Lưu ý: Đường dẫn tới icons cần được điều chỉnh theo cấu trúc thư mục của bạn
+        ImageIcon iconThem = new ImageIcon(getClass().getResource("/icon/them.png"));
+        JButton btnThem = new JButton("THÊM", iconThem);
+        btnThem.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnThem.setVerticalTextPosition(SwingConstants.BOTTOM);
+        
+        ImageIcon iconXoa = new ImageIcon(getClass().getResource("/icon/xoa.png"));
+        JButton btnXoa = new JButton("XÓA", iconXoa);
+        btnXoa.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnXoa.setVerticalTextPosition(SwingConstants.BOTTOM);
+        
+        ImageIcon iconSua = new ImageIcon(getClass().getResource("/icon/sua.png"));
+        JButton btnSua = new JButton("SỬA", iconSua);
+        btnSua.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnSua.setVerticalTextPosition(SwingConstants.BOTTOM);
+        
+        ImageIcon iconExcel = new ImageIcon(getClass().getResource("/icon/xuatexcel.png"));
+        JButton btnExcel = new JButton("XUẤT EXCEL", iconExcel);
+        btnExcel.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnExcel.setVerticalTextPosition(SwingConstants.BOTTOM);
+        
+        leftToolPanel.add(btnThem);
+        leftToolPanel.add(btnXoa);
+        leftToolPanel.add(btnSua);
+        leftToolPanel.add(btnExcel);
+
+        // B) Filter + Search + Refresh bên phải
+        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,5));
+        rightToolPanel.setOpaque(false);
+        
+        JLabel lblFilter = new JLabel("Chức vụ:");
+        cbbFilter = new JComboBox<>(new String[]{"Tất cả","Quản lý","Nhân viên"});
+        
+        JLabel lblSearch = new JLabel("Tìm kiếm:");
+        txtSearch = new JTextField(15);
+        
+        JButton btnLamMoi = new JButton("LÀM MỚI");
+        
+        rightToolPanel.add(lblFilter);
+        rightToolPanel.add(cbbFilter);
+        rightToolPanel.add(lblSearch);
+        rightToolPanel.add(txtSearch);
+        rightToolPanel.add(btnLamMoi);
+
+        toolbar.add(leftToolPanel, BorderLayout.WEST);
+        toolbar.add(rightToolPanel, BorderLayout.EAST);
+
+        // Kịch bản lọc & tìm kiếm
+        ActionListener doFilter = e -> reloadData();
+        cbbFilter.addActionListener(doFilter);
+        txtSearch.addActionListener(doFilter);
+        btnLamMoi.addActionListener(e -> {
+            cbbFilter.setSelectedIndex(0);
+            txtSearch.setText("");
+            reloadData();
+        });
 
         btnThem.addActionListener(e -> {
             ThemNhanVienDialog dlg = new ThemNhanVienDialog(
@@ -66,7 +122,7 @@ public class NhanVienPanel extends JPanel {
 
         btnSua.addActionListener(e -> {
             int r = tbl.getSelectedRow();
-            if (r<0) {
+            if (r < 0) {
                 JOptionPane.showMessageDialog(this,
                     "Chọn một nhân viên để chỉnh sửa",
                     "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -82,7 +138,12 @@ public class NhanVienPanel extends JPanel {
 
         btnXoa.addActionListener(e -> {
             int r = tbl.getSelectedRow();
-            if (r<0) return;
+            if (r < 0) {
+                JOptionPane.showMessageDialog(this,
+                    "Chọn một nhân viên để xóa",
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
             if (JOptionPane.showConfirmDialog(this,
                 "Xóa nhân viên này?") == JOptionPane.YES_OPTION) {
                 String maNV = model.getValueAt(r,0).toString();
@@ -91,30 +152,6 @@ public class NhanVienPanel extends JPanel {
             }
         });
 
-        // B) Filter + Search + Refresh bên phải
-        JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,5));
-        right.add(new JLabel("Chức vụ:"));
-        cbbFilter = new JComboBox<>(new String[]{"Tất cả","Quản lý","Nhân viên"});
-        right.add(cbbFilter);
-
-        right.add(new JLabel("Tìm kiếm:"));
-        txtSearch = new JTextField(15);
-        right.add(txtSearch);
-
-        JButton btnLamMoi = new JButton("LÀM MỚI");
-        right.add(btnLamMoi);
-
-        // Kịch bản lọc & tìm kiếm
-        ActionListener doFilter = e -> reloadData();
-        cbbFilter.addActionListener(doFilter);
-        txtSearch.addActionListener(doFilter);
-        btnLamMoi.addActionListener(e -> {
-            cbbFilter.setSelectedIndex(0);
-            txtSearch.setText("");
-            reloadData();
-        });
-
-        toolbar.add(right, BorderLayout.EAST);
         return toolbar;
     }
 
