@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package bus;
+package BUS;
 
-import dao.ChiTietPhieuNhapDAO;
-import dto.ChiTietPhieuNhapDTO;
+import DAO.ChiTietPhieuNhapDAO;
+import DTO.ChiTietPhieuNhapDTO;
 
 import java.util.List;
 

@@ -3,7 +3,7 @@ package DAO;
 import DTO.NhanVienDTO;
 import java.sql.*;
 import java.util.*;
-import dto.DBConnection;
+import DTO.DBConnection;
 
 public class NhanVienDAO {
     public List<NhanVienDTO> getAll() throws SQLException {

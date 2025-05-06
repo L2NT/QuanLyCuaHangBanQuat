@@ -1,8 +1,8 @@
 package GUI.Panel;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 import BUS.NhaCungCapBUS;
-import dto.NhaCungCapDTO;
+import DTO.NhaCungCapDTO;
 import GUI.Dialog.ThemNhaCungCapDialog;
 import GUI.Dialog.SuaNhaCungCapDialog;
 import java.sql.Statement;

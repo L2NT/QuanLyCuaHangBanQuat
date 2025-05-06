@@ -1,7 +1,7 @@
-package dao;
+package DAO;
 
-import dto.LoaiSanPhamDTO;
-import dto.DBConnection;
+import DTO.LoaiSanPhamDTO;
+import DTO.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

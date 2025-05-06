@@ -1,7 +1,7 @@
 package BUS;
 
-import dao.LoaiSanPhamDAO;
-import dto.LoaiSanPhamDTO;
+import DAO.LoaiSanPhamDAO;
+import DTO.LoaiSanPhamDTO;
 
 import javax.swing.*;
 import java.sql.SQLException;

@@ -1,7 +1,7 @@
 package GUI.Dialog;
 
 import BUS.NhaCungCapBUS;
-import dto.NhaCungCapDTO;
+import DTO.NhaCungCapDTO;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,4 +1,3 @@
-// src/GUI/Dialog/SuaNhanVienDialog.java
 package GUI.Dialog;
 
 import BUS.NhanVienBUS;
@@ -33,7 +32,7 @@ public class SuaNhanVienDialog extends JDialog {
         gbc.gridx=1;
         txtMa = new JTextField(n.getMaNV(), 15);
         txtMa.setEditable(false);
-        txtMa.setBackground(new Color(240, 240, 240)); // Gray background to indicate non-editable
+        txtMa.setBackground(new Color(240, 240, 240)); // Background xám để phân loại ko sửa dc
         add(txtMa, gbc);
 
         gbc.gridy=1; gbc.gridx=0;

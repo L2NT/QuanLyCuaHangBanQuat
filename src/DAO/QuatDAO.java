@@ -1,7 +1,7 @@
-package dao;
+package DAO;
 
-import dto.QuatDTO;
-import dto.DBConnection;
+import DTO.QuatDTO;
+import DTO.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

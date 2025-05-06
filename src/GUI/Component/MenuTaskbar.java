@@ -47,9 +47,9 @@ public class MenuTaskbar extends JPanel {
         ImageIcon accountIcon = new ImageIcon(getClass().getResource("/icon/taikhoan.png"));
         ImageIcon statisticIcon = new ImageIcon(getClass().getResource("/icon/thongke.png"));
         ImageIcon logoutIcon = new ImageIcon(getClass().getResource("/icon/logout.png"));
-
+        ImageIcon loaispIcon = new ImageIcon(getClass().getResource("/icon/loaisp.png"));
         // Các chức năng chung
-        addButton(menu, "Trang chủ", homeIcon, e -> swap(new TrangChu()));
+        addButton(menu, "Trang chủ", homeIcon, e -> swap(new TrangChuPanel()));
         addButton(menu, "Bán quạt", sellIcon, e -> {
             String maNV = null;
 
@@ -70,6 +70,7 @@ public class MenuTaskbar extends JPanel {
         addButton(menu, "Hóa đơn", billIcon, e -> swap(new HoaDonPanel()));
         addButton(menu, "Phiếu nhập", importIcon, e -> swap(new PhieuNhapPanel()));
         addButton(menu, "Phiếu xuất", exportIcon, e -> swap(new PhieuXuatPanel()));
+        addButton(menu,"Loại sản phẩm",loaispIcon,e-> swap(new LoaiSanPhamPanel()));
 
         // Chức năng riêng cho quản lý
         if (isManager) {
@@ -77,7 +78,7 @@ public class MenuTaskbar extends JPanel {
             addButton(menu, "Khách hàng", customerIcon, e -> swap(new KhachHangPanel()));
             addButton(menu, "Nhà cung cấp", supplierIcon, e -> swap(new NhaCungCapPanel()));
             addButton(menu, "Nhân viên", staffIcon, e -> swap(new NhanVienPanel()));
-            addButton(menu, "Tài khoản", accountIcon, e -> swap(new TaiKhoanPanel()));
+            addButton(menu, "Tài khoản", accountIcon, e -> swap(new TaiKhoanPanel(false))); //mặc định mở từ manager
             addButton(menu, "Thống kê", statisticIcon, e -> swap(new ThongKePanel()));
         }
 

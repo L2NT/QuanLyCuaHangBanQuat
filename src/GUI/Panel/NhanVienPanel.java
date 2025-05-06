@@ -1,4 +1,3 @@
-// src/GUI/Panel/NhanVienPanel.java
 package GUI.Panel;
 
 import BUS.NhanVienBUS;
@@ -47,7 +46,7 @@ public class NhanVienPanel extends JPanel {
     private JPanel createButtonPanel() {
         // Tạo một panel chứa toàn bộ toolbar
         JPanel toolbar = new JPanel();
-        toolbar.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout để căn chỉnh chính xác
+        toolbar.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout 
         toolbar.setBackground(Color.WHITE);
         toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
@@ -60,7 +59,7 @@ public class NhanVienPanel extends JPanel {
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 5); // Khoảng cách giữa các nút
 
-        // Tạo các buttons với icons - Chú ý thay đổi thứ tự THÊM, SỬA, XÓA
+        // Tạo các buttons với icons 
         ImageIcon iconThem = new ImageIcon(getClass().getResource("/icon/them.png"));
         JButton btnThem = new JButton("THÊM", iconThem);
         btnThem.setHorizontalTextPosition(SwingConstants.CENTER);

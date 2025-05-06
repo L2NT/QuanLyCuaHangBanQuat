@@ -1,7 +1,7 @@
 package BUS;
 
-import dao.QuatDAO;
-import dto.QuatDTO;
+import DAO.QuatDAO;
+import DTO.QuatDTO;
 
 import java.sql.SQLException;
 import java.util.List;

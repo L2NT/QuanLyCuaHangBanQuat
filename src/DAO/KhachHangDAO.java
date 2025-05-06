@@ -1,5 +1,5 @@
 package DAO;
-import dto.DBConnection;
+import DTO.DBConnection;
 import DTO.KhachHangDTO;
 import java.sql.*;
 import java.util.ArrayList;

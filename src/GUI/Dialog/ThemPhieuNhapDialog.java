@@ -16,10 +16,10 @@ import java.awt.Dimension;
 import javax.swing.*;
 import BUS.QuatBUS;
 import java.util.List;
-import dto.QuatDTO;
+import DTO.QuatDTO;
 import BUS.NhaCungCapBUS;
-import dto.NhaCungCapDTO;
-import bus.PhieuNhapBUS;
+import DTO.NhaCungCapDTO;
+import BUS.PhieuNhapBUS;
 
 
 

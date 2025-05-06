@@ -1,7 +1,7 @@
-package dao;
+package DAO;
 
-import dto.NhaCungCapDTO;
-import dto.DBConnection;
+import DTO.NhaCungCapDTO;
+import DTO.DBConnection;
 
 import java.sql.*;
 import java.util.ArrayList;

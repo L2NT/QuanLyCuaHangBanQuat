@@ -1,7 +1,7 @@
 package GUI.Panel;
 
 import BUS.LoaiSanPhamBUS;
-import dto.LoaiSanPhamDTO;
+import DTO.LoaiSanPhamDTO;
 import GUI.Dialog.ThemLoaiSanPhamDialog;
 import GUI.Dialog.SuaLoaiSanPhamDialog;
 

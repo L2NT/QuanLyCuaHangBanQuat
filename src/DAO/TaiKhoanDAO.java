@@ -1,6 +1,6 @@
 package DAO;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 import DTO.TaiKhoanDTO;
 
 import java.sql.*;

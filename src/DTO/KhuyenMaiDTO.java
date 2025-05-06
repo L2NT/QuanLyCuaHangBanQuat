@@ -2,26 +2,22 @@ package DTO;
 
 import java.util.Date;
 
-public class KhuyenMaiDTO {
+public class KhuyenMaiDTO{ 
     private String maSKKhuyenMai;
     private String tenKhuyenMai;
     private int phanTramGiam;
     private Date ngayBatDau;
     private Date ngayKetThuc;
-    private String dieuKien;
-    private int minOrderAmount;
-    private int minQuantity;
+    private int loai;
 
     // Constructor đầy đủ
-    public KhuyenMaiDTO(String maSKKhuyenMai, String tenKhuyenMai, int phanTramGiam, Date ngayBatDau, Date ngayKetThuc, String dieuKien, int minOrderAmount, int minQuantity) {
+    public KhuyenMaiDTO(String maSKKhuyenMai, String tenKhuyenMai, int phanTramGiam, Date ngayBatDau, Date ngayKetThuc,int loai) {
         this.maSKKhuyenMai = maSKKhuyenMai;
         this.tenKhuyenMai = tenKhuyenMai;
         this.phanTramGiam = phanTramGiam;
         this.ngayBatDau = ngayBatDau;
         this.ngayKetThuc = ngayKetThuc;
-        this.dieuKien = dieuKien;
-        this.minOrderAmount = minOrderAmount;
-        this.minQuantity = minQuantity;
+        this.loai = loai;
     }
 
     // Getters và Setters
@@ -65,27 +61,12 @@ public class KhuyenMaiDTO {
         this.ngayKetThuc = ngayKetThuc;
     }
 
-    public String getDieuKien() {
-        return dieuKien;
+
+    public int getLoai() {
+        return loai;
     }
 
-    public void setDieuKien(String dieuKien) {
-        this.dieuKien = dieuKien;
-    }
-
-    public int getMinOrderAmount() {
-        return minOrderAmount;
-    }
-
-    public void setMinOrderAmount(int minOrderAmount) {
-        this.minOrderAmount = minOrderAmount;
-    }
-
-    public int getMinQuantity() {
-        return minQuantity;
-    }
-
-    public void setMinQuantity(int minQuantity) {
-        this.minQuantity = minQuantity;
+    public void setLoai(int loai) {
+        this.loai = loai;
     }
 }

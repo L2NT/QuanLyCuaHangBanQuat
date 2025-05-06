@@ -2,15 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package bus;
+package BUS;
 
-import dao.PhieuNhapDAO;
-import dto.PhieuNhapDTO;
+import DAO.PhieuNhapDAO;
+import DTO.PhieuNhapDTO;
 
 import java.sql.*;
 import java.util.*;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 
 public class PhieuNhapBUS {
 

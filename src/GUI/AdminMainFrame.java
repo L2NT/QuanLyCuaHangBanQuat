@@ -13,7 +13,7 @@ public class AdminMainFrame extends JFrame {
         setSize(1000,600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        // Chỉ còn 1 panel TK
-        add(new TaiKhoanPanel(), BorderLayout.CENTER);
+        // Tạo TaiKhoanPanel với tham số true để chỉ ra rằng đây là Admin
+        add(new TaiKhoanPanel(true), BorderLayout.CENTER);
     }
 }

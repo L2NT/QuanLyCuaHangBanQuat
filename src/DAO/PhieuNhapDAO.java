@@ -2,16 +2,16 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dao ;
+package DAO ;
 
 /**
  *
  * @author nguye
  */
 
-import dto.DBConnection;
+import DTO.DBConnection;
 
-import dto.PhieuNhapDTO;
+import DTO.PhieuNhapDTO;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;

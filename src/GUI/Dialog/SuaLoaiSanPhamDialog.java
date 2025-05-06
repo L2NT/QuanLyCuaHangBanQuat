@@ -1,6 +1,6 @@
 package GUI.Dialog;
 
-import dto.LoaiSanPhamDTO;
+import DTO.LoaiSanPhamDTO;
 import BUS.LoaiSanPhamBUS;
 
 import javax.swing.*;

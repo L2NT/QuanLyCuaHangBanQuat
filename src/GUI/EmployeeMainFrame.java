@@ -1,8 +1,8 @@
 package GUI;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 import GUI.Component.MenuTaskbar;
-import GUI.Panel.TrangChu;
+import GUI.Panel.TrangChuPanel;
 
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
@@ -61,8 +61,8 @@ public class EmployeeMainFrame extends JFrame {
         mainContent.setBackground(Color.WHITE);
         add(mainContent, BorderLayout.CENTER);
 
-        // Mặc định hiển thị TrangChu
-        setPanel(new TrangChu());
+        // Mặc định hiển thị TrangChuPanel
+        setPanel(new TrangChuPanel());
     }
 
     /**
@@ -87,7 +87,7 @@ public class EmployeeMainFrame extends JFrame {
     }
 
     /**
-     * Phương thức cho phép các panel con (TrangChu, Bán quạt, ...) được swap vào vùng chính.
+     * Phương thức cho phép các panel con (TrangChuPanel, Bán quạt, ...) được swap vào vùng chính.
      */
     public void setPanel(JPanel panel) {
         mainContent.removeAll();

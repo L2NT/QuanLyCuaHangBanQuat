@@ -1,8 +1,8 @@
 package GUI;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 import GUI.Component.MenuTaskbar;
-import GUI.Panel.TrangChu;
+import GUI.Panel.TrangChuPanel;
 import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
@@ -76,7 +76,7 @@ public class ManagerMainFrame extends JFrame {
         add(mainContent, BorderLayout.CENTER);
 
         // Mặc định hiển thị Trang Chủ
-        setPanel(new TrangChu());
+        setPanel(new TrangChuPanel());
     }
 
     /**

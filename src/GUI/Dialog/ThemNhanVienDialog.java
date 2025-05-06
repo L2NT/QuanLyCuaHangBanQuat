@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
-import dto.DBConnection;
+import DTO.DBConnection; // Đổi từ import dto.DBConnection thành đúng package
 
 public class ThemNhanVienDialog extends JDialog {
     private final JTextField txtMa, txtTen, txtSdt, txtDiaChi;

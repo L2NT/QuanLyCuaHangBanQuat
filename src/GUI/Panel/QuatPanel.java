@@ -1,6 +1,6 @@
 package GUI.Panel;
 import GUI.Dialog.ThemQuatDialog;
-import dto.DBConnection;
+import DTO.DBConnection;
 import BUS.QuatBUS;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -8,7 +8,7 @@ import java.awt.*;
 import java.sql.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import dto.QuatDTO;
+import DTO.QuatDTO;
 import GUI.Dialog.SuaQuatDialog;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;

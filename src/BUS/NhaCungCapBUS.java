@@ -1,7 +1,7 @@
 package BUS;
 
-import dao.NhaCungCapDAO;
-import dto.NhaCungCapDTO;
+import DAO.NhaCungCapDAO;
+import DTO.NhaCungCapDTO;
 
 import java.sql.SQLException;
 import java.util.List;

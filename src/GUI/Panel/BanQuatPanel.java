@@ -1,499 +1,270 @@
 package GUI.Panel;
 
-import dto.DBConnection;
+import DTO.DBConnection;
 import DTO.KhuyenMaiDTO;
+import DTO.QuatDTO;
 import DAO.KhuyenMaiDAO;
+import DAO.QuatDAO;
+import java.util.Date;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.Serializable;
 import java.sql.*;
-import java.util.Date;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 
-public class BanQuatPanel extends JPanel implements ActionListener {
+public class BanQuatPanel extends JPanel implements ActionListener, Serializable {
+    private static final long serialVersionUID = 1L;
 
-    // Tiêu đề
-    private JLabel lblTitle;
-
-    // Thông tin chung
-    private JLabel lblNguoiLap, lblNgayLap, lblTrangThai, lblKhachHang, lblSanPham, lblKhuyenMai;
-    private JTextField txtNguoiLap, txtNgayLap;
-    private String MaNhanVien;
-
-    public BanQuatPanel(String maNhanVien) {
-        this.MaNhanVien = maNhanVien;
-        initComponent();
+    // Map loại → mô tả điều kiện
+    private static final Map<Integer, String> dieuKienMap = new HashMap<>();
+    static {
+        dieuKienMap.put(1, "Đơn hàng ≥ 500.000₫");
+        dieuKienMap.put(2, "Mua ≥ 2 sản phẩm");
+        dieuKienMap.put(3, "Áp dụng cho mọi hóa đơn");
     }
+
+    private JLabel lblTitle;
+    private JLabel lblNguoiLap, lblNgayLap;
+    private JLabel lblTrangThai, lblKhachHang, lblKhuyenMai, lblSanPham;
+    private JTextField txtNguoiLap, txtNgayLap;
+    private String maNhanVien;
     private JRadioButton rdoThanhVien, rdoVangLai;
     private ButtonGroup bgTrangThai;
-
-    // Khách hàng (combo phone + tên) với nút Mới
-    private JComboBox<String> cbbKhachHang;
-
-    // Khuyến mãi (combo)
-    private JComboBox<String> cbbKhuyenMai;
+    private JComboBox<String> cbbKhachHang, cbbKhuyenMai, cbbSanPham;
     private JCheckBox chkApDungKM;
-
-    // Sản phẩm (combo) và nút Thêm
-    private JComboBox<String> cbbSanPham;
-    private JButton btnThemSP;
-
-    // Bảng hiển thị sản phẩm
+    private JButton btnThemSP, btnThanhToan, btnXuatPDF, btnHuy;
     private JTable table;
     private DefaultTableModel tableModel;
-
-    // Phần dưới: Tổng, các nút
-    private JLabel lblTong;
     private JTextField txtTong;
-    private JButton btnThanhToan, btnXuatPDF, btnHuy;
-
     private static final Color BACKGROUND_COLOR = new Color(233, 247, 249);
 
-    public BanQuatPanel() {
+    public BanQuatPanel(String maNhanVien) {
+        this.maNhanVien = maNhanVien;
         initComponent();
+    }
+
+    public BanQuatPanel() {
+        this(null);
     }
 
     private void initComponent() {
         setLayout(new BorderLayout(10, 10));
         setBackground(BACKGROUND_COLOR);
 
+        // NORTH: Title
         lblTitle = new JLabel("Bán Quạt", SwingConstants.CENTER);
-        lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 20f));
+        lblTitle.setFont(lblTitle.getFont().deriveFont(Font.BOLD, 24f));
         add(lblTitle, BorderLayout.NORTH);
 
-        JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
-        centerPanel.setOpaque(false);
-        add(centerPanel, BorderLayout.CENTER);
+        // CENTER: Form + Table
+        JPanel center = new JPanel(new BorderLayout(10, 10));
+        center.setOpaque(false);
+        add(center, BorderLayout.CENTER);
 
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setOpaque(false);
-        formPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        // Form panel
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Người lập / Ngày lập
+        // Người lập
         lblNguoiLap = new JLabel("Người lập:");
-        String tenNV = loadTenNhanVien(this.MaNhanVien);  // Sử dụng biến đã truyền từ constructor
-        txtNguoiLap = new JTextField(tenNV, 15);
+        txtNguoiLap = new JTextField(loadTenNhanVien(), 15);
         txtNguoiLap.setEditable(false);
         lblNgayLap = new JLabel("Ngày lập:");
-        // Lấy ngày hôm nay dạng yyyy-MM-dd
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        txtNgayLap = new JTextField(today.format(fmt), 15);
+        txtNgayLap = new JTextField(LocalDate.now().format(DateTimeFormatter.ISO_DATE), 15);
         txtNgayLap.setEditable(false);
-
-        gbc.gridx = 0;
         gbc.gridy = 0;
-        formPanel.add(lblNguoiLap, gbc);
-        gbc.gridx = 1;
-        formPanel.add(txtNguoiLap, gbc);
-        gbc.gridx = 2;
-        formPanel.add(lblNgayLap, gbc);
-        gbc.gridx = 3;
-        formPanel.add(txtNgayLap, gbc);
+        gbc.gridx = 0; form.add(lblNguoiLap, gbc);
+        gbc.gridx = 1; form.add(txtNguoiLap, gbc);
+        gbc.gridx = 2; form.add(lblNgayLap, gbc);
+        gbc.gridx = 3; form.add(txtNgayLap, gbc);
 
-        // Trạng thái khách
+        // Trạng thái
         lblTrangThai = new JLabel("Trạng thái khách:");
         rdoThanhVien = new JRadioButton("Thành viên", true);
         rdoVangLai = new JRadioButton("Vãng lai");
         bgTrangThai = new ButtonGroup();
-        bgTrangThai.add(rdoThanhVien);
-        bgTrangThai.add(rdoVangLai);
-        rdoThanhVien.addActionListener(this);
-        rdoVangLai.addActionListener(this);
-        JPanel pnlTrangThai = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        pnlTrangThai.setOpaque(false);
-        pnlTrangThai.add(rdoThanhVien);
-        pnlTrangThai.add(Box.createHorizontalStrut(10));
-        pnlTrangThai.add(rdoVangLai);
-
-        gbc.gridx = 0;
+        bgTrangThai.add(rdoThanhVien); bgTrangThai.add(rdoVangLai);
+        rdoThanhVien.addActionListener(this); rdoVangLai.addActionListener(this);
+        JPanel pTrangThai = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        pTrangThai.setOpaque(false);
+        pTrangThai.add(rdoThanhVien); pTrangThai.add(rdoVangLai);
         gbc.gridy = 1;
-        formPanel.add(lblTrangThai, gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 3;
-        formPanel.add(pnlTrangThai, gbc);
+        gbc.gridx = 0; form.add(lblTrangThai, gbc);
+        gbc.gridx = 1; gbc.gridwidth = 3; form.add(pTrangThai, gbc);
         gbc.gridwidth = 1;
 
         // Khách hàng
         lblKhachHang = new JLabel("Khách hàng:");
-        cbbKhachHang = new JComboBox<>();
-        loadCustomersToCombo();
-        gbc.gridx = 0;
+        cbbKhachHang = new JComboBox<>(); loadCustomersToCombo();
         gbc.gridy = 2;
-        formPanel.add(lblKhachHang, gbc);
-        gbc.gridx = 1;
-        formPanel.add(cbbKhachHang, gbc);
-        gbc.gridx = 2;
+        gbc.gridx = 0; form.add(lblKhachHang, gbc);
+        gbc.gridx = 1; form.add(cbbKhachHang, gbc);
 
         // Khuyến mãi
         lblKhuyenMai = new JLabel("Khuyến mãi:");
         cbbKhuyenMai = new JComboBox<>();
-        loadPromotionsToCombo();
         chkApDungKM = new JCheckBox("Áp dụng");
-        gbc.gridx = 0;
+        loadPromotionsToCombo();
         gbc.gridy = 3;
-        formPanel.add(lblKhuyenMai, gbc);
-        gbc.gridx = 1;
-        formPanel.add(cbbKhuyenMai, gbc);
-        gbc.gridx = 2;
-        formPanel.add(chkApDungKM, gbc);
+        gbc.gridx = 0; form.add(lblKhuyenMai, gbc);
+        gbc.gridx = 1; form.add(cbbKhuyenMai, gbc);
+        gbc.gridx = 2; form.add(chkApDungKM, gbc);
 
         // Sản phẩm
         lblSanPham = new JLabel("Chọn quạt:");
-        cbbSanPham = new JComboBox<>();
-        btnThemSP = new JButton("Thêm");
-        gbc.gridx = 0;
+        cbbSanPham = new JComboBox<>(); loadProductsToCombo();
+        btnThemSP = new JButton("Thêm"); btnThemSP.addActionListener(this);
         gbc.gridy = 4;
-        formPanel.add(lblSanPham, gbc);
-        gbc.gridx = 1;
-        formPanel.add(cbbSanPham, gbc);
-        gbc.gridx = 2;
-        formPanel.add(btnThemSP, gbc);
+        gbc.gridx = 0; form.add(lblSanPham, gbc);
+        gbc.gridx = 1; form.add(cbbSanPham, gbc);
+        gbc.gridx = 2; form.add(btnThemSP, gbc);
 
-        centerPanel.add(formPanel, BorderLayout.NORTH);
+        center.add(form, BorderLayout.NORTH);
 
-        // Bảng
-        tableModel = new DefaultTableModel(new String[]{"Mã Quạt", "Tên Quạt", "Giá", "Thương hiệu", "Số lượng"}, 0) {
-            @Override
-            public boolean isCellEditable(int r, int c) {
-                return c == 4;
-            }
-
-            @Override
-            public Class<?> getColumnClass(int c) {
-                if (c == 2 || c == 4) {
-                    return Integer.class;
-                }
-                return String.class;
-            }
+        // Table
+        tableModel = new DefaultTableModel(new String[]{"Mã","Tên","Giá","Thương hiệu","Số lượng"}, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return c == 4; }
+            @Override public Class<?> getColumnClass(int c) { return (c==2||c==4)? Integer.class : String.class; }
         };
-        tableModel.addTableModelListener(e -> {
-            if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == 4) {
-                updateTotal();
-            }
-        });
+        tableModel.addTableModelListener(e -> { if (e.getType()==TableModelEvent.UPDATE) updateTotal(); });
         table = new JTable(tableModel);
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-        TableColumn qtyCol = table.getColumnModel().getColumn(4);
-        qtyCol.setCellEditor(new SpinnerEditor());
+        DefaultTableCellRenderer ctr = new DefaultTableCellRenderer();
+        ctr.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i=0; i<table.getColumnCount(); i++) table.getColumnModel().getColumn(i).setCellRenderer(ctr);
+        table.getColumnModel().getColumn(4).setCellEditor(new SpinnerEditor());
         JScrollPane scroll = new JScrollPane(table);
-        scroll.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Danh sách sản phẩm", TitledBorder.LEFT, TitledBorder.TOP));
-        centerPanel.add(scroll, BorderLayout.CENTER);
+        scroll.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Danh sách sản phẩm"));
+        center.add(scroll, BorderLayout.CENTER);
 
-        loadProductsToCombo();
-
-        // Bottom
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        add(bottomPanel, BorderLayout.SOUTH);
-        JPanel rightBot = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
-        rightBot.setOpaque(false);
-        lblTong = new JLabel("Tổng:");
-        txtTong = new JTextField("0", 8);
-        txtTong.setEditable(false);
-        btnThanhToan = new JButton("Thanh toán");
-        btnXuatPDF = new JButton("Xuất PDF");
-        btnHuy = new JButton("Xoá");
-        rightBot.add(lblTong);
-        rightBot.add(txtTong);
-        rightBot.add(btnThanhToan);
-        rightBot.add(btnXuatPDF);
-        rightBot.add(btnHuy);
-        bottomPanel.add(rightBot, BorderLayout.EAST);
-
-        // events
-        btnThemSP.addActionListener(this);
-        btnXuatPDF.addActionListener(this);
-        btnHuy.addActionListener(this);
-        btnThanhToan.addActionListener(this);
-        chkApDungKM.addActionListener(this);
+        // SOUTH: Tổng & các nút
+        JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        south.setOpaque(false);
+        south.add(new JLabel("Tổng:"));
+        txtTong = new JTextField("0", 8); txtTong.setEditable(false); south.add(txtTong);
+        btnThanhToan = new JButton("Thanh toán"); btnThanhToan.addActionListener(this); south.add(btnThanhToan);
+        btnXuatPDF  = new JButton("Xuất PDF");  btnXuatPDF.addActionListener(this);  south.add(btnXuatPDF);
+        btnHuy     = new JButton("Xóa");       btnHuy.addActionListener(this);     south.add(btnHuy);
+        add(south, BorderLayout.SOUTH);
     }
 
+    // ActionListener override
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        Object src = e.getSource();
+        if (src==rdoThanhVien) cbbKhachHang.setEnabled(true);
+        else if (src==rdoVangLai) cbbKhachHang.setEnabled(false);
+        else if (src==btnThemSP) addProduct();
+        else if (src==chkApDungKM) updateTotal();
+        else if (src==btnThanhToan) processPayment();
+        else if (src==btnXuatPDF) JOptionPane.showMessageDialog(this, "Chức năng đang phát triển.");
+        else if (src==btnHuy) { tableModel.setRowCount(0); updateTotal(); }
+    }
+
+    // Load methods
     private void loadProductsToCombo() {
-        try (Connection conn = DBConnection.getConnection(); Statement st = conn.createStatement(); ResultSet rs = st.executeQuery("SELECT MaQuat,TenQuat FROM quat")) {
-            while (rs.next()) {
-                cbbSanPham.addItem(rs.getString("MaQuat") + " - " + rs.getString("TenQuat"));
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi load sản phẩm: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
+        cbbSanPham.removeAllItems();
+        try (Connection c=DBConnection.getConnection(); Statement s=c.createStatement(); ResultSet rs=s.executeQuery("SELECT MaQuat,TenQuat FROM quat")){
+            while(rs.next()) cbbSanPham.addItem(rs.getString(1)+" - "+rs.getString(2));
+        } catch(SQLException ex){ showError(ex); }
     }
 
     private void loadCustomersToCombo() {
         cbbKhachHang.removeAllItems();
-        try (Connection conn = DBConnection.getConnection(); Statement st = conn.createStatement(); ResultSet rs = st.executeQuery("SELECT Sdt_KH,HoTenKH FROM khachhang")) {
-            while (rs.next()) {
-                cbbKhachHang.addItem(rs.getString("Sdt_KH") + " – " + rs.getString("HoTenKH"));
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi load khách hàng: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-        }
+        try (Connection c=DBConnection.getConnection(); Statement s=c.createStatement(); ResultSet rs=s.executeQuery("SELECT Sdt_KH,HoTenKH FROM khachhang")){
+            while(rs.next()) cbbKhachHang.addItem(rs.getString(1)+" – "+rs.getString(2));
+        } catch(SQLException ex){ showError(ex); }
     }
 
     private void loadPromotionsToCombo() {
         cbbKhuyenMai.removeAllItems();
-        String sql = "SELECT MaSKKhuyenMai,DieuKien,TenKhuyenMai FROM su_kien_khuyen_mai";
-        try (Connection conn = DBConnection.getConnection(); Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                String item = rs.getString("MaSKKhuyenMai") + " – " + rs.getString("DieuKien") + " – " + rs.getString("TenKhuyenMai");
-                cbbKhuyenMai.addItem(item);
-            }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(this, "Lỗi load khuyến mãi: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        for (KhuyenMaiDTO km: KhuyenMaiDAO.selectAll()){
+            cbbKhuyenMai.addItem(km.getMaSKKhuyenMai()+" – "+dieuKienMap.get(km.getLoai())+" – "+km.getTenKhuyenMai());
         }
     }
 
-    private QuatDTO fetchQuatDetail(String maQuat) throws SQLException {
-        String sql = "SELECT Gia,ThuongHieu FROM quat WHERE MaQuat=?";
-        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, maQuat);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new QuatDTO(maQuat, (String) cbbSanPham.getSelectedItem(), rs.getInt("Gia"), rs.getString("ThuongHieu"));
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        Object src = e.getSource();
-        if (src == rdoThanhVien) {
-            cbbKhachHang.setEnabled(true);
-        } else if (src == rdoVangLai) {
-            cbbKhachHang.setEnabled(false);
-        } else if (src == btnThemSP) {
-            String sel = (String) cbbSanPham.getSelectedItem();
-            String ma = sel.split(" - ")[0].trim();
+    // Helpers
+    private void addProduct() {
+        String sel = (String)cbbSanPham.getSelectedItem();
+        if(sel!=null){
+            String code = sel.split(" - ")[0];
             try {
-                QuatDTO q = fetchQuatDetail(ma);
-                if (q != null) {
-                    tableModel.addRow(new Object[]{q.getMaQuat(), q.getTenQuat(), q.getGia(), q.getThuongHieu(), 1});
-                    updateTotal();
-                }
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(this, "Không lấy được thông tin!\n" + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        } else if (src == btnThanhToan) {
-            processPayment();
-        } else if (src == btnXuatPDF) {
-            JOptionPane.showMessageDialog(this, "Xuất PDF (demo)!");
-        } else if (src == btnHuy) {
-            tableModel.setRowCount(0);
-            txtTong.setText("0");
-            updateTotal();
-        } else if (src == chkApDungKM) {
+                QuatDTO q = new QuatDAO().findByMaQuat(code);
+                if(q!=null) tableModel.addRow(new Object[]{q.getMaQuat(),q.getTenQuat(),q.getGia(),q.getThuongHieu(),1});
+            } catch(SQLException ex){ showError(ex); }
             updateTotal();
         }
     }
 
-    private void processPayment() {
-        int originalTotal = calculateSubtotal();
-        int finalTotal = originalTotal;
-        String discountInfo = "";
-
-        // Kiểm tra áp dụng khuyến mãi nếu checkbox được chọn
-        if (chkApDungKM.isSelected()) {
-            String selectedKM = (String) cbbKhuyenMai.getSelectedItem();
-            if (selectedKM != null && !selectedKM.isEmpty()) {
-                String maKM = selectedKM.split(" – ")[0].trim();
-                PromotionCheckResult result = checkPromotion(maKM, originalTotal);
-
-                if (result.isValid) {
-                    // Áp dụng giảm giá
-                    int discount = (originalTotal * result.discountPercent) / 100;
-                    finalTotal = originalTotal - discount;
-                    discountInfo = "\nKhuyến mãi: " + result.promotionName
-                            + "\nGiảm giá: " + discount + " VND (" + result.discountPercent + "%)";
-                } else {
-                    // Thông báo không thỏa điều kiện
-                    JOptionPane.showMessageDialog(this,
-                            "Không thể áp dụng khuyến mãi: " + result.message,
-                            "Thông báo", JOptionPane.WARNING_MESSAGE);
-                    chkApDungKM.setSelected(false);
-                }
-            }
+    private void updateTotal(){
+        int sum=0,qty=0;
+        for(int i=0;i<tableModel.getRowCount();i++){
+            int price=(int)tableModel.getValueAt(i,2);
+            int count=(int)tableModel.getValueAt(i,4);
+            sum+=price*count; qty+=count;
         }
+        if(chkApDungKM.isSelected()&&cbbKhuyenMai.getSelectedItem()!=null){
+            String ma=((String)cbbKhuyenMai.getSelectedItem()).split(" – ")[0];
+            PromotionResult r=checkPromotion(ma,sum,qty);
+            if(r.isValid) sum-=sum*r.discount/100;
+        }
+        txtTong.setText(String.valueOf(sum));
+        btnThanhToan.setEnabled(tableModel.getRowCount()>0);
+        btnXuatPDF.setEnabled(tableModel.getRowCount()>0);
+    }
 
-        txtTong.setText(String.valueOf(finalTotal));
-        String message = "Tổng thanh toán: " + finalTotal + " VND" + discountInfo + "\nBạn có muốn thanh toán?";
-
-        int choice = JOptionPane.showConfirmDialog(this, message, "Xác nhận thanh toán",
-                JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        if (choice == JOptionPane.OK_OPTION) {
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công!", "Kết quả", JOptionPane.INFORMATION_MESSAGE);
-            tableModel.setRowCount(0);
-            txtTong.setText("0");
-            updateTotal();
-        } else {
-            JOptionPane.showMessageDialog(this, "Bạn đã hủy thanh toán.", "Kết quả", JOptionPane.WARNING_MESSAGE);
+    private void processPayment(){
+        int total=Integer.parseInt(txtTong.getText());
+        int choice=JOptionPane.showConfirmDialog(this,
+            "Xác nhận thanh toán: "+total+" VND?","Thanh toán",JOptionPane.OK_CANCEL_OPTION);
+        if(choice==JOptionPane.OK_OPTION){
+            JOptionPane.showMessageDialog(this,"Thanh toán thành công!");
+            tableModel.setRowCount(0); updateTotal();
         }
     }
 
-    private int calculateSubtotal() {
-        int total = 0;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            total += ((int) tableModel.getValueAt(i, 2)) * ((int) tableModel.getValueAt(i, 4));
-        }
-        return total;
+    private String loadTenNhanVien(){
+        if(maNhanVien==null) return "";
+        try(Connection c=DBConnection.getConnection(); PreparedStatement p=c.prepareStatement("SELECT HoTenNV FROM nhanvien WHERE MaNhanVien=?")){
+            p.setString(1,maNhanVien);
+            ResultSet rs=p.executeQuery();
+            if(rs.next()) return rs.getString(1);
+        } catch(SQLException ex){ showError(ex); }
+        return maNhanVien;
     }
 
-    private void updateTotal() {
-        int total = calculateSubtotal();
-
-        // Nếu áp dụng khuyến mãi, hiển thị tổng tiền đã giảm giá
-        if (chkApDungKM.isSelected() && cbbKhuyenMai.getSelectedItem() != null) {
-            String maKM = ((String) cbbKhuyenMai.getSelectedItem()).split(" – ")[0].trim();
-            PromotionCheckResult result = checkPromotion(maKM, total);
-
-            if (result.isValid) {
-                int discount = (total * result.discountPercent) / 100;
-                total -= discount;
-            }
+    private PromotionResult checkPromotion(String ma,int sum,int qty){
+        KhuyenMaiDTO km=KhuyenMaiDAO.selectById(ma);
+        if(km==null) return new PromotionResult(false,"Không tìm KM",0);
+        Date now=new Date();
+        if(now.before(km.getNgayBatDau())||now.after(km.getNgayKetThuc())) return new PromotionResult(false,"KM không hiệu lực",0);
+        switch(km.getLoai()){
+            case 1: if(sum<500000) return new PromotionResult(false,"Đơn <500k",0); break;
+            case 2: if(qty<2) return new PromotionResult(false,"Số lượng <2",0); break;
         }
-
-        txtTong.setText(String.valueOf(total));
-        boolean hasItems = tableModel.getRowCount() > 0;
-        btnThanhToan.setEnabled(hasItems);
-        btnXuatPDF.setEnabled(hasItems);
+        return new PromotionResult(true,"OK",km.getPhanTramGiam());
     }
 
-    /**
-     * Lớp chứa kết quả kiểm tra khuyến mãi
-     */
-    private static class PromotionCheckResult {
-
-        boolean isValid;
-        String message;
-        int discountPercent;
-        String promotionName;
-
-        public PromotionCheckResult(boolean isValid, String message, int discountPercent, String promotionName) {
-            this.isValid = isValid;
-            this.message = message;
-            this.discountPercent = discountPercent;
-            this.promotionName = promotionName;
-        }
+    private void showError(Exception ex){
+        JOptionPane.showMessageDialog(this,ex.getMessage(),"Lỗi",JOptionPane.ERROR_MESSAGE);
     }
 
-    /**
-     * Kiểm tra điều kiện áp dụng khuyến mãi
-     *
-     * @param maKM Mã khuyến mãi
-     * @param total Tổng tiền hóa đơn
-     * @return Kết quả kiểm tra
-     */
-    private PromotionCheckResult checkPromotion(String maKM, int total) {
-        KhuyenMaiDAO kmDAO = new KhuyenMaiDAO();
-        KhuyenMaiDTO km = kmDAO.selectById(maKM);
-
-        if (km == null) {
-            return new PromotionCheckResult(false, "Không tìm thấy thông tin khuyến mãi", 0, "");
-        }
-
-        // Kiểm tra ngày khuyến mãi còn hiệu lực không
-        Date currentDate = new Date();
-        if (currentDate.before(km.getNgayBatDau()) || currentDate.after(km.getNgayKetThuc())) {
-            return new PromotionCheckResult(false,
-                    "Khuyến mãi chỉ áp dụng từ " + km.getNgayBatDau() + " đến " + km.getNgayKetThuc(),
-                    0, "");
-        }
-
-        // Kiểm tra điều kiện số tiền tối thiểu
-        if (km.getMinOrderAmount() > 0 && total < km.getMinOrderAmount()) {
-            return new PromotionCheckResult(false,
-                    "Cần đạt giá trị đơn hàng tối thiểu " + km.getMinOrderAmount() + " VND",
-                    0, "");
-        }
-
-        // Kiểm tra điều kiện số lượng sản phẩm tối thiểu
-        int totalQuantity = 0;
-        for (int i = 0; i < tableModel.getRowCount(); i++) {
-            totalQuantity += (int) tableModel.getValueAt(i, 4);
-        }
-
-        if (km.getMinQuantity() > 0 && totalQuantity < km.getMinQuantity()) {
-            return new PromotionCheckResult(false,
-                    "Cần mua tối thiểu " + km.getMinQuantity() + " sản phẩm",
-                    0, "");
-        }
-
-        return new PromotionCheckResult(true,
-                "Áp dụng thành công khuyến mãi " + km.getTenKhuyenMai(),
-                km.getPhanTramGiam(), km.getTenKhuyenMai());
-    }
-
-    private static class QuatDTO {
-
-        private final String maQuat, tenQuat, thuongHieu;
-        private final int gia;
-
-        public QuatDTO(String maQuat, String tenQuat, int gia, String thuongHieu) {
-            this.maQuat = maQuat;
-            this.tenQuat = tenQuat;
-            this.gia = gia;
-            this.thuongHieu = thuongHieu;
-        }
-
-        public String getMaQuat() {
-            return maQuat;
-        }
-
-        public String getTenQuat() {
-            return tenQuat;
-        }
-
-        public int getGia() {
-            return gia;
-        }
-
-        public String getThuongHieu() {
-            return thuongHieu;
-        }
-    }
-
-    private String loadTenNhanVien(String maNV) {
-        String sql = "SELECT HoTenNV FROM nhanvien WHERE MaNhanVien = ?";
-        try (Connection c = DBConnection.getConnection(); PreparedStatement p = c.prepareStatement(sql)) {
-            p.setString(1, maNV);
-            try (ResultSet r = p.executeQuery()) {
-                if (r.next()) {
-                    return r.getString("HoTenNV");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return maNV;
+    // Inner helper classes
+    private static class PromotionResult { boolean isValid; String msg; int discount;
+        PromotionResult(boolean v,String m,int d){isValid=v;msg=m;discount=d;}
     }
 
     private static class SpinnerEditor extends AbstractCellEditor implements TableCellEditor {
-
-        private final JSpinner spinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            spinner.setValue(value);
-            return spinner;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return spinner.getValue();
-        }
+        private final JSpinner spinner = new JSpinner(new SpinnerNumberModel(1,1,1000,1));
+        @Override public Component getTableCellEditorComponent(JTable table,Object val,boolean sel,int r,int c){spinner.setValue(val);return spinner;}
+        @Override public Object getCellEditorValue(){return spinner.getValue();}
     }
 }
