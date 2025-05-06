@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class NhanVienPanel extends JPanel {
     private final DefaultTableModel model;
     private final JTable tbl;
-    // Bỏ final để khởi tạo trong createButtonPanel()
     private JComboBox<String> cbbFilter;
     private JTextField txtSearch;
     private final NhanVienBUS bll = new NhanVienBUS();
@@ -46,72 +45,82 @@ public class NhanVienPanel extends JPanel {
     }
 
     private JPanel createButtonPanel() {
-        JPanel toolbar = new JPanel(new BorderLayout());
+        // Tạo một panel chứa toàn bộ toolbar
+        JPanel toolbar = new JPanel();
+        toolbar.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout để căn chỉnh chính xác
         toolbar.setBackground(Color.WHITE);
         toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        // A) Nút bên trái
-        JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,10,5));
-        leftToolPanel.setOpaque(false);
         
-        // Tạo các buttons với icons
-        // Lưu ý: Đường dẫn tới icons cần được điều chỉnh theo cấu trúc thư mục của bạn
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 0.0;
+        gbc.weighty = 1.0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.insets = new Insets(0, 0, 0, 5); // Khoảng cách giữa các nút
+
+        // Tạo các buttons với icons - Chú ý thay đổi thứ tự THÊM, SỬA, XÓA
         ImageIcon iconThem = new ImageIcon(getClass().getResource("/icon/them.png"));
         JButton btnThem = new JButton("THÊM", iconThem);
         btnThem.setHorizontalTextPosition(SwingConstants.CENTER);
         btnThem.setVerticalTextPosition(SwingConstants.BOTTOM);
+        toolbar.add(btnThem, gbc);
         
-        ImageIcon iconXoa = new ImageIcon(getClass().getResource("/icon/xoa.png"));
-        JButton btnXoa = new JButton("XÓA", iconXoa);
-        btnXoa.setHorizontalTextPosition(SwingConstants.CENTER);
-        btnXoa.setVerticalTextPosition(SwingConstants.BOTTOM);
-        
+        gbc.gridx = 1;
         ImageIcon iconSua = new ImageIcon(getClass().getResource("/icon/sua.png"));
         JButton btnSua = new JButton("SỬA", iconSua);
         btnSua.setHorizontalTextPosition(SwingConstants.CENTER);
         btnSua.setVerticalTextPosition(SwingConstants.BOTTOM);
+        toolbar.add(btnSua, gbc);
         
+        gbc.gridx = 2;
+        ImageIcon iconXoa = new ImageIcon(getClass().getResource("/icon/xoa.png"));
+        JButton btnXoa = new JButton("XÓA", iconXoa);
+        btnXoa.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnXoa.setVerticalTextPosition(SwingConstants.BOTTOM);
+        toolbar.add(btnXoa, gbc);
+        
+        gbc.gridx = 3;
         ImageIcon iconExcel = new ImageIcon(getClass().getResource("/icon/xuatexcel.png"));
         JButton btnExcel = new JButton("XUẤT EXCEL", iconExcel);
         btnExcel.setHorizontalTextPosition(SwingConstants.CENTER);
         btnExcel.setVerticalTextPosition(SwingConstants.BOTTOM);
+        toolbar.add(btnExcel, gbc);
         
-        leftToolPanel.add(btnThem);
-        leftToolPanel.add(btnXoa);
-        leftToolPanel.add(btnSua);
-        leftToolPanel.add(btnExcel);
-
-        // B) Filter + Search + Refresh bên phải
-        JPanel rightToolPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT,10,5));
-        rightToolPanel.setOpaque(false);
+        // Phần tìm kiếm bên phải
+        gbc.gridx = 4;
+        gbc.weightx = 1.0; // Phần này sẽ chiếm khoảng trống còn lại
+        toolbar.add(Box.createHorizontalGlue(), gbc); // Tạo khoảng trống giữa các nút và phần tìm kiếm
         
+        // Panel chứa các thành phần tìm kiếm
+        JPanel searchPanel = new JPanel();
+        searchPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 0)); // Căn phải, khoảng cách 5px
+        searchPanel.setOpaque(false);
+        
+        // Thêm các thành phần vào panel tìm kiếm
         JLabel lblFilter = new JLabel("Chức vụ:");
-        cbbFilter = new JComboBox<>(new String[]{"Tất cả","Quản lý","Nhân viên"});
+        cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Quản lý", "Nhân viên"});
+        cbbFilter.setPreferredSize(new Dimension(110, 25));
         
         JLabel lblSearch = new JLabel("Tìm kiếm:");
-        txtSearch = new JTextField(15);
+        txtSearch = new JTextField();
+        txtSearch.setPreferredSize(new Dimension(180, 25));
         
         JButton btnLamMoi = new JButton("LÀM MỚI");
         
-        rightToolPanel.add(lblFilter);
-        rightToolPanel.add(cbbFilter);
-        rightToolPanel.add(lblSearch);
-        rightToolPanel.add(txtSearch);
-        rightToolPanel.add(btnLamMoi);
-
-        toolbar.add(leftToolPanel, BorderLayout.WEST);
-        toolbar.add(rightToolPanel, BorderLayout.EAST);
-
-        // Kịch bản lọc & tìm kiếm
-        ActionListener doFilter = e -> reloadData();
-        cbbFilter.addActionListener(doFilter);
-        txtSearch.addActionListener(doFilter);
-        btnLamMoi.addActionListener(e -> {
-            cbbFilter.setSelectedIndex(0);
-            txtSearch.setText("");
-            reloadData();
-        });
-
+        searchPanel.add(lblFilter);
+        searchPanel.add(cbbFilter);
+        searchPanel.add(lblSearch);
+        searchPanel.add(txtSearch);
+        searchPanel.add(btnLamMoi);
+        
+        gbc.gridx = 5;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0.0;
+        toolbar.add(searchPanel, gbc);
+        
+        // Thêm sự kiện cho các nút
         btnThem.addActionListener(e -> {
             ThemNhanVienDialog dlg = new ThemNhanVienDialog(
                 SwingUtilities.getWindowAncestor(this)
@@ -152,10 +161,21 @@ public class NhanVienPanel extends JPanel {
             }
         });
 
+        // Kịch bản lọc & tìm kiếm
+        ActionListener doFilter = e -> reloadData();
+        cbbFilter.addActionListener(doFilter);
+        txtSearch.addActionListener(doFilter);
+        
+        btnLamMoi.addActionListener(e -> {
+            cbbFilter.setSelectedIndex(0);
+            txtSearch.setText("");
+            reloadData();
+        });
+
         return toolbar;
     }
 
-    /** Tải lại data từ BLL, áp dụng filter và tìm kiếm */
+    // Các phương thức khác giữ nguyên
     private void reloadData() {
         List<NhanVienDTO> all = bll.layTatCa();
 

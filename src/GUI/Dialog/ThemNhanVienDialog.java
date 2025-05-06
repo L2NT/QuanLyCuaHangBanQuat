@@ -73,6 +73,9 @@ public class ThemNhanVienDialog extends JDialog {
 
         pack();
         setLocationRelativeTo(owner);
+        
+        // Focus vào trường Họ tên sau khi hiển thị
+        SwingUtilities.invokeLater(() -> txtTen.requestFocus());
 
         btnHuy.addActionListener(e -> dispose());
         btnLuu.addActionListener(e -> {
@@ -94,6 +97,7 @@ public class ThemNhanVienDialog extends JDialog {
         });
     }
     
+    // Các phương thức khác giữ nguyên
     private boolean validateInput() {
         // Kiểm tra tên nhân viên
         if (txtTen.getText().trim().isEmpty()) {
