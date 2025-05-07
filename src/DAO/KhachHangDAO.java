@@ -1,4 +1,5 @@
 package DAO;
+
 import DTO.DBConnection;
 import DTO.KhachHangDTO;
 import java.sql.*;
@@ -15,7 +16,7 @@ public class KhachHangDAO {
      */
     public static List<KhachHangDTO> selectAll() {
         List<KhachHangDTO> list = new ArrayList<>();
-        String sql = "SELECT MaKhachHang, HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua FROM khachhang";
+        String sql = "SELECT MaKhachHang, HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua, TrangThai FROM khachhang";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 KhachHangDTO kh = new KhachHangDTO(
@@ -23,7 +24,8 @@ public class KhachHangDAO {
                         rs.getString("HoTenKH"),
                         rs.getString("Sdt_KH"),
                         rs.getString("DiaChiKH"),
-                        rs.getInt("TongTienDaMua")
+                        rs.getInt("TongTienDaMua"),
+                        rs.getInt("TrangThai")
                 );
                 list.add(kh);
             }
@@ -37,7 +39,7 @@ public class KhachHangDAO {
      * Lấy khách hàng theo mã
      */
     public KhachHangDTO selectById(String maKh) {
-        String sql = "SELECT HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua FROM khachhang WHERE MaKhachHang = ?";
+        String sql = "SELECT HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua, TrangThai FROM khachhang WHERE MaKhachHang = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maKh);
             try (ResultSet rs = ps.executeQuery()) {
@@ -47,7 +49,8 @@ public class KhachHangDAO {
                             rs.getString("HoTenKH"),
                             rs.getString("Sdt_KH"),
                             rs.getString("DiaChiKH"),
-                            rs.getInt("TongTienDaMua")
+                            rs.getInt("TongTienDaMua"),
+                            rs.getInt("TrangThai")
                     );
                 }
             }
@@ -61,13 +64,14 @@ public class KhachHangDAO {
      * Thêm mới khách hàng
      */
     public boolean insert(KhachHangDTO kh) {
-        String sql = "INSERT INTO khachhang (MaKhachHang, HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO khachhang (MaKhachHang, HoTenKH, Sdt_KH, DiaChiKH, TongTienDaMua, TrangThai) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, kh.getMaKhachHang());
             ps.setString(2, kh.getHoTenKH());
             ps.setString(3, kh.getSdtKH());
             ps.setString(4, kh.getDiaChiKH());
             ps.setInt(5, kh.getTongTienDaMua());
+            ps.setInt(6, kh.getTrangThai());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -79,13 +83,14 @@ public class KhachHangDAO {
      * Cập nhật khách hàng
      */
     public boolean update(KhachHangDTO kh) {
-        String sql = "UPDATE khachhang SET HoTenKH = ?, Sdt_KH = ?, DiaChiKH = ?, TongTienDaMua = ? WHERE MaKhachHang = ?";
+        String sql = "UPDATE khachhang SET HoTenKH = ?, Sdt_KH = ?, DiaChiKH = ?, TongTienDaMua = ?, TrangThai = ? WHERE MaKhachHang = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, kh.getHoTenKH());
-            ps.setString(2, kh.getSdtKH());
-            ps.setString(3, kh.getDiaChiKH());
-            ps.setInt(4, kh.getTongTienDaMua());
-            ps.setString(5, kh.getMaKhachHang());
+            ps.setString(2, kh.getHoTenKH());
+            ps.setString(3, kh.getSdtKH());
+            ps.setString(4, kh.getDiaChiKH());
+            ps.setInt(5, kh.getTongTienDaMua());  // Cập nhật tổng tiền
+            ps.setInt(6, kh.getTrangThai());
+            ps.setString(1, kh.getMaKhachHang());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -96,10 +101,42 @@ public class KhachHangDAO {
     /**
      * Xóa khách hàng theo mã
      */
+    /**
+     * Soft-delete khách hàng (chuyển trạng thái từ 1 → 0)
+     */
     public boolean delete(String maKh) {
-        String sql = "DELETE FROM khachhang WHERE MaKhachHang = ?";
+        String sql = "UPDATE khachhang SET TrangThai = 0 WHERE MaKhachHang = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maKh);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Khôi phục khách hàng (chuyển trạng thái từ 0 → 1)
+     */
+    public boolean restore(String maKh) {
+        String sql = "UPDATE khachhang SET TrangThai = 1 WHERE MaKhachHang = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, maKh);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Cập nhật chỉ cột TrangThai
+     */
+    public boolean updateStatus(String maKh, int trangThai) {
+        String sql = "UPDATE khachhang SET TrangThai = ? WHERE MaKhachHang = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, trangThai);
+            ps.setString(2, maKh);
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();

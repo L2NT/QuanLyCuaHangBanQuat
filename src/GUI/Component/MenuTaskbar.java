@@ -34,10 +34,26 @@ public class MenuTaskbar extends JPanel {
         JPanel menu = new JPanel(new GridLayout(0, 1, 0, 5));
         menu.setBackground(Color.WHITE);
 
+        // Tải icon
+        ImageIcon homeIcon = new ImageIcon(getClass().getResource("/icon/trangchu.png"));
+        ImageIcon sellIcon = new ImageIcon(getClass().getResource("/icon/ban.png"));
+        ImageIcon quatIcon = new ImageIcon(getClass().getResource("/icon/fan.png"));
+        ImageIcon billIcon = new ImageIcon(getClass().getResource("/icon/bill.png"));
+        ImageIcon importIcon = new ImageIcon(getClass().getResource("/icon/in.png"));
+        ImageIcon exportIcon = new ImageIcon(getClass().getResource("/icon/out.png"));
+        ImageIcon promotionIcon = new ImageIcon(getClass().getResource("/icon/khuyenmai.png"));
+        ImageIcon customerIcon = new ImageIcon(getClass().getResource("/icon/khachhang.png"));
+        ImageIcon supplierIcon = new ImageIcon(getClass().getResource("/icon/nhacungcap.png"));
+        ImageIcon staffIcon = new ImageIcon(getClass().getResource("/icon/nhanvien.png"));
+        ImageIcon accountIcon = new ImageIcon(getClass().getResource("/icon/taikhoan.png"));
+        ImageIcon statisticIcon = new ImageIcon(getClass().getResource("/icon/thongke.png"));
+        ImageIcon logoutIcon = new ImageIcon(getClass().getResource("/icon/logout.png"));
+        ImageIcon loaispIcon = new ImageIcon(getClass().getResource("/icon/loaisp.png"));
+
         // Các chức năng chung
-        addButton(menu, "Trang chủ", e -> swap(new TrangChuPanel()));
+        addButton(menu, "Trang chủ", homeIcon, e -> swap(new TrangChuPanel()));
         
-        addButton(menu, "Bán quạt", e -> {
+        addButton(menu, "Bán quạt", sellIcon, e -> {
             String maNV = null;
 
             if (parent instanceof EmployeeMainFrame) {
@@ -53,29 +69,29 @@ public class MenuTaskbar extends JPanel {
             }
         });
 
-        addButton(menu, "Quản lý quạt", e -> swap(new QuatPanel()));
-        addButton(menu, "Hóa đơn", e -> swap(new HoaDonPanel()));
-        addButton(menu, "Phiếu nhập", e -> swap(new PhieuNhapPanel()));
-        addButton(menu, "Phiếu xuất", e -> swap(new PhieuXuatPanel()));
-        addButton(menu, "Loại sản phẩm", e -> swap(new LoaiSanPhamPanel()));
+        addButton(menu, "Quản lý quạt", quatIcon, e -> swap(new QuatPanel()));
+        addButton(menu, "Hóa đơn", billIcon, e -> swap(new HoaDonPanel()));
+        addButton(menu, "Phiếu nhập", importIcon, e -> swap(new PhieuNhapPanel()));
+        addButton(menu, "Phiếu xuất", exportIcon, e -> swap(new PhieuXuatPanel()));
+        addButton(menu, "Loại sản phẩm", loaispIcon, e -> swap(new LoaiSanPhamPanel()));
 
         // Chức năng riêng cho quản lý
         if (isManager) {
-            addButton(menu, "Khuyến mãi", e -> swap(new KhuyenMaiPanel()));
-            addButton(menu, "Khách hàng", e -> swap(new KhachHangPanel()));
-            addButton(menu, "Nhà cung cấp", e -> swap(new NhaCungCapPanel()));
-            addButton(menu, "Nhân viên", e -> swap(new NhanVienPanel()));
-            addButton(menu, "Tài khoản", e -> swap(new TaiKhoanPanel(false))); //mặc định mở từ manager
-            addButton(menu, "Thống kê", e -> swap(new ThongKePanel()));
+            addButton(menu, "Khuyến mãi", promotionIcon, e -> swap(new KhuyenMaiPanel()));
+            addButton(menu, "Khách hàng", customerIcon, e -> swap(new KhachHangPanel()));
+            addButton(menu, "Nhà cung cấp", supplierIcon, e -> swap(new NhaCungCapPanel()));
+            addButton(menu, "Nhân viên", staffIcon, e -> swap(new NhanVienPanel()));
+            addButton(menu, "Tài khoản", accountIcon, e -> swap(new TaiKhoanPanel(false))); //mặc định mở từ manager
+            addButton(menu, "Thống kê", statisticIcon, e -> swap(new ThongKePanel()));
         }
         
-        // Thêm chức năng xem thông tin cá nhân
+        // Thêm chức năng xem thông tin cá nhân - dùng icon giống tài khoản
         if (maNhanVien != null) {
-            addButton(menu, "Thông tin cá nhân", e -> swap(new ThongTinCaNhanPanel(maNhanVien)));
+            addButton(menu, "Thông tin cá nhân", accountIcon, e -> swap(new ThongTinCaNhanPanel(maNhanVien)));
         }
 
         // Nút đăng xuất
-        JButton btnLogout = new JButton("Đăng xuất");
+        JButton btnLogout = new JButton("Đăng xuất", logoutIcon);
         btnLogout.setHorizontalAlignment(SwingConstants.LEFT);
         btnLogout.setForeground(Color.RED);
         btnLogout.addActionListener(e -> {
@@ -96,6 +112,14 @@ public class MenuTaskbar extends JPanel {
     // Phiên bản không có icon
     private void addButton(JPanel menu, String text, ActionListener action) {
         JButton btn = new JButton(text);
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.addActionListener(action);
+        menu.add(btn);
+    }
+
+    // Phiên bản thêm icon
+    private void addButton(JPanel menu, String text, Icon icon, ActionListener action) {
+        JButton btn = new JButton(text, icon);
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.addActionListener(action);
         menu.add(btn);

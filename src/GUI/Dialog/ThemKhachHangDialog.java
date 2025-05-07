@@ -37,7 +37,7 @@ public class ThemKhachHangDialog extends JDialog {
         add(btnHuy);
 
         btnLuu.addActionListener(e -> {
-            KhachHangDTO kh = new KhachHangDTO(txtMa.getText(), txtTen.getText(), txtSdt.getText(), txtDiaChi.getText(), 0);
+            KhachHangDTO kh = new KhachHangDTO(txtMa.getText(), txtTen.getText(), txtSdt.getText(), txtDiaChi.getText(), 0,1);
             if (new KhachHangDAO().insert(kh)) {
                 JOptionPane.showMessageDialog(this, "Thêm thành công!");
                 saved = true;
