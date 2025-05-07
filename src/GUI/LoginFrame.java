@@ -32,8 +32,7 @@ public class LoginFrame extends JFrame implements KeyListener {
     public LoginFrame() {
         initLookAndFeel();
         initComponent();
-        // Dùng để test nhanh, khi deploy xóa 2 dòng này
-        txtUsername.setText("admin");
+        txtUsername.setText("nv1");
         txtPassword.setPass("123");
     }
 
