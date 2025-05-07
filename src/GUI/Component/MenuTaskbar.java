@@ -37,8 +37,6 @@ public class MenuTaskbar extends JPanel {
         // Các chức năng chung
         addButton(menu, "Trang chủ", e -> swap(new TrangChuPanel()));
         
-     
-        
         addButton(menu, "Bán quạt", e -> {
             String maNV = null;
 
