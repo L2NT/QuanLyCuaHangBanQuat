@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
+import java.awt.Dialog.ModalityType;
 
 public class ThongTinCaNhanPanel extends JPanel {
     private JTextField txtMaNV, txtHoTen, txtChucVu, txtSDT, txtDiaChi;
@@ -212,8 +213,7 @@ public class ThongTinCaNhanPanel extends JPanel {
     }
     
     private void showPasswordChangeDialog() {
-        JDialog passwordDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Đổi mật khẩu", true);
-        passwordDialog.setLayout(new BorderLayout(10, 10));
+        JDialog passwordDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Đổi mật khẩu", Dialog.ModalityType.APPLICATION_MODAL);        passwordDialog.setLayout(new BorderLayout(10, 10));
         passwordDialog.setSize(400, 250);
         passwordDialog.setLocationRelativeTo(this);
         

@@ -37,10 +37,7 @@ public class MenuTaskbar extends JPanel {
         // Các chức năng chung
         addButton(menu, "Trang chủ", e -> swap(new TrangChuPanel()));
         
-        // Thêm chức năng xem thông tin cá nhân
-        if (maNhanVien != null) {
-            addButton(menu, "Thông tin cá nhân", e -> swap(new ThongTinCaNhanPanel(maNhanVien)));
-        }
+     
         
         addButton(menu, "Bán quạt", e -> {
             String maNV = null;
@@ -72,6 +69,11 @@ public class MenuTaskbar extends JPanel {
             addButton(menu, "Nhân viên", e -> swap(new NhanVienPanel()));
             addButton(menu, "Tài khoản", e -> swap(new TaiKhoanPanel(false))); //mặc định mở từ manager
             addButton(menu, "Thống kê", e -> swap(new ThongKePanel()));
+        }
+        
+        // Thêm chức năng xem thông tin cá nhân
+        if (maNhanVien != null) {
+            addButton(menu, "Thông tin cá nhân", e -> swap(new ThongTinCaNhanPanel(maNhanVien)));
         }
 
         // Nút đăng xuất
