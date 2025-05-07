@@ -110,27 +110,8 @@ CREATE TABLE `khachhang` (
   `DiaChiKH` varchar(300) NOT NULL,
   `TongTienDaMua` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `khachhang`
---
-
-INSERT INTO `khachhang` (`MaKhachHang`, `HoTenKH`, `Sdt_KH`, `DiaChiKH`, `TongTienDaMua`) VALUES
-('KH001', 'Nguyễn Văn A', '0912345678', 'Hà Nội', 1500000),
-('KH002', 'Trần Thị B', '0987654321', 'TP.HCM', 2300000),
-('KH003', 'Lê Văn C', '0933221144', 'Đà Nẵng', 1200000),
-('KH004', 'Trần Văn Bảo', '0914234567', 'TP.HCM', 850000),
-('KH005', 'Lê Thị Hồng', '0925345678', 'Đà Nẵng', 2000000),
-('KH006', 'Phạm Văn Minh', '0936456789', 'Hải Phòng', 950000),
-('KH007', 'Đỗ Thị Thủy', '0947567890', 'Cần Thơ', 1250000),
-('KH008', 'Hoàng Văn Long', '0958678901', 'Huế', 1100000),
-('KH009', 'Ngô Thị Hương', '0969789012', 'Bình Dương', 3000000),
-('KH010', 'Bùi Văn Hùng', '0970890123', 'Biên Hòa', 700000),
-('KH011', 'Dương Thị Lan', '0981901234', 'Quảng Ninh', 1600000),
-('KH012', 'Trịnh Văn Sơn', '0992012345', 'Lâm Đồng', 1300000),
-('KH013', 'Cao Thị Yến', '0903123456', 'Hưng Yên', 1750000),
-('KH014', 'Tạ Văn Phúc', '0914234561', 'Thái Bình', 900000),
-('KH015', 'Phan Thị Nga', '0925345672', 'Nam Định', 1950000);
+ALTER TABLE khachhang
+  ADD COLUMN TrangThai TINYINT(1) NOT NULL DEFAULT 1;
 
 -- --------------------------------------------------------
 
@@ -488,9 +469,12 @@ ALTER TABLE `taikhoan`
 --
 -- Các ràng buộc cho bảng `chitiet_hoadon`
 --
-ALTER TABLE `chitiet_hoadon`
-  ADD CONSTRAINT `fk_cthd_hd` FOREIGN KEY (`MaHoaDon`) REFERENCES `hoadon` (`MaHoaDon`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_cthd_quat` FOREIGN KEY (`MaQuat`) REFERENCES `quat` (`MaQuat`);
+ALTER TABLE chitiet_hoadon
+  ADD CONSTRAINT fk_cthd_hd
+    FOREIGN KEY (MaHoaDon) REFERENCES hoadon(MaHoaDon)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT fk_cthd_quat
+    FOREIGN KEY (MaQuat) REFERENCES quat(MaQuat);
 
 --
 -- Các ràng buộc cho bảng `chitiet_phieunhap`
