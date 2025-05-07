@@ -26,6 +26,7 @@ public class ThemTaiKhoanDialog extends JDialog {
         gbc.gridx=0; gbc.gridy=0; p.add(new JLabel("Nhân viên:"),gbc);
         gbc.gridx=1;
         cbbNV = new JComboBox<>();
+        // Already filtered in TaiKhoanBUS.layDanhSachNhanVienChuaCoTaiKhoan()
         new TaiKhoanBUS().layDanhSachNhanVienChuaCoTaiKhoan().forEach(cbbNV::addItem);
         p.add(cbbNV,gbc);
 
@@ -36,8 +37,9 @@ public class ThemTaiKhoanDialog extends JDialog {
         gbc.gridx=1; txtPass=new JTextField(15); p.add(txtPass,gbc);
 
         gbc.gridy=3; gbc.gridx=0; p.add(new JLabel("Quyền hạng:"),gbc);
-        gbc.gridx=1; cbbQuyenHang=new JComboBox<>(new String[]{"QuanLy","NhanVien"});
-    
+        gbc.gridx=1; 
+        cbbQuyenHang=new JComboBox<>(new String[]{"QuanLy","NhanVien"});
+        cbbQuyenHang.setEnabled(false); // Deshabilitar para que no se pueda cambiar manualmente
         p.add(cbbQuyenHang,gbc);
 
         gbc.gridy=4; gbc.gridx=0; gbc.gridwidth=2; gbc.anchor=GridBagConstraints.CENTER;
@@ -63,26 +65,56 @@ public class ThemTaiKhoanDialog extends JDialog {
         btnH.addActionListener(e->dispose());
         btnL.addActionListener(e->{
             try {
-                new TaiKhoanBUS().them(
-                    txtUser.getText().trim(),
-                    txtPass.getText().trim(),
-                    (String)cbbQuyenHang.getSelectedItem(), // Sử dụng quyền hạng đã chọn
-                    (String)cbbNV.getSelectedItem()
-                );
-                saved=true;
+                String maNV = (String)cbbNV.getSelectedItem();
+                String user = txtUser.getText().trim();
+                String pass = txtPass.getText().trim();
+                String role = (String)cbbQuyenHang.getSelectedItem();
+                
+                // Verificar si rol y cargo coinciden
+                NhanVienDTO nv = nvBUS.layTatCa().stream()
+                              .filter(n -> n.getMaNV().equals(maNV))
+                              .findFirst()
+                              .orElse(null);
+                              
+                if (nv != null) {
+                    boolean roleMatches = ("Quản lý".equals(nv.getChucVu()) && "QuanLy".equals(role)) ||
+                                         ("Nhân viên".equals(nv.getChucVu()) && "NhanVien".equals(role));
+                    
+                    if (!roleMatches) {
+                        // Si han cambiado, mostrar advertencia pero permitir continuar
+                        int response = JOptionPane.showOptionDialog(
+                            this,
+                            "Quyền hạng của tài khoản không phù hợp với chức vụ của nhân viên.\n" +
+                            "Bạn có muốn tiếp tục?",
+                            "Xác nhận",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.WARNING_MESSAGE,
+                            null,
+                            new Object[]{"Có", "Hủy"},
+                            "Có"
+                        );
+                        
+                        if (response != 0) { // No es "Có"
+                            return;
+                        }
+                    }
+                }
+                
+                new TaiKhoanBUS().them(user, pass, role, maNV);
+                saved = true;
                 dispose();
             } catch(Exception ex){
-                JOptionPane.showMessageDialog(this,ex.getMessage(),"Lỗi",JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
         
-        // Cập nhật quyền hạng mặc định khi hiển thị dialogg
+        // Cập nhật quyền hạng mặc định khi hiển thị dialog
         if (cbbNV.getItemCount() > 0) {
             setDefaultQuyenHang();
         }
     }
     
-    // Phương thức cập nhật quyền hạng mặc định dựa trên chức vụ của nhân viên (trong db là ChucVu)
+    // Phương thức cập nhật quyền hạng mặc định dựa trên chức vụ của nhân viên
     private void setDefaultQuyenHang() {
         String maNV = (String)cbbNV.getSelectedItem();
         if (maNV != null && !maNV.isEmpty()) {

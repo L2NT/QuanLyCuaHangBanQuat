@@ -52,7 +52,7 @@ public class EmployeeMainFrame extends JFrame {
         add(lblInfo, BorderLayout.NORTH);
 
         // Menu (chỉ 4 chức năng cho NV)
-        menuTaskbar = new MenuTaskbar(this, false);
+        menuTaskbar = new MenuTaskbar(this, false, maNhanVien);
         menuTaskbar.setPreferredSize(new Dimension(250, 800));
         add(menuTaskbar, BorderLayout.WEST);
 

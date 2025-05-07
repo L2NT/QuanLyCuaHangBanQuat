@@ -34,8 +34,8 @@ public class ThemNhanVienDialog extends JDialog {
         add(new JLabel("Mã NV:"), gbc);
         gbc.gridx=1;
         txtMa = new JTextField(nextMaNV, 15);
-        txtMa.setEditable(false); // Make it non-editable
-        txtMa.setBackground(new Color(240, 240, 240)); // Gray background to indicate non-editable
+        txtMa.setEditable(false); // Ko cho chỉnh sửa
+        txtMa.setBackground(new Color(240, 240, 240)); // Nền xám
         add(txtMa, gbc);
 
         gbc.gridy=1; gbc.gridx=0;
@@ -47,8 +47,7 @@ public class ThemNhanVienDialog extends JDialog {
         gbc.gridy=2; gbc.gridx=0;
         add(new JLabel("Chức vụ:"), gbc);
         gbc.gridx=1;
-        cbbChucVu = new JComboBox<>(new String[]{"Nhân viên", "Quản lý"});
-        // Default is now "Nhân viên" (index 0)
+        cbbChucVu = new JComboBox<>(new String[]{"Nhân viên", "Quản lý", "Bảo vệ"});
         add(cbbChucVu, gbc);
 
         gbc.gridy=3; gbc.gridx=0;

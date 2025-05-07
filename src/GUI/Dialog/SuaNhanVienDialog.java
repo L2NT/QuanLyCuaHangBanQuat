@@ -1,10 +1,16 @@
 package GUI.Dialog;
 
 import BUS.NhanVienBUS;
+import BUS.TaiKhoanBUS;
 import DTO.NhanVienDTO;
+import DTO.TaiKhoanDTO;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 public class SuaNhanVienDialog extends JDialog {
@@ -12,7 +18,9 @@ public class SuaNhanVienDialog extends JDialog {
     private final JComboBox<String> cbbChucVu;
     private final JButton btnLuu, btnHuy;
     private final NhanVienBUS bll = new NhanVienBUS();
+    private final TaiKhoanBUS tkBUS = new TaiKhoanBUS();
     private boolean saved = false;
+    private String oldChucVu; // Para guardar el cargo original
 
     public SuaNhanVienDialog(Window owner, String maNV) {
         super(owner, "Chỉnh sửa nhân viên", ModalityType.APPLICATION_MODAL);
@@ -26,13 +34,15 @@ public class SuaNhanVienDialog extends JDialog {
                         .filter(x -> x.getMaNV().equals(maNV))
                         .findFirst()
                         .orElseThrow();
+        
+        oldChucVu = n.getChucVu(); // Guardar el cargo original
 
         gbc.gridx=0; gbc.gridy=0;
         add(new JLabel("Mã NV:"), gbc);
         gbc.gridx=1;
         txtMa = new JTextField(n.getMaNV(), 15);
         txtMa.setEditable(false);
-        txtMa.setBackground(new Color(240, 240, 240)); // Background xám để phân loại ko sửa dc
+        txtMa.setBackground(new Color(240, 240, 240));
         add(txtMa, gbc);
 
         gbc.gridy=1; gbc.gridx=0;
@@ -44,10 +54,61 @@ public class SuaNhanVienDialog extends JDialog {
         gbc.gridy=2; gbc.gridx=0;
         add(new JLabel("Chức vụ:"), gbc);
         gbc.gridx=1;
-        cbbChucVu = new JComboBox<>(new String[]{"Nhân viên", "Quản lý"});
-        // Chọn đúng chức vụ hiện tại
-        cbbChucVu.setSelectedItem(n.getChucVu().equals("Quản lý") ? "Quản lý" : "Nhân viên");
+        cbbChucVu = new JComboBox<>(new String[]{"Nhân viên", "Quản lý", "Bảo vệ"});
+        cbbChucVu.setSelectedItem(n.getChucVu().equals("Quản lý") ? "Quản lý" : 
+                                n.getChucVu().equals("Bảo vệ") ? "Bảo vệ" : "Nhân viên");
         add(cbbChucVu, gbc);
+
+        // Evento al cambiar el cargo
+        cbbChucVu.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    String newChucVu = (String) cbbChucVu.getSelectedItem();
+                    if (!newChucVu.equals(oldChucVu)) {
+                        // Verificar si tiene cuenta
+                        Optional<TaiKhoanDTO> taikhoan = tkBUS.layTatCa().stream()
+                                                      .filter(tk -> maNV.equals(tk.getMaNhanVien()))
+                                                      .findFirst();
+                        
+                        if (taikhoan.isPresent()) {
+                            String message;
+                            String title;
+                            int messageType;
+                            
+                            if (newChucVu.equals("Bảo vệ")) {
+                                message = "Nhân viên này đã có tài khoản với quyền hạng là " + 
+                                          taikhoan.get().getVaiTro() + ".\n" +
+                                          "Nếu chỉnh sửa thành Bảo vệ, tài khoản hiện tại sẽ bị xóa.\n" +
+                                          "Bạn có muốn tiếp tục?";
+                                title = "Cảnh báo xóa tài khoản";
+                                messageType = JOptionPane.WARNING_MESSAGE;
+                            } else {
+                                message = "Cập nhật chức vụ của nhân viên sẽ cũng sẽ cập nhật quyền hạng của tài khoản.\n" +
+                                         "Bạn có muốn tiếp tục?";
+                                title = "Xác nhận";
+                                messageType = JOptionPane.INFORMATION_MESSAGE;
+                            }
+                            
+                            int response = JOptionPane.showOptionDialog(
+                                SuaNhanVienDialog.this,
+                                message,
+                                title,
+                                JOptionPane.YES_NO_OPTION,
+                                messageType,
+                                null,
+                                new Object[]{"Có", "Hủy"},
+                                "Có"
+                            );
+                            
+                            if (response != 0) { // No es "Có"
+                                cbbChucVu.setSelectedItem(oldChucVu); // Revertir cambio
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         gbc.gridy=3; gbc.gridx=0;
         add(new JLabel("SĐT:"), gbc);
@@ -72,19 +133,45 @@ public class SuaNhanVienDialog extends JDialog {
         pack();
         setLocationRelativeTo(owner);
         
-        // Focus vào trường Họ tên sau khi hiển thị
         SwingUtilities.invokeLater(() -> txtTen.requestFocus());
 
         btnHuy.addActionListener(e -> dispose());
         btnLuu.addActionListener(e -> {
             if (validateInput()) {
+                String oldRole = oldChucVu;
+                String newRole = cbbChucVu.getSelectedItem().toString();
+                
+                // Si hay cambio de cargo
+                if (!newRole.equals(oldRole)) {
+                    // Ver si tiene cuenta
+                    String maNhanVien = txtMa.getText().trim();
+                    Optional<TaiKhoanDTO> taikhoan = tkBUS.layTatCa().stream()
+                                                 .filter(tk -> maNhanVien.equals(tk.getMaNhanVien()))
+                                                 .findFirst();
+                    
+                    if (taikhoan.isPresent()) {
+                        if (newRole.equals("Bảo vệ")) {
+                            // Eliminar cuenta si cambia a Bảo vệ
+                            tkBUS.xoa(taikhoan.get().getMaTaiKhoan());
+                        } else {
+                            // Actualizar rol de la cuenta
+                            String newAccountRole = newRole.equals("Quản lý") ? "QuanLy" : "NhanVien";
+                            TaiKhoanDTO tk = taikhoan.get();
+                            tkBUS.capNhat(tk.getMaTaiKhoan(), tk.getUsername(), tk.getPassword(), 
+                                        newAccountRole, tk.getMaNhanVien());
+                        }
+                    }
+                }
+                
+                // Guardar cambios al empleado
                 NhanVienDTO nv = new NhanVienDTO(
-                    n.getMaNV(),
+                    txtMa.getText().trim(),
                     txtTen.getText().trim(),
-                    cbbChucVu.getSelectedItem().toString(),
+                    newRole,
                     txtSdt.getText().trim(),
                     txtDiaChi.getText().trim()
                 );
+                
                 if (bll.sua(nv)) {
                     saved = true;
                     dispose();
@@ -95,7 +182,6 @@ public class SuaNhanVienDialog extends JDialog {
         });
     }
     
-    // Các phương thức khác giữ nguyên
     private boolean validateInput() {
         // Kiểm tra tên nhân viên
         if (txtTen.getText().trim().isEmpty()) {

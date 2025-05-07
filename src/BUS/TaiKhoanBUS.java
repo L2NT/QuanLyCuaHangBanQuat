@@ -2,12 +2,17 @@ package BUS;
 
 import DAO.TaiKhoanDAO;
 import DTO.TaiKhoanDTO;
+import DTO.NhanVienDTO;
+import BUS.NhanVienBUS;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class TaiKhoanBUS {
     private final TaiKhoanDAO dao = new TaiKhoanDAO();
+    private final NhanVienBUS nvBUS = new NhanVienBUS();
 
     public List<TaiKhoanDTO> layTatCa() {
         try { return dao.getAll(); }
@@ -20,7 +25,25 @@ public class TaiKhoanBUS {
     }
 
     public List<String> layDanhSachNhanVienChuaCoTaiKhoan() {
-        try { return dao.getNhanVienWithoutAccount(); }
+        try { 
+            List<String> allNhanVien = dao.getNhanVienWithoutAccount();
+            // Filter out employees with "Bảo vệ" role
+            List<String> filteredList = new ArrayList<>();
+            
+            for (String maNV : allNhanVien) {
+                // Get employee details to check role
+                NhanVienDTO nv = nvBUS.layTatCa().stream()
+                                  .filter(n -> n.getMaNV().equals(maNV))
+                                  .findFirst()
+                                  .orElse(null);
+                                    
+                if (nv != null && !nv.getChucVu().equals("Bảo vệ")) {
+                    filteredList.add(maNV);
+                }
+            }
+            
+            return filteredList;
+        }
         catch(SQLException ex) { throw new RuntimeException(ex); }
     }
 

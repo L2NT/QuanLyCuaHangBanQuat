@@ -99,7 +99,7 @@ public class NhanVienPanel extends JPanel {
         
         // Thêm các thành phần vào panel tìm kiếm
         JLabel lblFilter = new JLabel("Chức vụ:");
-        cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Quản lý", "Nhân viên"});
+        cbbFilter = new JComboBox<>(new String[]{"Tất cả", "Quản lý", "Nhân viên", "Bảo vệ"});
         cbbFilter.setPreferredSize(new Dimension(110, 25));
         
         JLabel lblSearch = new JLabel("Tìm kiếm:");

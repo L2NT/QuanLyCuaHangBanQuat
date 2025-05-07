@@ -34,6 +34,13 @@ public class ManagerMainFrame extends JFrame {
     public ManagerMainFrame() {
         this(null);
     }
+    
+    /**
+     * Getter cho mã nhân viên
+     */
+    public String getMaNhanVien() {
+        return maNhanVien;
+    }
 
     /**
      * Thiết lập FlatLaf và font Roboto.
@@ -66,7 +73,7 @@ public class ManagerMainFrame extends JFrame {
         add(lblInfo, BorderLayout.NORTH);
 
         // Menu bên trái (full quyền)
-        menuTaskbar = new MenuTaskbar(this, true);
+        menuTaskbar = new MenuTaskbar(this, true, maNhanVien);
         menuTaskbar.setPreferredSize(new Dimension(250, 800));
         add(menuTaskbar, BorderLayout.WEST);
 
