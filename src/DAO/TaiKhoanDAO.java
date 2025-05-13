@@ -133,4 +133,22 @@ public class TaiKhoanDAO {
         }
         return list;
     }
+   public String getMaNVByMaTaiKhoan(String maTaiKhoan) {
+    String sql = "SELECT MaNhanVien FROM taikhoan WHERE MaTaiKhoan = ?";
+    try (
+        Connection conn = DBConnection.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)
+    ) {
+        ps.setString(1, maTaiKhoan);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getString("MaNhanVien");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return null; // Trả về null nếu không tìm thấy
+}
+
 }

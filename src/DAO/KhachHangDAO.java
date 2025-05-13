@@ -85,12 +85,12 @@ public class KhachHangDAO {
     public boolean update(KhachHangDTO kh) {
         String sql = "UPDATE khachhang SET HoTenKH = ?, Sdt_KH = ?, DiaChiKH = ?, TongTienDaMua = ?, TrangThai = ? WHERE MaKhachHang = ?";
         try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(2, kh.getHoTenKH());
-            ps.setString(3, kh.getSdtKH());
-            ps.setString(4, kh.getDiaChiKH());
-            ps.setInt(5, kh.getTongTienDaMua());  // Cập nhật tổng tiền
-            ps.setInt(6, kh.getTrangThai());
-            ps.setString(1, kh.getMaKhachHang());
+            ps.setString(1, kh.getHoTenKH());      // Tham số 1: HoTenKH
+            ps.setString(2, kh.getSdtKH());        // Tham số 2: Sdt_KH
+            ps.setString(3, kh.getDiaChiKH());     // Tham số 3: DiaChiKH
+            ps.setInt(4, kh.getTongTienDaMua());   // Tham số 4: TongTienDaMua
+            ps.setInt(5, kh.getTrangThai());       // Tham số 5: TrangThai
+            ps.setString(6, kh.getMaKhachHang());  // Tham số 6: WHERE MaKhachHang
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             ex.printStackTrace();

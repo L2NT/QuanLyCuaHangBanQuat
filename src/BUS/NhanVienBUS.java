@@ -7,7 +7,10 @@ import java.util.List;
 
 public class NhanVienBUS {
     private final NhanVienDAO dao = new NhanVienDAO();
-
+    public String getNameNVByMaNV(String manv){
+        return dao.getTenNhanVienByManv(manv);
+    }
+    
     public List<NhanVienDTO> layTatCa() {
         try {
             return dao.getAll();

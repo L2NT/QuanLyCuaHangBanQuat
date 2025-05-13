@@ -11,6 +11,7 @@ package DAO ;
 
 import DTO.DBConnection;
 
+
 import DTO.PhieuNhapDTO;
 import java.sql.*;
 import java.time.LocalDate;
@@ -56,7 +57,7 @@ public class PhieuNhapDAO {
                 LocalDate ngayNhap = rs.getDate("NgayNhap").toLocalDate();
                 String maNCC = rs.getString("MaNCC");
                 String maNV = rs.getString("MaNhanVien");
-                double tongTien = rs.getDouble("TongTien");
+                int tongTien = rs.getInt("TongTien");
 
                 PhieuNhapDTO pn = new PhieuNhapDTO(maPhieuNhap, ngayNhap, maNCC, maNV, tongTien);
                 ds.add(pn);
@@ -81,7 +82,7 @@ public static boolean themPhieuNhap(PhieuNhapDTO pn) {
         stmt.setDate(2, Date.valueOf(pn.getNgayNhap())); // LocalDate -> java.sql.Date
         stmt.setString(3, pn.getMaNCC());
         stmt.setString(4, pn.getMaNhanVien());
-        stmt.setDouble(5, pn.getTongTien());
+        stmt.setInt(5, pn.getTongTien());
 
         return stmt.executeUpdate() > 0;
 
@@ -90,6 +91,33 @@ public static boolean themPhieuNhap(PhieuNhapDTO pn) {
         return false;
     }
 }
+
+public static PhieuNhapDTO findPhieuNhapFromMaPN(String maPN) {
+    String sql = "SELECT * FROM PhieuNhap WHERE MaPhieuNhap = ?";
+    
+    try (
+        Connection conn = DBConnection.getConnection();
+        PreparedStatement stmt = conn.prepareStatement(sql)
+    ) {
+        stmt.setString(1, maPN);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            String maPhieuNhap = rs.getString("MaPhieuNhap");
+            LocalDate ngayNhap = rs.getDate("NgayNhap").toLocalDate();
+            String maNCC = rs.getString("MaNCC");
+            String maNhanVien = rs.getString("MaNhanVien");
+            int tongTien = rs.getInt("TongTien");
+
+            return new PhieuNhapDTO(maPhieuNhap, ngayNhap, maNCC, maNhanVien, tongTien);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return null; // Nếu không tìm thấy
+}
+
 
         
 

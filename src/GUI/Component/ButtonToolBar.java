@@ -4,11 +4,12 @@
  */
 package GUI.Component;
 
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import javax.swing.JButton;
+import javax.swing.ImageIcon;
+
 
 
 public class ButtonToolBar extends JButton{
@@ -16,9 +17,10 @@ public class ButtonToolBar extends JButton{
     
     public ButtonToolBar(String text, String icon, String permisson) {
         this.permisson = permisson;
-        this.setFont(new java.awt.Font(FlatRobotoFont.FAMILY, 1, 14));
+        this.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 14));
         this.setForeground(new Color(1, 88, 155));
-        this.setIcon(new FlatSVGIcon("./icon/"+icon));
+        this.setIcon(new ImageIcon(getClass().getResource("/icon/" + icon)));
+
         this.setText(text);
         this.setFocusable(false);
         this.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);

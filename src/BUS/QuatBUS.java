@@ -103,4 +103,13 @@ public class QuatBUS {
             return List.of();
         }
     }
+    public boolean  updatesoluongquat(String maquat,int soluongquat)
+    {
+        return dao.updateSoLuongQuat(maquat, soluongquat);
+    }
+    
+    public List<QuatDTO> layTheoMaLoai(String maLoai) throws SQLException {
+        return new QuatDAO().findByMaLoai(maLoai);
+    }
+
 }

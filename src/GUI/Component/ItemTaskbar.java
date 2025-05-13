@@ -1,6 +1,6 @@
 package GUI.Component;
 
-import com.formdev.flatlaf.FlatClientProperties;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
+
 import java.awt.BorderLayout;
 import javax.swing.ImageIcon;
 import javax.swing.border.EmptyBorder;
@@ -29,18 +29,18 @@ public class ItemTaskbar extends JPanel implements MouseListener {
         this.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 7));
         this.setPreferredSize(new Dimension(225, 45));
         this.setBackground(DefaultColor);
-        this.putClientProperty(FlatClientProperties.STYLE, "arc: 15");
+    
         this.addMouseListener(this);
 
         lblIcon = new JLabel();
         lblIcon.setBorder(new EmptyBorder(0, 10, 0, 0));
         lblIcon.setPreferredSize(new Dimension(45, 30));
-        lblIcon.setIcon(new FlatSVGIcon("./icon/" + linkIcon));
+        lblIcon.setIcon(new ImageIcon("./icon/" + linkIcon));
+
         this.add(lblIcon);
 
         pnlContent = new JLabel(content);
         pnlContent.setPreferredSize(new Dimension(155, 30));
-        pnlContent.putClientProperty("FlatLaf.style", "font: 145% $medium.font");
         pnlContent.setForeground(ColorBlack);
         this.add(pnlContent);
     }
@@ -49,17 +49,18 @@ public class ItemTaskbar extends JPanel implements MouseListener {
     public ItemTaskbar(String linkIcon, String content1, String content2) {
         this.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 50));
         this.setBackground(DefaultColor);
-        this.putClientProperty(FlatClientProperties.STYLE, "arc: 15");
+
         this.addMouseListener(this);
 
         lblIcon = new JLabel();
         lblIcon.setPreferredSize(new Dimension(110, 110));
-        lblIcon.setIcon(new FlatSVGIcon("./icon/" + linkIcon));
+        lblIcon.setIcon(new ImageIcon("./icon/" + linkIcon));
+
         this.add(lblIcon);
 
         pnlContent = new JLabel(content1);
         pnlContent.setPreferredSize(new Dimension(170, 30));
-        pnlContent.putClientProperty("FlatLaf.style", "font: 200% $medium.font");
+    
         pnlContent.setForeground(FontColor);
         this.add(pnlContent);
     }
@@ -82,13 +83,13 @@ public class ItemTaskbar extends JPanel implements MouseListener {
         this.add(right, BorderLayout.CENTER);
 
         pnlContent = new JLabel(tenSP);
-        pnlContent.putClientProperty("FlatLaf.style", "font: 120% $semibold.font");
+     
         pnlContent.setForeground(Color.black);
         right.add(pnlContent);
 
         pnlSoLuong = new JLabel("Số lượng: " + soLuong);
         pnlSoLuong.setPreferredSize(new Dimension(350, 20));
-        pnlSoLuong.putClientProperty("FlatLaf.style", "font: 100% $medium.font");
+ 
         pnlSoLuong.setForeground(Color.gray);
         right.add(pnlSoLuong);
     }
@@ -102,7 +103,8 @@ public class ItemTaskbar extends JPanel implements MouseListener {
         lblIcon = new JLabel();
         lblIcon.setPreferredSize(new Dimension(100, 100));
         lblIcon.setBorder(new EmptyBorder(0, 20, 0, 0));
-        lblIcon.setIcon(new FlatSVGIcon("./icon/" + linkIcon));
+        lblIcon.setIcon(new ImageIcon(getClass().getResource("/icon/" + linkIcon)));
+
         this.add(lblIcon, BorderLayout.WEST);
 
         JPanel center = new JPanel();
@@ -113,13 +115,13 @@ public class ItemTaskbar extends JPanel implements MouseListener {
 
         pnlContent = new JLabel(content);
         pnlContent.setPreferredSize(new Dimension(250, 30));
-        pnlContent.putClientProperty("FlatLaf.style", "font: 300% $semibold.font");
+   
         pnlContent.setForeground(FontColor);
         center.add(pnlContent);
 
         pnlContent1 = new JLabel(content2);
         pnlContent1.setPreferredSize(new Dimension(250, 30));
-        pnlContent1.putClientProperty("FlatLaf.style", "font: 150% $medium.font");
+      
         pnlContent1.setForeground(FontColor);
         center.add(pnlContent1);
     }

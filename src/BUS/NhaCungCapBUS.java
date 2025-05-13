@@ -10,6 +10,9 @@ import javax.swing.JOptionPane;
 public class NhaCungCapBUS {
     private final NhaCungCapDAO dao = new NhaCungCapDAO();
 
+     public String layMaNCCTheoTen(String tenNCC) {
+        return NhaCungCapDAO.layMaNhaCungCapTheoTen(tenNCC);
+    }
     // Lấy tất cả nhà cung cấp
     public List<NhaCungCapDTO> layTatCa() {
         try {

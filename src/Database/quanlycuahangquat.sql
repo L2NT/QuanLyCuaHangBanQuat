@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 04, 2025 lúc 11:05 AM
+-- Thời gian đã tạo: Th5 06, 2025 lúc 06:25 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -35,50 +35,6 @@ CREATE TABLE `chitiet_hoadon` (
   `ThanhTien` int(11) NOT NULL,
   `MaBaoHanh` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Đang đổ dữ liệu cho bảng `chitiet_hoadon`
---
-
-INSERT INTO `chitiet_hoadon` (`MaHoaDon`, `MaQuat`, `SoLuong`, `DonGia`, `ThanhTien`, `MaBaoHanh`) VALUES
-('HD001', 'Q001', 3, 550000, 1650000, 'BH001'),
-('HD001', 'Q002', 2, 650000, 1300000, 'BH002'),
-('HD001', 'Q003', 1, 350000, 350000, 'BH003'),
-('HD002', 'Q002', 4, 650000, 2600000, 'BH004'),
-('HD002', 'Q004', 1, 470000, 470000, 'BH005'),
-('HD003', 'Q003', 5, 350000, 1750000, 'BH006'),
-('HD003', 'Q005', 2, 1250000, 2500000, 'BH007'),
-('HD003', 'Q006', 1, 2200000, 2200000, 'BH008'),
-('HD004', 'Q004', 2, 470000, 940000, 'BH009'),
-('HD004', 'Q007', 3, 250000, 750000, 'BH010'),
-('HD005', 'Q005', 3, 1250000, 3750000, 'BH011'),
-('HD005', 'Q008', 1, 980000, 980000, 'BH012'),
-('HD005', 'Q009', 2, 560000, 1120000, 'BH013'),
-('HD006', 'Q006', 2, 2200000, 4400000, 'BH014'),
-('HD006', 'Q010', 1, 3600000, 3600000, 'BH015'),
-('HD007', 'Q007', 4, 250000, 1000000, 'BH016'),
-('HD007', 'Q011', 1, 750000, 750000, 'BH017'),
-('HD007', 'Q012', 2, 410000, 820000, 'BH018'),
-('HD008', 'Q008', 2, 980000, 1960000, 'BH019'),
-('HD008', 'Q013', 1, 620000, 620000, 'BH020'),
-('HD009', 'Q009', 3, 560000, 1680000, 'BH021'),
-('HD009', 'Q014', 1, 2400000, 2400000, 'BH022'),
-('HD009', 'Q015', 1, 490000, 490000, 'BH023'),
-('HD010', 'Q001', 1, 550000, 550000, 'BH024'),
-('HD010', 'Q010', 2, 3600000, 7200000, 'BH025'),
-('HD011', 'Q002', 1, 650000, 650000, 'BH002'),
-('HD011', 'Q011', 3, 750000, 2250000, 'BH011'),
-('HD011', 'Q012', 2, 410000, 820000, 'BH012'),
-('HD012', 'Q003', 2, 350000, 700000, 'BH003'),
-('HD012', 'Q012', 4, 410000, 1640000, 'BH012'),
-('HD013', 'Q005', 1, 1250000, 1250000, 'BH005'),
-('HD013', 'Q013', 2, 620000, 1240000, 'BH013'),
-('HD013', 'Q014', 1, 2400000, 2400000, 'BH014'),
-('HD014', 'Q006', 1, 2200000, 2200000, 'BH006'),
-('HD014', 'Q014', 3, 2400000, 7200000, 'BH014'),
-('HD015', 'Q007', 1, 250000, 250000, 'BH007'),
-('HD015', 'Q009', 1, 560000, 560000, 'BH009'),
-('HD015', 'Q015', 2, 490000, 980000, 'BH015');
 
 -- --------------------------------------------------------
 
@@ -141,27 +97,6 @@ CREATE TABLE `hoadon` (
   `TongTien` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Đang đổ dữ liệu cho bảng `hoadon`
---
-
-INSERT INTO `hoadon` (`MaHoaDon`, `MaKhachHang`, `MaNhanVien`, `NgayLap`, `MaSuKienKM`, `TongTien`) VALUES
-('HD001', 'KH003', 'NV002', '2024-05-01', NULL, 3300000),
-('HD002', 'KH005', 'NV001', '2024-05-02', NULL, 3070000),
-('HD003', 'KH007', 'NV003', '2024-05-03', NULL, 6450000),
-('HD004', 'KH009', 'NV002', '2024-05-04', NULL, 1690000),
-('HD005', 'KH011', 'NV001', '2024-05-05', NULL, 5850000),
-('HD006', 'KH013', 'NV003', '2024-05-06', NULL, 8000000),
-('HD007', 'KH004', 'NV002', '2024-05-07', NULL, 2570000),
-('HD008', 'KH006', 'NV001', '2024-05-08', NULL, 2580000),
-('HD009', 'KH008', 'NV003', '2024-05-09', NULL, 4570000),
-('HD010', 'KH010', 'NV002', '2024-05-10', NULL, 7750000),
-('HD011', 'KH012', 'NV001', '2024-05-11', NULL, 3720000),
-('HD012', 'KH014', 'NV003', '2024-05-12', NULL, 2340000),
-('HD013', 'KH015', 'NV002', '2024-05-13', NULL, 4890000),
-('HD014', 'KH001', 'NV001', '2024-05-14', NULL, 9400000),
-('HD015', 'KH002', 'NV003', '2024-05-15', NULL, 1790000);
-
 -- --------------------------------------------------------
 
 --
@@ -173,29 +108,34 @@ CREATE TABLE `khachhang` (
   `HoTenKH` varchar(200) NOT NULL,
   `Sdt_KH` varchar(11) NOT NULL,
   `DiaChiKH` varchar(300) NOT NULL,
-  `TongTienDaMua` int(11) NOT NULL
+  `TongTienDaMua` int(11) NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+ALTER TABLE khachhang
+  ADD COLUMN TrangThai TINYINT(1) NOT NULL DEFAULT 1;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `loaisanpham`
+--
+
+CREATE TABLE `loaisanpham` (
+  `MaLoaiSanPham` varchar(10) NOT NULL,
+  `TenLoai` varchar(100) DEFAULT NULL,
+  `TrangThai` varchar(100) DEFAULT NULL,
+  `MoTa` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Đang đổ dữ liệu cho bảng `khachhang`
+-- Đang đổ dữ liệu cho bảng `loaisanpham`
 --
 
-INSERT INTO `khachhang` (`MaKhachHang`, `HoTenKH`, `Sdt_KH`, `DiaChiKH`, `TongTienDaMua`) VALUES
-('KH001', 'Nguyễn Văn A', '0912345678', 'Hà Nội', 1500000),
-('KH002', 'Trần Thị B', '0987654321', 'TP.HCM', 2300000),
-('KH003', 'Lê Văn C', '0933221144', 'Đà Nẵng', 1200000),
-('KH004', 'Trần Văn Bảo', '0914234567', 'TP.HCM', 850000),
-('KH005', 'Lê Thị Hồng', '0925345678', 'Đà Nẵng', 2000000),
-('KH006', 'Phạm Văn Minh', '0936456789', 'Hải Phòng', 950000),
-('KH007', 'Đỗ Thị Thủy', '0947567890', 'Cần Thơ', 1250000),
-('KH008', 'Hoàng Văn Long', '0958678901', 'Huế', 1100000),
-('KH009', 'Ngô Thị Hương', '0969789012', 'Bình Dương', 3000000),
-('KH010', 'Bùi Văn Hùng', '0970890123', 'Biên Hòa', 700000),
-('KH011', 'Dương Thị Lan', '0981901234', 'Quảng Ninh', 1600000),
-('KH012', 'Trịnh Văn Sơn', '0992012345', 'Lâm Đồng', 1300000),
-('KH013', 'Cao Thị Yến', '0903123456', 'Hưng Yên', 1750000),
-('KH014', 'Tạ Văn Phúc', '0914234561', 'Thái Bình', 900000),
-('KH015', 'Phan Thị Nga', '0925345672', 'Nam Định', 1950000);
+INSERT INTO `loaisanpham` (`MaLoaiSanPham`, `TenLoai`, `TrangThai`, `MoTa`) VALUES
+('LSP001', 'Quạt trần', 'Hoạt động', 'Quạt gắn trên trần, tiết kiệm không gian'),
+('LSP002', 'Quạt đứng', 'Hoạt động', 'Quạt có chân đế điều chỉnh chiều cao'),
+('LSP003', 'Quạt bàn', 'Hoạt động', 'Quạt nhỏ gọn đặt trên bàn làm việc.'),
+('LSP004', 'Quạt hộp', 'Hoạt động', 'Quạt hình hộp, thiết kế an toàn cho trẻ em'),
+('LSP005', 'Quạt sạc', 'Hoạt động', 'Quạt dùng pin sạc, tiện lợi khi mất điện');
 
 -- --------------------------------------------------------
 
@@ -401,31 +341,22 @@ INSERT INTO `quat` (`MaQuat`, `TenQuat`, `Gia`, `SoLuongTon`, `MaNSX`, `NgaySanX
 --
 
 CREATE TABLE `su_kien_khuyen_mai` (
-  `MaSKKhuyenMai`   VARCHAR(50)  NOT NULL,
-  `TenKhuyenMai`    VARCHAR(200) NOT NULL,
-  `PhanTramGiam`    INT          NOT NULL,
-  `NgayBatDau`      DATE         NOT NULL,
-  `NgayKetThuc`     DATE         NOT NULL,
-  `DieuKien`        VARCHAR(200) NOT NULL COMMENT
-  `MinOrderAmount`  INT          NOT NULL DEFAULT 0 COMMENT 
-  `MinQuantity`     INT          NOT NULL DEFAULT 0 COMMENT 
+  `MaSKKhuyenMai` varchar(50) NOT NULL,
+  `TenKhuyenMai` varchar(200) NOT NULL,
+  `PhanTramGiam` int(11) NOT NULL,
+  `NgayBatDau` date NOT NULL,
+  `NgayKetThuc` date NOT NULL,
+  `Loai` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Dữ liệu mẫu
-INSERT INTO `su_kien_khuyen_mai`
-  (`MaSKKhuyenMai`, `TenKhuyenMai`, `PhanTramGiam`,
-   `NgayBatDau`, `NgayKetThuc`, `DieuKien`,
-   `MinOrderAmount`, `MinQuantity`)
-VALUES
-  -- KM01: Đơn hàng >= 500k
-  ('KM01', 'Giảm giá mùa hè', 10,
-   '2024-06-01', '2024-06-30', 'Đơn hàng ≥ 500k',
-   500000, 0),
-  -- KM02: Mua từ 2 sản phẩm
-  ('KM02', 'Khuyến mãi lễ', 15,
-   '2024-04-20', '2024-05-01', 'Mua ≥ 2 sp',
-   0, 2);
+--
+-- Đang đổ dữ liệu cho bảng `su_kien_khuyen_mai`
+--
 
+INSERT INTO `su_kien_khuyen_mai` (`MaSKKhuyenMai`, `TenKhuyenMai`, `PhanTramGiam`, `NgayBatDau`, `NgayKetThuc`, `Loai`) VALUES
+('KM01', 'Giảm giá mùa hè', 20, '2025-06-01', '2025-06-30', 1),
+('KM02', 'Khuyến mãi lễ', 15, '2025-04-20', '2025-05-15', 2),
+('KM03', 'Siêu sales mùa Đông', 10, '2025-05-06', '2025-05-16', 3);
 
 -- --------------------------------------------------------
 
@@ -476,12 +407,6 @@ ALTER TABLE `hoadon`
   ADD KEY `idx_hd_kh` (`MaKhachHang`),
   ADD KEY `idx_hd_nv` (`MaNhanVien`),
   ADD KEY `fk_hd_sk` (`MaSuKienKM`);
-
---
--- Chỉ mục cho bảng `khachhang`
---
-ALTER TABLE `khachhang`
-  ADD PRIMARY KEY (`MaKhachHang`);
 
 --
 -- Chỉ mục cho bảng `nhanvien`
@@ -544,9 +469,12 @@ ALTER TABLE `taikhoan`
 --
 -- Các ràng buộc cho bảng `chitiet_hoadon`
 --
-ALTER TABLE `chitiet_hoadon`
-  ADD CONSTRAINT `fk_cthd_hd` FOREIGN KEY (`MaHoaDon`) REFERENCES `hoadon` (`MaHoaDon`),
-  ADD CONSTRAINT `fk_cthd_quat` FOREIGN KEY (`MaQuat`) REFERENCES `quat` (`MaQuat`);
+ALTER TABLE chitiet_hoadon
+  ADD CONSTRAINT fk_cthd_hd
+    FOREIGN KEY (MaHoaDon) REFERENCES hoadon(MaHoaDon)
+    ON DELETE CASCADE,
+  ADD CONSTRAINT fk_cthd_quat
+    FOREIGN KEY (MaQuat) REFERENCES quat(MaQuat);
 
 --
 -- Các ràng buộc cho bảng `chitiet_phieunhap`
@@ -556,26 +484,11 @@ ALTER TABLE `chitiet_phieunhap`
   ADD CONSTRAINT `fk_ctpn_quat` FOREIGN KEY (`MaQuat`) REFERENCES `quat` (`MaQuat`);
 
 --
--- Các ràng buộc cho bảng `hoadon`
---
-ALTER TABLE `hoadon`
-  ADD CONSTRAINT `fk_hd_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`),
-  ADD CONSTRAINT `fk_hd_nv` FOREIGN KEY (`MaNhanVien`) REFERENCES `nhanvien` (`MaNhanVien`),
-  ADD CONSTRAINT `fk_hd_sk` FOREIGN KEY (`MaSuKienKM`) REFERENCES `su_kien_khuyen_mai` (`MaSKKhuyenMai`);
-
---
 -- Các ràng buộc cho bảng `phieunhap`
 --
 ALTER TABLE `phieunhap`
   ADD CONSTRAINT `fk_pn_ncc` FOREIGN KEY (`MaNCC`) REFERENCES `nha_cung_cap` (`MaNCC`),
   ADD CONSTRAINT `fk_pn_nv` FOREIGN KEY (`MaNhanVien`) REFERENCES `nhanvien` (`MaNhanVien`);
-
---
--- Các ràng buộc cho bảng `quanlibaohanh`
---
-ALTER TABLE `quanlibaohanh`
-  ADD CONSTRAINT `fk_qbh_kh` FOREIGN KEY (`MaKhachHang`) REFERENCES `khachhang` (`MaKhachHang`),
-  ADD CONSTRAINT `fk_qbh_quat` FOREIGN KEY (`MaQuat`) REFERENCES `quat` (`MaQuat`);
 
 --
 -- Các ràng buộc cho bảng `quat`
@@ -588,16 +501,6 @@ ALTER TABLE `quat`
 --
 ALTER TABLE `taikhoan`
   ADD CONSTRAINT `fk_tk_nv` FOREIGN KEY (`MaNhanVien`) REFERENCES `nhanvien` (`MaNhanVien`) ON DELETE SET NULL ON UPDATE CASCADE;
-
-ALTER TABLE chitiet_hoadon
-DROP FOREIGN KEY fk_cthd_hd;
-
-ALTER TABLE chitiet_hoadon
-ADD CONSTRAINT fk_cthd_hd
-FOREIGN KEY (MaHoaDon) REFERENCES hoadon(MaHoaDon)
-ON DELETE CASCADE;
-
-
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

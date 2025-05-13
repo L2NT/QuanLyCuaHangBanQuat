@@ -6,18 +6,17 @@ import java.sql.SQLException;
 
 public class DBConnection {
     private static final String URL = "jdbc:mysql://localhost:3306/quanlycuahangquat";
-    private static String USER = "root";      // mặc định
-    private static String PASS = "";          // mặc định
+    private static String USER = "root";      
+    private static String PASS = "";          
 
     private static Connection conn;
 
     private DBConnection() { }
 
-    /** Gọi sau khi login thành công để cập nhật user/pass mới */
+
     public static void setCredentials(String user, String pass) {
         USER = user;
         PASS = pass;
-        // reset connection cũ
         if (conn != null) {
             try {
                 conn.close();
@@ -39,7 +38,7 @@ public class DBConnection {
             } catch (SQLException e) {
                 e.printStackTrace();
             } finally {
-                conn = null; // Đảm bảo kết nối được giải phóng
+                conn = null; 
             }
         }
     }

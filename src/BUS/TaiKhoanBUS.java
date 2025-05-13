@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 public class TaiKhoanBUS {
     private final TaiKhoanDAO dao = new TaiKhoanDAO();
     private final NhanVienBUS nvBUS = new NhanVienBUS();
-
+    public String getMaNVByMaTaiKhoan(String mataikhoan){
+        return dao.getMaNVByMaTaiKhoan(mataikhoan);
+    }
     public List<TaiKhoanDTO> layTatCa() {
         try { return dao.getAll(); }
         catch(SQLException ex) { throw new RuntimeException(ex); }

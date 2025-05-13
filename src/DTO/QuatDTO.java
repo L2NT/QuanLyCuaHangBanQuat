@@ -111,5 +111,6 @@ public class QuatDTO {
     public int hashCode() {
         return maQuat != null ? maQuat.hashCode() : 0;
     }
+    
 
 }

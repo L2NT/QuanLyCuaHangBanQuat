@@ -2,10 +2,9 @@ package GUI;
 
 import DTO.DBConnection;
 import GUI.Component.MenuTaskbar;
-import GUI.Panel.TrangChuPanel;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import GUI.Panel.BanQuatPanel;
+
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +21,7 @@ public class ManagerMainFrame extends JFrame {
     /**
      * Constructor chính, nhận vào mã nhân viên để load tên.
      */
+   
     public ManagerMainFrame(String maNhanVien) {
         this.maNhanVien = maNhanVien;
         initLookAndFeel();
@@ -41,22 +41,21 @@ public class ManagerMainFrame extends JFrame {
     public String getMaNhanVien() {
         return maNhanVien;
     }
+    
 
     /**
      * Thiết lập FlatLaf và font Roboto.
      */
     private void initLookAndFeel() {
-        FlatRobotoFont.install();
-        FlatLaf.setPreferredFontFamily(FlatRobotoFont.FAMILY);
-        FlatLaf.setPreferredLightFontFamily(FlatRobotoFont.FAMILY_LIGHT);
-        FlatLaf.setPreferredSemiboldFontFamily(FlatRobotoFont.FAMILY_SEMIBOLD);
-        FlatIntelliJLaf.setup();
+    
         UIManager.put("PasswordField.showRevealButton", true);
     }
 
     /**
      * Xây dựng giao diện chính: header, menu và vùng nội dung.
      */
+    
+  
     private void initComponent() {
         setTitle("Giao diện Quản lý");
         setSize(1200, 800);
@@ -83,7 +82,7 @@ public class ManagerMainFrame extends JFrame {
         add(mainContent, BorderLayout.CENTER);
 
         // Mặc định hiển thị Trang Chủ
-        setPanel(new TrangChuPanel());
+        setPanel(new BanQuatPanel());
     }
 
     /**

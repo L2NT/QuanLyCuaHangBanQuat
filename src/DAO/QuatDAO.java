@@ -8,7 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class QuatDAO {
-
+//    publoc List<QuatDTo> laytatca()throws SQLException{
+//        List<QuatDTO> list = new ArrayList<>();
+//        String sql = "SELECT  FROM quat";
+//        try(Connection c = DBConnection.getConnection();
+//            PreparedStatement ps = c.prepareStatement(sql);
+//            RessultSet rs = ps.excuteQuery()){
+//            while(rs.next()){
+//                list.add(new QuatDTO(
+//                
+//                ));
+//            }
+//            
+//        }
+//    }
     public List<QuatDTO> getAll() throws SQLException {
         List<QuatDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM quat";
@@ -20,7 +33,7 @@ public class QuatDAO {
                     rs.getString("MaQuat"),
                     rs.getString("TenQuat"),
                     rs.getInt("Gia"),
-                    rs.getInt("SoLuongTon"), // ✅ thêm dòng này
+                    rs.getInt("SoLuongTon"), 
                     rs.getString("MaNSX"),
                     rs.getString("NgaySanXuat"),
                     rs.getString("ChatLieu"),
@@ -40,7 +53,7 @@ public class QuatDAO {
             ps.setString(1, quat.getMaQuat());
             ps.setString(2, quat.getTenQuat());
             ps.setInt(3, quat.getGia());
-            ps.setInt(4, quat.getSoLuongTon()); // ✅ thêm dòng này
+            ps.setInt(4, quat.getSoLuongTon()); 
             ps.setString(5, quat.getMaNSX());
             ps.setString(6, quat.getNgaySanXuat());
             ps.setString(7, quat.getChatLieu());
@@ -65,7 +78,7 @@ public class QuatDAO {
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, quat.getTenQuat());
             ps.setInt(2, quat.getGia());
-            ps.setInt(3, quat.getSoLuongTon()); // ✅ thêm dòng này
+            ps.setInt(3, quat.getSoLuongTon()); 
             ps.setString(4, quat.getMaNSX());
             ps.setString(5, quat.getNgaySanXuat());
             ps.setString(6, quat.getChatLieu());
@@ -87,7 +100,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
-                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
+                        rs.getInt("SoLuongTon"),
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -112,7 +125,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
-                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
+                        rs.getInt("SoLuongTon"),
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -137,7 +150,7 @@ public class QuatDAO {
                         rs.getString("MaQuat"),
                         rs.getString("TenQuat"),
                         rs.getInt("Gia"),
-                        rs.getInt("SoLuongTon"), // ✅ thêm dòng này
+                        rs.getInt("SoLuongTon"), 
                         rs.getString("MaNSX"),
                         rs.getString("NgaySanXuat"),
                         rs.getString("ChatLieu"),
@@ -149,4 +162,47 @@ public class QuatDAO {
         }
         return list;
     }
+    public boolean updateSoLuongQuat(String maQuat, int soLuongNhap) {
+        String sql = "UPDATE quat SET SoLuongTon = SoLuongTon + ? WHERE MaQuat = ?"; // Cộng số lượng quạt nhập vào
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, soLuongNhap); // Cộng số lượng quạt nhập vào
+            ps.setString(2, maQuat);   // Mã quạt cần cập nhật
+
+            int rowsUpdated = ps.executeUpdate();
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public List<QuatDTO> findByMaLoai(String maLoai) throws SQLException {
+        List<QuatDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM quat WHERE MaLoaiSP = ?";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, maLoai);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    list.add(new QuatDTO(
+                        rs.getString("MaQuat"),
+                        rs.getString("TenQuat"),
+                        rs.getInt("Gia"),
+                        rs.getInt("SoLuongTon"),
+                        rs.getString("MaNSX"),
+                        rs.getString("NgaySanXuat"),
+                        rs.getString("ChatLieu"),
+                        rs.getString("ThuongHieu"),
+                        rs.getString("MaLoaiSP")
+                    ));
+                }
+            }
+        }
+        return list;
+    }
+
+
+
 }

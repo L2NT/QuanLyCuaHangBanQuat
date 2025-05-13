@@ -2,11 +2,10 @@ package GUI;
 
 import DTO.DBConnection;
 import GUI.Component.MenuTaskbar;
-import GUI.Panel.TrangChuPanel;
+import GUI.Panel.BanQuatPanel;
 
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+
+
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -14,7 +13,7 @@ import java.awt.*;
 import java.sql.*;
 
 public class EmployeeMainFrame extends JFrame {
-    private final String maNhanVien;
+    public  final String maNhanVien;
     private MenuTaskbar menuTaskbar;
     private JPanel mainContent;
     public String getMaNhanVien(){
@@ -25,14 +24,11 @@ public class EmployeeMainFrame extends JFrame {
         this.maNhanVien = maNhanVien;
         initLookAndFeel();
         initComponent();
-    }
+    }   
+         
 
     private void initLookAndFeel() {
-        FlatRobotoFont.install();
-        FlatLaf.setPreferredFontFamily(FlatRobotoFont.FAMILY);
-        FlatLaf.setPreferredLightFontFamily(FlatRobotoFont.FAMILY_LIGHT);
-        FlatLaf.setPreferredSemiboldFontFamily(FlatRobotoFont.FAMILY_SEMIBOLD);
-        FlatIntelliJLaf.setup();
+      
         UIManager.put("PasswordField.showRevealButton", true);
     }
 
@@ -62,7 +58,7 @@ public class EmployeeMainFrame extends JFrame {
         add(mainContent, BorderLayout.CENTER);
 
         // Mặc định hiển thị TrangChuPanel
-        setPanel(new TrangChuPanel());
+        setPanel(new BanQuatPanel());
     }
 
     /**

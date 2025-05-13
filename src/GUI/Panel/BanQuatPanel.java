@@ -7,8 +7,11 @@ import DTO.QuatDTO;
 import DAO.KhuyenMaiDAO;
 import DTO.KhachHangDTO;
 import BUS.KhachHangBUS;
-import GUI.Dialog.ThemKhachHangDialog;
+import DAO.ChiTietHoaDonDAO;
+import DAO.HoaDonDAO;
 import DAO.QuatDAO;
+import DTO.ChiTietHoaDonDTO;
+import DTO.HoaDonDTO;
 import java.util.Date;
 import java.awt.*;
 import java.awt.event.*;
@@ -18,7 +21,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 
@@ -303,16 +305,222 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         btnXuatPDF.setEnabled(tableModel.getRowCount() > 0);
     }
 
+//    private void processPayment() {
+//        // Kiểm tra xem có sản phẩm trong giỏ hàng không
+//        if (tableModel.getRowCount() == 0) {
+//            JOptionPane.showMessageDialog(this, "Chưa có sản phẩm nào để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+//            return;
+//        }
+//
+//        // Tính tổng tiền trước khi áp dụng khuyến mãi
+//        int sum = 0, qty = 0;
+//        for (int i = 0; i < tableModel.getRowCount(); i++) {
+//            int price = (int) tableModel.getValueAt(i, 2);
+//            int count = (int) tableModel.getValueAt(i, 4);
+//            sum += price * count;
+//            qty += count;
+//        }
+//
+//        // Kiểm tra khuyến mãi nếu có
+//        boolean khuyenMaiHopLe = true;
+//        String thongBaoKM = "";
+//        int totalAfterDiscount = sum;
+//
+//        if (chkApDungKM.isSelected() && cbbKhuyenMai.getSelectedItem() != null) {
+//            String ma = ((String) cbbKhuyenMai.getSelectedItem()).split(" – ")[0];
+//            PromotionResult r = checkPromotion(ma, sum, qty);
+//
+//            if (!r.isValid) {
+//                khuyenMaiHopLe = false;
+//                thongBaoKM = "Khuyến mãi không hợp lệ: " + r.msg;
+//            } else {
+//                totalAfterDiscount = sum - (sum * r.discount / 100);
+//            }
+//        }
+//
+//        // Nếu khuyến mãi không hợp lệ, hiển thị thông báo và không cho thanh toán
+//        if (!khuyenMaiHopLe) {
+//            JOptionPane.showMessageDialog(this, thongBaoKM, "Lỗi khuyến mãi", JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+//
+//        // Hiển thị xác nhận thanh toán
+//        int choice = JOptionPane.showConfirmDialog(this,
+//                "Xác nhận thanh toán: " + totalAfterDiscount + " VND?",
+//                "Thanh toán", JOptionPane.OK_CANCEL_OPTION);
+//
+//        if (choice == JOptionPane.OK_OPTION) {
+//            boolean capNhatThanhCong = true;
+//
+//            // Nếu là khách hàng thành viên, cập nhật tổng tiền đã mua
+//            if (rdoThanhVien.isSelected() && cbbKhachHang.getSelectedItem() != null) {
+//                String selectedItem = (String) cbbKhachHang.getSelectedItem();
+//                String sdtKH = selectedItem.split(" – ")[0];
+//
+//                // Truy vấn thông tin khách hàng từ cơ sở dữ liệu
+//                KhachHangDTO kh = new KhachHangBUS().findBySdt(sdtKH);
+//                if (kh == null) {
+//                    JOptionPane.showMessageDialog(this, "Khách hàng không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+//                    return;
+//                }
+//
+//                // Cập nhật tổng tiền cho khách hàng
+//                int tongTienMoi = kh.getTongTienDaMua() + totalAfterDiscount;
+//                kh.setTongTienDaMua(tongTienMoi);
+//
+//                // Cập nhật vào cơ sở dữ liệu
+//                KhachHangDAO dao = new KhachHangDAO();
+//                capNhatThanhCong = dao.update(kh);
+//            }
+//
+//            // Hiển thị thông báo phù hợp
+//            if (capNhatThanhCong) {
+//                JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
+//                tableModel.setRowCount(0);
+//                updateTotal();
+//            } else {
+//                JOptionPane.showMessageDialog(this, "Thanh toán thành công nhưng cập nhật thông tin khách hàng thất bại!",
+//                        "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+//                tableModel.setRowCount(0);
+//                updateTotal();
+//            }
+//        }
+//    }
     private void processPayment() {
-        int total = Integer.parseInt(txtTong.getText());
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            System.out.println("Row " + i + ": Mã Quạt=" + tableModel.getValueAt(i, 0) + ", Giá=" + tableModel.getValueAt(i, 2) + ", Số lượng=" + tableModel.getValueAt(i, 4));
+        }
+        // Kiểm tra xem có sản phẩm trong giỏ hàng không
+        if (tableModel.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(this, "Chưa có sản phẩm nào để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Tính tổng tiền trước khi áp dụng khuyến mãi
+        int sum = 0, qty = 0;
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            int price = (int) tableModel.getValueAt(i, 2);
+            int count = (int) tableModel.getValueAt(i, 4);
+            sum += price * count;
+            qty += count;
+        }
+
+        // Kiểm tra khuyến mãi nếu có
+        boolean khuyenMaiHopLe = true;
+        String maKM = null;
+        String thongBaoKM = "";
+        int totalAfterDiscount = sum;
+
+        if (chkApDungKM.isSelected() && cbbKhuyenMai.getSelectedItem() != null) {
+            maKM = ((String) cbbKhuyenMai.getSelectedItem()).split(" – ")[0];
+            PromotionResult r = checkPromotion(maKM, sum, qty);
+
+            if (!r.isValid) {
+                khuyenMaiHopLe = false;
+                thongBaoKM = "Khuyến mãi không hợp lệ: " + r.msg;
+            } else {
+                totalAfterDiscount = sum - (sum * r.discount / 100);
+            }
+        }
+
+        // Nếu khuyến mãi không hợp lệ, hiển thị thông báo và không cho thanh toán
+        if (!khuyenMaiHopLe) {
+            JOptionPane.showMessageDialog(this, thongBaoKM, "Lỗi khuyến mãi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Hiển thị xác nhận thanh toán
         int choice = JOptionPane.showConfirmDialog(this,
-                "Xác nhận thanh toán: " + total + " VND?", "Thanh toán", JOptionPane.OK_CANCEL_OPTION);
+                "Xác nhận thanh toán: " + totalAfterDiscount + " VND?",
+                "Thanh toán", JOptionPane.OK_CANCEL_OPTION);
+
         if (choice == JOptionPane.OK_OPTION) {
-            // Gọi updateTongTien với total là số tiền mua hàng
-            updateTongTien(total);
-            JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
-            tableModel.setRowCount(0);
-            updateTotal();
+            try {
+                // Tạo mã hóa đơn mới (format: HDyyyyMMdd + số thứ tự)
+                String maHD = generateNewInvoiceCode();
+
+                // Lấy mã khách hàng từ ComboBox (nếu là thành viên)
+                String maKH = "KH000"; // Default for non-member customers
+                if (rdoThanhVien.isSelected() && cbbKhachHang.getSelectedItem() != null) {
+                    String sdtKH = ((String) cbbKhachHang.getSelectedItem()).split(" – ")[0];
+                    KhachHangDTO kh = new KhachHangBUS().findBySdt(sdtKH);
+                    if (kh != null) {
+                        maKH = kh.getMaKhachHang();
+                    }
+                }
+
+                // Tạo đối tượng HoaDon
+                java.sql.Date ngayLap = java.sql.Date.valueOf(java.time.LocalDate.now());
+                HoaDonDTO hoaDon = new HoaDonDTO(maHD, maKH, maNhanVien, ngayLap, maKM, totalAfterDiscount);
+
+                // Lưu hóa đơn vào cơ sở dữ liệu
+                int resultHD = HoaDonDAO.insert(hoaDon);
+
+                if (resultHD > 0) {
+                    // Lưu chi tiết hóa đơn
+                    boolean allDetailsSaved = true;
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        System.out.println("Row " + i + ": " + tableModel.getValueAt(i, 0) + ", Price: " + tableModel.getValueAt(i, 2) + ", Quantity: " + tableModel.getValueAt(i, 4));
+                        // Add debug output
+                        System.out.println("Row " + i + " data:");
+                        for (int j = 0; j < tableModel.getColumnCount(); j++) {
+                            System.out.println("Column " + j + ": " + tableModel.getValueAt(i, j));
+                        }
+
+                        String maQuat = (String) tableModel.getValueAt(i, 0);
+                        int donGia = (int) tableModel.getValueAt(i, 2);
+                        int soLuong = (int) tableModel.getValueAt(i, 4);
+                        int thanhTien = donGia * soLuong;
+
+                        System.out.println("Creating detail with: MaQuat=" + maQuat
+                                + ", SoLuong=" + soLuong
+                                + ", DonGia=" + donGia
+                                + ", ThanhTien=" + thanhTien);
+
+                        // Create warranty code
+                        String maBaoHanh = "BH" + maHD + maQuat;
+
+                        ChiTietHoaDonDTO ctHD = new ChiTietHoaDonDTO(maHD, maQuat, soLuong, donGia, thanhTien, maBaoHanh);
+                        int resultCTHD = ChiTietHoaDonDAO.insert(ctHD);
+
+                        System.out.println("Insert result: " + resultCTHD);
+                    }
+
+                    // Cập nhật tổng tiền cho khách hàng nếu là thành viên
+                    if (rdoThanhVien.isSelected() && cbbKhachHang.getSelectedItem() != null) {
+                        String sdtKH = ((String) cbbKhachHang.getSelectedItem()).split(" – ")[0];
+                        KhachHangDTO kh = new KhachHangBUS().findBySdt(sdtKH);
+                        if (kh != null) {
+                            kh.setTongTienDaMua(kh.getTongTienDaMua() + totalAfterDiscount);
+                            new KhachHangDAO().update(kh);
+                        }
+                    }
+
+                    // Hiển thị thông báo thành công
+                    if (allDetailsSaved) {
+                        JOptionPane.showMessageDialog(this,
+                                "Thanh toán thành công!\nMã hóa đơn: " + maHD,
+                                "Thành công", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this,
+                                "Thanh toán thành công nhưng có lỗi khi lưu chi tiết hóa đơn!",
+                                "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                    }
+
+                    // Xóa giỏ hàng
+                    tableModel.setRowCount(0);
+                    updateTotal();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Thanh toán thất bại! Không thể lưu hóa đơn.",
+                            "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                        "Lỗi xảy ra khi thanh toán: " + ex.getMessage(),
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
     }
 
@@ -411,6 +619,38 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
             msg = m;
             discount = d;
         }
+    }
+
+    private String generateNewInvoiceCode() {
+        // Lấy ngày hiện tại
+        LocalDate currentDate = LocalDate.now();
+        String dateStr = currentDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String prefix = "HD" + dateStr;
+
+        // Tìm mã hóa đơn lớn nhất trong ngày
+        int maxNumber = 0;
+
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement pst = conn.prepareStatement(
+                "SELECT MAX(MaHoaDon) FROM hoadon WHERE MaHoaDon LIKE ?")) {
+
+            pst.setString(1, prefix + "%");
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next() && rs.getString(1) != null) {
+                    String maxCode = rs.getString(1);
+                    // Extract the numeric part
+                    try {
+                        maxNumber = Integer.parseInt(maxCode.substring(prefix.length()));
+                    } catch (NumberFormatException e) {
+                        // Default to 0 if parsing fails
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Tăng số thứ tự lên 1 và định dạng với 3 chữ số
+        return prefix + String.format("%03d", maxNumber + 1);
     }
 
     private static class SpinnerEditor extends AbstractCellEditor implements TableCellEditor {

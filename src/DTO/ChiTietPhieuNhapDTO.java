@@ -19,12 +19,12 @@ public class ChiTietPhieuNhapDTO {
     public ChiTietPhieuNhapDTO() {}
 
     // Constructor đầy đủ
-    public ChiTietPhieuNhapDTO(String maPhieuNhap, String maQuat, int soLuong, int donGia, int thanhTien) {
+    public ChiTietPhieuNhapDTO(String maPhieuNhap, String maQuat, int soLuong, int donGia) {
         this.maPhieuNhap = maPhieuNhap;
         this.maQuat = maQuat;
         this.soLuong = soLuong;
         this.donGia = donGia;
-        this.thanhTien = thanhTien;
+        this.thanhTien = soLuong*donGia;
     }
 
     // Getters và Setters
@@ -66,5 +66,12 @@ public class ChiTietPhieuNhapDTO {
 
     public void setThanhTien(int thanhTien) {
         this.thanhTien = thanhTien;
+    }
+      public void printDetails() {
+        System.out.println("maphieunhap: " + maPhieuNhap);
+        System.out.println("maquat: " + maQuat);
+        System.out.println("soluong: " + soLuong);
+        System.out.println("dongia: " + donGia);
+        System.out.println("thanhtien: " + thanhTien);
     }
 }

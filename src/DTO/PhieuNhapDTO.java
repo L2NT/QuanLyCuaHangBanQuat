@@ -15,14 +15,14 @@ public class PhieuNhapDTO {
     public LocalDate NgayNhap;
     public String MaNCC;
     public String MaNhanVien;
-    public double TongTien;
+    public int TongTien;
 
     // Constructor mặc định
     public PhieuNhapDTO() {
     }
 
     // Constructor đầy đủ
-    public PhieuNhapDTO(String MaPhieuNhap, LocalDate NgayNhap, String MaNCC, String MaNhanVien, double TongTien) {
+    public PhieuNhapDTO(String MaPhieuNhap, LocalDate NgayNhap, String MaNCC, String MaNhanVien, int TongTien) {
         this.MaPhieuNhap = MaPhieuNhap;
         this.NgayNhap = NgayNhap;
         this.MaNCC = MaNCC;
@@ -63,11 +63,11 @@ public class PhieuNhapDTO {
         MaNhanVien = maNhanVien;
     }
 
-    public double getTongTien() {
+    public int getTongTien() {
         return TongTien;
     }
 
-    public void setTongTien(double tongTien) {
+    public void setTongTien(int tongTien) {
         TongTien = tongTien;
     }
 }

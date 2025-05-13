@@ -5,10 +5,7 @@ import GUI.AdminMainFrame;
 import GUI.ManagerMainFrame;
 import GUI.EmployeeMainFrame;
 import GUI.Component.InputForm;
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -37,12 +34,7 @@ public class LoginFrame extends JFrame implements KeyListener {
     }
 
     private void initLookAndFeel() {
-        FlatRobotoFont.install();
-        FlatLaf.setPreferredFontFamily(FlatRobotoFont.FAMILY);
-        FlatLaf.setPreferredLightFontFamily(FlatRobotoFont.FAMILY_LIGHT);
-        FlatLaf.setPreferredSemiboldFontFamily(FlatRobotoFont.FAMILY_SEMIBOLD);
-        FlatIntelliJLaf.registerCustomDefaultsSource("style");
-        FlatIntelliJLaf.setup();
+ 
         UIManager.put("PasswordField.showRevealButton", true);
     }
 
@@ -64,7 +56,7 @@ public class LoginFrame extends JFrame implements KeyListener {
 
         // Tiêu đề
         lblTitle = new JLabel("ĐĂNG NHẬP VÀO HỆ THỐNG");
-        lblTitle.setFont(new Font(FlatRobotoFont.FAMILY_SEMIBOLD, Font.BOLD, 20));
+  
         pnlMain.add(lblTitle);
 
         // Form Username / Password
@@ -84,11 +76,11 @@ public class LoginFrame extends JFrame implements KeyListener {
 
         // Nút Đăng nhập
         lblLoginBtn = new JLabel("ĐĂNG NHẬP", SwingConstants.CENTER);
-        lblLoginBtn.setFont(new Font(FlatRobotoFont.FAMILY, Font.BOLD, 16));
+  
         lblLoginBtn.setForeground(Color.WHITE);
 
         pnlLogIn = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 12));
-        pnlLogIn.putClientProperty(FlatClientProperties.STYLE, "arc: 99");
+ 
         pnlLogIn.setBackground(Color.BLACK);
         pnlLogIn.setPreferredSize(new Dimension(380, 45));
         pnlLogIn.add(lblLoginBtn);

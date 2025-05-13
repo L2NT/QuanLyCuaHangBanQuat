@@ -20,6 +20,10 @@ public class PhieuNhapBUS {
     public List<PhieuNhapDTO> getAllPhieuNhap() {
         return PhieuNhapDAO.getAllPhieuNhap();
     }
+    public PhieuNhapDTO findphieunhapfrommapn(String mapn)
+    {
+        return PhieuNhapDAO.findPhieuNhapFromMaPN(mapn);
+    }
 
     public static Map<String, String> getTenNhaCungCapMap() {
         Map<String, String> map = new HashMap<>();
@@ -43,5 +47,6 @@ public class PhieuNhapBUS {
     public boolean themPhieuNhap(PhieuNhapDTO pn) {
     return PhieuNhapDAO.themPhieuNhap(pn);
 }
+    
 
 }

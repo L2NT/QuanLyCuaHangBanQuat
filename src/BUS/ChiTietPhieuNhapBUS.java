@@ -9,7 +9,7 @@ import DTO.ChiTietPhieuNhapDTO;
 
 import java.util.List;
 
-public class ChiTietPhieuNhapBLL {
+public class ChiTietPhieuNhapBUS {
 
     // Lấy toàn bộ danh sách chi tiết phiếu nhập
     public List<ChiTietPhieuNhapDTO> layTatCa() {
@@ -17,7 +17,13 @@ public class ChiTietPhieuNhapBLL {
     }
     public boolean themChiTietPhieuNhap(ChiTietPhieuNhapDTO ct) {
     return ChiTietPhieuNhapDAO.themChiTietPhieuNhap(ct);
-}
+}   
+  
+    public static List<ChiTietPhieuNhapDTO> getChiTietPhieuNhapByMaPN(String maPN) {
+        return ChiTietPhieuNhapDAO.getChiTietPhieuNhapByMaPN(maPN);
+    }
+
+
 
 
   

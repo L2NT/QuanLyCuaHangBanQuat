@@ -24,6 +24,23 @@ public class NhanVienDAO {
         }
         return list;
     }
+    public String getTenNhanVienByManv(String manv) {
+      String sql = "SELECT HoTenNV FROM nhanvien WHERE MaNhanVien = ?";
+      try (
+          Connection conn = DBConnection.getConnection();
+          PreparedStatement stmt = conn.prepareStatement(sql)
+      ) {
+          stmt.setString(1, manv);
+          try (ResultSet rs = stmt.executeQuery()) {
+              if (rs.next()) {
+                  return rs.getString("HoTenNV");
+              }
+          }
+      } catch (SQLException e) {
+          e.printStackTrace();
+      }
+      return null; // hoặc return "Không tìm thấy";
+  }
 
     public void insert(NhanVienDTO nv) throws SQLException {
         String sql = "INSERT INTO `nhanvien` VALUES (?,?,?,?,?)";

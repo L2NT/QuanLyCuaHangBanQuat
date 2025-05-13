@@ -73,6 +73,27 @@ public class NhaCungCapDAO {
         return null;
     }
 
+    public static String layMaNhaCungCapTheoTen(String tenNCC) {
+    String maNCC = null;
+    String sql = "SELECT MaNCC FROM nha_cung_cap WHERE TenNCC = ?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setString(1, tenNCC);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            maNCC = rs.getString("MaNCC");
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return maNCC;
+}
+
     public List<NhaCungCapDTO> findByTenNCC(String keyword) throws SQLException {
         List<NhaCungCapDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM nha_cung_cap WHERE TenNCC LIKE ?";
