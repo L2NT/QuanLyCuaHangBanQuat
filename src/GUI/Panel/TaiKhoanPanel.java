@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
+ * Panel quản lý tài khoản - cho phép xem danh sách, thêm, sửa, xóa tài khoản người dùng
  * Có 2 chế độ: 
  * 1. Chế độ admin (khi isAdmin = true) - hiển thị nút đăng xuất thay vì xuất Excel
  * 2. Chế độ quản lý thông thường
@@ -49,7 +50,7 @@ public class TaiKhoanPanel extends JPanel {
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        // Tạo và thêm toolbar
+        // Tạo và thêm thanh công cụ
         JPanel thanhCongCu = taoThanhCongCu();
         add(thanhCongCu, BorderLayout.NORTH);
 
@@ -67,20 +68,22 @@ public class TaiKhoanPanel extends JPanel {
         boLocDuLieu = new TableRowSorter<>(modelBangDuLieu);
         bangDuLieu.setRowSorter(boLocDuLieu);
         
-      
+        // Thêm bảng vào panel với thanh cuộn
         add(new JScrollPane(bangDuLieu), BorderLayout.CENTER);
+
+        // Nạp dữ liệu vào bảng
         napDuLieuVaoBang();
     }
     
     /**
-     * Constructor mặc định - cho tương thích với code cũ :)))
+     * Constructor mặc định - cho tương thích với code cũ
      */
     public TaiKhoanPanel() {
         this(false); // Mặc định không phải Admin
     }
 
     /**
-     * thanh công cụ chia ra làm 2 phần: trái, phải
+     * Tạo thanh công cụ với các nút chức năng và bộ lọc
      */
     private JPanel taoThanhCongCu() {
         // Panel chính cho thanh công cụ
@@ -97,7 +100,7 @@ public class TaiKhoanPanel extends JPanel {
         gbc.gridy = 0;
         gbc.insets = new Insets(0, 0, 0, 5); // Khoảng cách giữa các nút
 
-        // ===== Phần bên trái =====
+        // ===== PHẦN 1: Các nút chức năng =====
         
         // Nút THÊM
         ImageIcon iconThem = new ImageIcon(getClass().getResource("/icon/them.png"));
@@ -140,12 +143,12 @@ public class TaiKhoanPanel extends JPanel {
             thanh.add(btnDangXuat, gbc);
         }
         
-        // ===== Khoảng trống giữa các nút và phần tìm kiếm =====
+        // ===== PHẦN 2: Khoảng trống giữa các nút và phần tìm kiếm =====
         gbc.gridx = 4;
         gbc.weightx = 1.0; // Phần này sẽ chiếm khoảng trống còn lại
         thanh.add(Box.createHorizontalGlue(), gbc);
         
-        // ===== Phần bên phải =====
+        // ===== PHẦN 3: Panel tìm kiếm và lọc =====
         JPanel panelTimKiem = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelTimKiem.setOpaque(false);
         
@@ -175,8 +178,9 @@ public class TaiKhoanPanel extends JPanel {
         gbc.weightx = 0.0;
         thanh.add(panelTimKiem, gbc);
         
-        // ===== Gắn các sự kiện =====
+        // ===== PHẦN 4: Gắn các sự kiện =====
         
+        // Sự kiện nút THÊM
         btnThem.addActionListener(e -> {
             ThemTaiKhoanDialog hopThoai = new ThemTaiKhoanDialog(
                 SwingUtilities.getWindowAncestor(this)
@@ -188,6 +192,7 @@ public class TaiKhoanPanel extends JPanel {
             }
         });
         
+        // Sự kiện nút SỬA
         btnSua.addActionListener(e -> {
             // Kiểm tra xem đã chọn dòng nào chưa
             int dongDangChon = bangDuLieu.getSelectedRow();
@@ -223,6 +228,7 @@ public class TaiKhoanPanel extends JPanel {
             }
         });
         
+        // Sự kiện nút XÓA
         btnXoa.addActionListener(e -> {
             // Kiểm tra xem đã chọn dòng nào chưa
             int dongDangChon = bangDuLieu.getSelectedRow();
@@ -277,7 +283,7 @@ public class TaiKhoanPanel extends JPanel {
             });
         }
         
-        
+        // Sự kiện nút LÀM MỚI
         btnLamMoi.addActionListener(e -> {
             // Xóa nội dung tìm kiếm và đặt lại bộ lọc
             txtTimKiem.setText("");
@@ -299,7 +305,7 @@ public class TaiKhoanPanel extends JPanel {
     }
 
     /**
-     * Lọc nâng cao
+     * Áp dụng bộ lọc cho bảng dựa trên giá trị tìm kiếm và quyền hạng đã chọn
      */
     private void apDungBoLoc() {
         List<RowFilter<DefaultTableModel, Integer>> cacBoLoc = new ArrayList<>();
@@ -322,6 +328,7 @@ public class TaiKhoanPanel extends JPanel {
                     "(?i)" + Pattern.quote(tuKhoa));
                 cacBoLoc.add(locTuKhoa);
             } catch (PatternSyntaxException ex) {
+                // Bỏ qua nếu cú pháp regex không hợp lệ
             }
         }
         
@@ -336,23 +343,23 @@ public class TaiKhoanPanel extends JPanel {
     }
 
     /**
-     * Nạp dữ liệu từ csdl vào bảng
+     * Nạp dữ liệu từ cơ sở dữ liệu vào bảng
      */
     private void napDuLieuVaoBang() {
-        // Xóa hết dữ liệu cũ 
+        // Xóa hết dữ liệu cũ
         modelBangDuLieu.setRowCount(0);
         
-        // Lấy danh sách tk mới
+        // Lấy danh sách tài khoản từ BUS
         List<TaiKhoanDTO> danhSachTaiKhoan = taiKhoanBUS.layTatCa();
         
-        // thêm vào bảng
+        // Thêm từng tài khoản vào bảng
         for (TaiKhoanDTO taiKhoan : danhSachTaiKhoan) {
             modelBangDuLieu.addRow(new Object[]{
-                taiKhoan.getMaTaiKhoan(),       
-                taiKhoan.getMaNhanVien(),       
-                taiKhoan.getUsername(),         
-                taiKhoan.getPassword(),         
-                taiKhoan.getVaiTro()            
+                taiKhoan.getMaTaiKhoan(),       // Cột 0: Mã tài khoản
+                taiKhoan.getMaNhanVien(),       // Cột 1: Mã nhân viên
+                taiKhoan.getUsername(),         // Cột 2: Tên đăng nhập
+                taiKhoan.getPassword(),         // Cột 3: Mật khẩu
+                taiKhoan.getVaiTro()            // Cột 4: Vai trò (quyền hạng)
             });
         }
     }
