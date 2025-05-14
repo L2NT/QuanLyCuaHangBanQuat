@@ -33,10 +33,12 @@ public class ThongKeQuatTheoNgay extends JPanel {
         // ========== PHẦN NHẬP NGÀY ==========
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setOpaque(false);
-        LocalDate now = LocalDate.now();
+         LocalDate now = LocalDate.now();
+        LocalDate oneWeekAgo = now.minusDays(7);  
         String currentDate = now.toString();
+        String oneWeekAgoStr = oneWeekAgo.toString();
         JLabel lblNgayBD = new JLabel("Ngày bắt đầu (yyyy-mm-dd):");
-        txtNgayBD = new JTextField(currentDate, 10);
+        txtNgayBD = new JTextField(oneWeekAgoStr, 10);
         JLabel lblNgayKT = new JLabel("Ngày kết thúc (yyyy-mm-dd):");
         txtNgayKT = new JTextField(currentDate, 10);
         JButton btnThongKe = new JButton("Thống kê");

@@ -46,4 +46,9 @@ public class LoaiSanPhamDTO {
     public void setMoTa(String moTa) {
         this.moTa = moTa;
     }
+    @Override
+    public String toString() {
+        return tenLoai;
+    }
+
 }

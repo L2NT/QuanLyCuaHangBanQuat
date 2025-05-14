@@ -10,6 +10,7 @@ import BUS.KhachHangBUS;
 import DAO.ChiTietHoaDonDAO;
 import DAO.HoaDonDAO;
 import DAO.QuatDAO;
+import BUS.QLBH_BUS;
 import DTO.ChiTietHoaDonDTO;
 import DTO.HoaDonDTO;
 import java.util.Date;
@@ -44,7 +45,8 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
     private String maNhanVien;
     private JRadioButton rdoThanhVien, rdoVangLai;
     private ButtonGroup bgTrangThai;
-    private JComboBox<String> cbbKhachHang, cbbKhuyenMai, cbbSanPham;
+    private JComboBox<String> cbbKhachHang, cbbKhuyenMai;
+    private JComboBox<QuatComboItem> cbbSanPham;
     private JCheckBox chkApDungKM;
     private JButton btnThemSP, btnThanhToan, btnXuatPDF, btnHuy;
     private JTable table;
@@ -189,7 +191,7 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setCellRenderer(ctr);
         }
-        table.getColumnModel().getColumn(4).setCellEditor(new SpinnerEditor());
+        table.getColumnModel().getColumn(4).setCellEditor(new StockAwareSpinnerEditor());
         JScrollPane scroll = new JScrollPane(table);
         scroll.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY), "Danh sách sản phẩm"));
         center.add(scroll, BorderLayout.CENTER);
@@ -204,9 +206,6 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         btnThanhToan = new JButton("Thanh toán");
         btnThanhToan.addActionListener(this);
         south.add(btnThanhToan);
-        btnXuatPDF = new JButton("Xuất PDF");
-        btnXuatPDF.addActionListener(this);
-        south.add(btnXuatPDF);
         btnHuy = new JButton("Xóa");
         btnHuy.addActionListener(this);
         south.add(btnHuy);
@@ -238,15 +237,79 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         }
     }
 
-    // Load methods
     private void loadProductsToCombo() {
         cbbSanPham.removeAllItems();
-        try (Connection c = DBConnection.getConnection(); Statement s = c.createStatement(); ResultSet rs = s.executeQuery("SELECT MaQuat,TenQuat FROM quat")) {
+        try (Connection c = DBConnection.getConnection(); Statement s = c.createStatement(); ResultSet rs = s.executeQuery("SELECT MaQuat, TenQuat, SoLuongTon FROM quat")) {
+
             while (rs.next()) {
-                cbbSanPham.addItem(rs.getString(1) + " - " + rs.getString(2));
+                String maQuat = rs.getString(1);
+                String tenQuat = rs.getString(2);
+                int soLuongTon = rs.getInt(3);
+
+                // Create a custom combo box item that includes stock info
+                QuatComboItem item = new QuatComboItem(maQuat, tenQuat, soLuongTon);
+                cbbSanPham.addItem(item);
             }
+
+            // Use custom renderer to display the item properly
+            cbbSanPham.setRenderer(new QuatComboRenderer());
         } catch (SQLException ex) {
             showError(ex);
+        }
+    }
+    private static class QuatComboItem {
+
+        private String maQuat;
+        private String tenQuat;
+        private int soLuongTon;
+
+        public QuatComboItem(String maQuat, String tenQuat, int soLuongTon) {
+            this.maQuat = maQuat;
+            this.tenQuat = tenQuat;
+            this.soLuongTon = soLuongTon;
+        }
+
+        public String getMaQuat() {
+            return maQuat;
+        }
+
+        public String getTenQuat() {
+            return tenQuat;
+        }
+
+        public int getSoLuongTon() {
+            return soLuongTon;
+        }
+
+        @Override
+        public String toString() {
+            return maQuat + " - " + tenQuat + " (SL: " + soLuongTon + ")";
+        }
+    }
+
+    private static class QuatComboRenderer extends DefaultListCellRenderer {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus) {
+
+            Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            if (value instanceof QuatComboItem) {
+                QuatComboItem item = (QuatComboItem) value;
+
+                // Gray out items with zero stock
+                if (item.getSoLuongTon() <= 0) {
+                    c.setForeground(Color.GRAY);
+                    setToolTipText("Hết hàng");
+                } else {
+                    c.setForeground(list.getForeground());
+                    setToolTipText(null);
+                }
+            }
+            return c;
         }
     }
 
@@ -268,15 +331,43 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         }
     }
 
-    // Helpers
     private void addProduct() {
-        String sel = (String) cbbSanPham.getSelectedItem();
-        if (sel != null) {
-            String code = sel.split(" - ")[0];
+        Object sel = cbbSanPham.getSelectedItem();
+        if (sel instanceof QuatComboItem item) {
+            // Check if this product has stock
+            if (item.getSoLuongTon() <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Sản phẩm " + item.getTenQuat() + " đã hết hàng!",
+                        "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Check if this product already exists in the table
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                String maQuat = (String) tableModel.getValueAt(i, 0);
+                if (maQuat.equals(item.getMaQuat())) {
+                    // Product already in table, check quantity against stock
+                    int currentQty = (int) tableModel.getValueAt(i, 4);
+                    if (currentQty >= item.getSoLuongTon()) {
+                        JOptionPane.showMessageDialog(this,
+                                "Số lượng đã đạt mức tối đa trong kho: " + item.getSoLuongTon(),
+                                "Thông báo", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    // Increment quantity instead of adding new row
+                    tableModel.setValueAt(currentQty + 1, i, 4);
+                    updateTotal();
+                    return;
+                }
+            }
+
+            // Product not in table yet, add new row
             try {
-                QuatDTO q = new QuatDAO().findByMaQuat(code);
+                QuatDTO q = new QuatDAO().findByMaQuat(item.getMaQuat());
                 if (q != null) {
-                    tableModel.addRow(new Object[]{q.getMaQuat(), q.getTenQuat(), q.getGia(), q.getThuongHieu(), 1});
+                    tableModel.addRow(new Object[]{q.getMaQuat(), q.getTenQuat(), q.getGia(),
+                        q.getThuongHieu(), 1});
                 }
             } catch (SQLException ex) {
                 showError(ex);
@@ -305,87 +396,6 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
         btnXuatPDF.setEnabled(tableModel.getRowCount() > 0);
     }
 
-//    private void processPayment() {
-//        // Kiểm tra xem có sản phẩm trong giỏ hàng không
-//        if (tableModel.getRowCount() == 0) {
-//            JOptionPane.showMessageDialog(this, "Chưa có sản phẩm nào để thanh toán!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-//            return;
-//        }
-//
-//        // Tính tổng tiền trước khi áp dụng khuyến mãi
-//        int sum = 0, qty = 0;
-//        for (int i = 0; i < tableModel.getRowCount(); i++) {
-//            int price = (int) tableModel.getValueAt(i, 2);
-//            int count = (int) tableModel.getValueAt(i, 4);
-//            sum += price * count;
-//            qty += count;
-//        }
-//
-//        // Kiểm tra khuyến mãi nếu có
-//        boolean khuyenMaiHopLe = true;
-//        String thongBaoKM = "";
-//        int totalAfterDiscount = sum;
-//
-//        if (chkApDungKM.isSelected() && cbbKhuyenMai.getSelectedItem() != null) {
-//            String ma = ((String) cbbKhuyenMai.getSelectedItem()).split(" – ")[0];
-//            PromotionResult r = checkPromotion(ma, sum, qty);
-//
-//            if (!r.isValid) {
-//                khuyenMaiHopLe = false;
-//                thongBaoKM = "Khuyến mãi không hợp lệ: " + r.msg;
-//            } else {
-//                totalAfterDiscount = sum - (sum * r.discount / 100);
-//            }
-//        }
-//
-//        // Nếu khuyến mãi không hợp lệ, hiển thị thông báo và không cho thanh toán
-//        if (!khuyenMaiHopLe) {
-//            JOptionPane.showMessageDialog(this, thongBaoKM, "Lỗi khuyến mãi", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        // Hiển thị xác nhận thanh toán
-//        int choice = JOptionPane.showConfirmDialog(this,
-//                "Xác nhận thanh toán: " + totalAfterDiscount + " VND?",
-//                "Thanh toán", JOptionPane.OK_CANCEL_OPTION);
-//
-//        if (choice == JOptionPane.OK_OPTION) {
-//            boolean capNhatThanhCong = true;
-//
-//            // Nếu là khách hàng thành viên, cập nhật tổng tiền đã mua
-//            if (rdoThanhVien.isSelected() && cbbKhachHang.getSelectedItem() != null) {
-//                String selectedItem = (String) cbbKhachHang.getSelectedItem();
-//                String sdtKH = selectedItem.split(" – ")[0];
-//
-//                // Truy vấn thông tin khách hàng từ cơ sở dữ liệu
-//                KhachHangDTO kh = new KhachHangBUS().findBySdt(sdtKH);
-//                if (kh == null) {
-//                    JOptionPane.showMessageDialog(this, "Khách hàng không tồn tại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//
-//                // Cập nhật tổng tiền cho khách hàng
-//                int tongTienMoi = kh.getTongTienDaMua() + totalAfterDiscount;
-//                kh.setTongTienDaMua(tongTienMoi);
-//
-//                // Cập nhật vào cơ sở dữ liệu
-//                KhachHangDAO dao = new KhachHangDAO();
-//                capNhatThanhCong = dao.update(kh);
-//            }
-//
-//            // Hiển thị thông báo phù hợp
-//            if (capNhatThanhCong) {
-//                JOptionPane.showMessageDialog(this, "Thanh toán thành công!");
-//                tableModel.setRowCount(0);
-//                updateTotal();
-//            } else {
-//                JOptionPane.showMessageDialog(this, "Thanh toán thành công nhưng cập nhật thông tin khách hàng thất bại!",
-//                        "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-//                tableModel.setRowCount(0);
-//                updateTotal();
-//            }
-//        }
-//    }
     private void processPayment() {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             System.out.println("Row " + i + ": Mã Quạt=" + tableModel.getValueAt(i, 0) + ", Giá=" + tableModel.getValueAt(i, 2) + ", Số lượng=" + tableModel.getValueAt(i, 4));
@@ -404,8 +414,6 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
             sum += price * count;
             qty += count;
         }
-
-        // Kiểm tra khuyến mãi nếu có
         boolean khuyenMaiHopLe = true;
         String maKM = null;
         String thongBaoKM = "";
@@ -448,14 +456,9 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
                         maKH = kh.getMaKhachHang();
                     }
                 }
-
-                // Tạo đối tượng HoaDon
                 java.sql.Date ngayLap = java.sql.Date.valueOf(java.time.LocalDate.now());
                 HoaDonDTO hoaDon = new HoaDonDTO(maHD, maKH, maNhanVien, ngayLap, maKM, totalAfterDiscount);
-
-                // Lưu hóa đơn vào cơ sở dữ liệu
                 int resultHD = HoaDonDAO.insert(hoaDon);
-
                 if (resultHD > 0) {
                     // Lưu chi tiết hóa đơn
                     boolean allDetailsSaved = true;
@@ -476,14 +479,19 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
                                 + ", SoLuong=" + soLuong
                                 + ", DonGia=" + donGia
                                 + ", ThanhTien=" + thanhTien);
-
-                        // Create warranty code
-                        String maBaoHanh = "BH" + maHD + maQuat;
-
+                        String maBaoHanh = QLBH_BUS.getMaBaoHanhByMaQuat(maQuat);
                         ChiTietHoaDonDTO ctHD = new ChiTietHoaDonDTO(maHD, maQuat, soLuong, donGia, thanhTien, maBaoHanh);
                         int resultCTHD = ChiTietHoaDonDAO.insert(ctHD);
 
                         System.out.println("Insert result: " + resultCTHD);
+                    }
+                    QuatDAO quatDAO = new QuatDAO();
+                    for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        String maQuat = (String) tableModel.getValueAt(i, 0);
+                        int soLuong = (int) tableModel.getValueAt(i, 4);
+
+                        // Reduce stock by the sold quantity (negative soLuongNhap)
+                        quatDAO.updateSoLuongQuat(maQuat, -soLuong);
                     }
 
                     // Cập nhật tổng tiền cho khách hàng nếu là thành viên
@@ -622,44 +630,79 @@ public class BanQuatPanel extends JPanel implements ActionListener, Serializable
     }
 
     private String generateNewInvoiceCode() {
-        // Lấy ngày hiện tại
-        LocalDate currentDate = LocalDate.now();
-        String dateStr = currentDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        String prefix = "HD" + dateStr;
+        // Prefix cho mã hóa đơn
+        String prefix = "HD";
 
-        // Tìm mã hóa đơn lớn nhất trong ngày
+        // Tìm mã hóa đơn lớn nhất
         int maxNumber = 0;
-
         try (Connection conn = DBConnection.getConnection(); PreparedStatement pst = conn.prepareStatement(
                 "SELECT MAX(MaHoaDon) FROM hoadon WHERE MaHoaDon LIKE ?")) {
-
             pst.setString(1, prefix + "%");
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next() && rs.getString(1) != null) {
                     String maxCode = rs.getString(1);
-                    // Extract the numeric part
+                    // Trích xuất phần số
                     try {
                         maxNumber = Integer.parseInt(maxCode.substring(prefix.length()));
                     } catch (NumberFormatException e) {
-                        // Default to 0 if parsing fails
+                        // Mặc định là 0 nếu có lỗi
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        // Tăng số thứ tự lên 1 và định dạng với 3 chữ số
-        return prefix + String.format("%03d", maxNumber + 1);
+        return prefix + String.format("%02d", maxNumber + 1);
     }
 
-    private static class SpinnerEditor extends AbstractCellEditor implements TableCellEditor {
+    private class StockAwareSpinnerEditor extends AbstractCellEditor implements TableCellEditor {
 
-        private final JSpinner spinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+        private final JSpinner spinner;
+        private int row;
+
+        public StockAwareSpinnerEditor() {
+            spinner = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+
+            // Add a change listener to validate against stock
+            spinner.addChangeListener(e -> {
+                if (row >= 0 && row < tableModel.getRowCount()) {
+                    String maQuat = (String) tableModel.getValueAt(row, 0);
+                    int newValue = (Integer) spinner.getValue();
+
+                    try {
+                        QuatDAO dao = new QuatDAO();
+                        QuatDTO quat = dao.findByMaQuat(maQuat);
+
+                        if (quat != null && newValue > quat.getSoLuongTon()) {
+                            JOptionPane.showMessageDialog(BanQuatPanel.this,
+                                    "Số lượng vượt quá tồn kho (" + quat.getSoLuongTon() + ")",
+                                    "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+                            spinner.setValue(quat.getSoLuongTon());
+                        }
+                    } catch (SQLException ex) {
+                        showError(ex);
+                    }
+                }
+            });
+        }
 
         @Override
-        public Component getTableCellEditorComponent(JTable table, Object val, boolean sel, int r, int c) {
-            spinner.setValue(val);
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            this.row = row;
+            spinner.setValue(value);
+
+            // Set maximum based on stock
+            try {
+                String maQuat = (String) tableModel.getValueAt(row, 0);
+                QuatDTO quat = new QuatDAO().findByMaQuat(maQuat);
+                if (quat != null) {
+                    ((SpinnerNumberModel) spinner.getModel()).setMaximum(quat.getSoLuongTon());
+                }
+            } catch (SQLException ex) {
+                showError(ex);
+            }
+
             return spinner;
         }
 

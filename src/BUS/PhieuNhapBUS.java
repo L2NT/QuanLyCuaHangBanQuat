@@ -7,46 +7,107 @@ package BUS;
 import DAO.PhieuNhapDAO;
 import DTO.PhieuNhapDTO;
 
+import BUS.NhaCungCapBUS;
+
 import java.sql.*;
 import java.util.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 
 import DTO.DBConnection;
 
 public class PhieuNhapBUS {
-
-     public static String taoMaPhieuNhapTuDong() {
-        return PhieuNhapDAO.taoMaPhieuNhapTuDong();
+    public PhieuNhapDAO dao=new PhieuNhapDAO();
+     public  String taoMaPhieuNhapTuDong() {
+        return dao.taoMaPhieuNhapTuDong();
     }
     public List<PhieuNhapDTO> getAllPhieuNhap() {
-        return PhieuNhapDAO.getAllPhieuNhap();
+        return dao.getAllPhieuNhap();
     }
     public PhieuNhapDTO findphieunhapfrommapn(String mapn)
     {
-        return PhieuNhapDAO.findPhieuNhapFromMaPN(mapn);
+        return dao.findPhieuNhapFromMaPN(mapn);
     }
 
-    public static Map<String, String> getTenNhaCungCapMap() {
-        Map<String, String> map = new HashMap<>();
-        String sql = "SELECT MaNCC, TenNCC FROM nha_cung_cap";
-
-        try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                String ma = rs.getString("MaNCC");
-                String ten = rs.getString("TenNCC");
-                map.put(ma, ten);
+ 
+    public boolean themPhieuNhap(PhieuNhapDTO pn) 
+    {
+    return dao.themPhieuNhap(pn);
+    }
+    
+    
+ 
+    
+   public List<PhieuNhapDTO> get_filter(String tenncc, String manv, java.util.Date ngaystar, java.util.Date ngayend, int sotienstar, int sotienend) {
+    List<PhieuNhapDTO> allPhieuNhap = getAllPhieuNhap(); 
+    List<PhieuNhapDTO> filteredList = new ArrayList<>();
+    NhaCungCapBUS nccbus=new NhaCungCapBUS();
+    
+ 
+    for (PhieuNhapDTO phieuNhap : allPhieuNhap) {
+        boolean match = true;
+        
+    
+        if (tenncc != null && !tenncc.equals("Tất cả") && !tenncc.isEmpty()) {
+            if (!nccbus.layTenNhaCungCapTheoMa(phieuNhap.getMaNCC()).equals(tenncc)) {
+                match = false;
             }
-        } catch (SQLException e) {
-            e.printStackTrace(); // Hoặc log ra file nếu có hệ thống log
         }
 
-        return map;
-    }
-    
-    public boolean themPhieuNhap(PhieuNhapDTO pn) {
-    return PhieuNhapDAO.themPhieuNhap(pn);
-}
-    
+       
+        if (manv != null && !manv.equals("Tất cả") && !manv.isEmpty()) {
+            if (!phieuNhap.getMaNhanVien().equals(manv)) {
+                match = false;
+            }
+        }
+        
+       
+        if (ngaystar != null || ngayend != null) {
+            LocalDate phieuNhapDate = phieuNhap.getNgayNhap(); // Giả sử getNgayNhap trả về LocalDate
 
+            // Chuyển đổi ngày bắt đầu và ngày kết thúc từ java.util.Date sang LocalDate
+            LocalDate ngayBatDau = (ngaystar != null)
+                ? ngaystar.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                : null;
+
+            LocalDate ngayKetThuc = (ngayend != null)
+                ? ngayend.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                : null;
+
+            if (ngayBatDau != null && phieuNhapDate.isBefore(ngayBatDau)) {
+                match = false;
+            }
+
+            if (ngayKetThuc != null && phieuNhapDate.isAfter(ngayKetThuc)) {
+                match = false;
+            }
+        }
+        
+   
+        int tongTien = phieuNhap.getTongTien(); 
+        if (sotienstar > 0 && tongTien < sotienstar) {
+            match = false;
+        }
+        
+        if (sotienend > 0 && tongTien > sotienend) {
+            match = false;
+        }
+        
+
+        if (match) {
+            filteredList.add(phieuNhap);
+        }
+    }
+       System.out.println(filteredList.size());
+    return filteredList;
+}
+
+    
+    
+    
+    
+    
+    
+    
 }

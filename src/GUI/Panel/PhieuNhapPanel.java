@@ -9,28 +9,50 @@ import DTO.PhieuNhapDTO;
 import java.util.List;
 import java.util.Map;
 import GUI.Dialog.ThemPhieuNhapDialog;
-import GUI.Dialog.ChiTietPhieuNhapDialog;
 import org.jdesktop.swingx.prompt.PromptSupport;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import com.toedter.calendar.JDateChooser;
 import java.util.Locale;
 import javax.swing.JOptionPane;
+import GUI.Dialog.ThemPhieuNhapDialog;
+import GUI.Dialog.ChiTietPhieuNhapDialog;
+import GUI.Dialog.SuaPhieuNhapDialog;
+import BUS.NhaCungCapBUS;
+import DTO.NhaCungCapDTO;
+import DTO.NhanVienDTO;
+import BUS.NhanVienBUS;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
+import com.toedter.calendar.JDateChooser;
+
+
+// Apache POI
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.awt.Desktop;
+import java.util.ArrayList;
+
 
 
 
 public class PhieuNhapPanel extends JPanel {
     private String manv;
-    private JButton btnThem, btnChiTiet, btnHuyPhieu, btnXuatExcel, btnLamMoi,btnTimKiem;
+    private JButton btnThem, btnChiTiet, btnSuaPhieu, btnXuatExcel, btnLamMoi,btnTimKiem,btnTimKiem2;
     private JComboBox<String> cbbSearchType;
     private JTextField txtSearch;
-
+    private JDateChooser dateChooserTuNgay;
+    private JDateChooser dateChooserDenNgay;
     private JTable table;
     private DefaultTableModel tableModel;
 
     // Bộ lọc bên trái
     private JComboBox<String> cbbNhaCungCap, cbbNhanVien;
-    private JTextField txtTuNgay, txtDenNgay, txtSoTien; 
+    private JTextField txtTuNgay, txtDenNgay, txtTuSoTien,txtDenSotien; 
     // (Có thể dùng JDateChooser, v.v. tuỳ bạn)
 
     public PhieuNhapPanel(String manv) {
@@ -66,10 +88,10 @@ public class PhieuNhapPanel extends JPanel {
         btnChiTiet.setHorizontalTextPosition(SwingConstants.CENTER);
         btnChiTiet.setVerticalTextPosition(SwingConstants.BOTTOM);
 
-        btnHuyPhieu = new JButton("HỦY PHIẾU");
-        btnHuyPhieu.setIcon(new ImageIcon(getClass().getResource("/icon/xoa.png")));
-        btnHuyPhieu.setHorizontalTextPosition(SwingConstants.CENTER);
-        btnHuyPhieu.setVerticalTextPosition(SwingConstants.BOTTOM);
+        btnSuaPhieu = new JButton("SỬA PHIẾU");
+        btnSuaPhieu.setIcon(new ImageIcon(getClass().getResource("/icon/xoa.png")));
+        btnSuaPhieu.setHorizontalTextPosition(SwingConstants.CENTER);
+        btnSuaPhieu.setVerticalTextPosition(SwingConstants.BOTTOM);
         
         btnXuatExcel = new JButton("XUẤT EXCEL");
         btnXuatExcel.setIcon(new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
@@ -78,7 +100,7 @@ public class PhieuNhapPanel extends JPanel {
         
         leftToolPanel.add(btnThem);
         leftToolPanel.add(btnChiTiet);
-        leftToolPanel.add(btnHuyPhieu);
+        leftToolPanel.add(btnSuaPhieu);
         leftToolPanel.add(btnXuatExcel);
 
         //(B) Panel chứa combo + ô tìm kiếm + nút làm mới (FlowLayout phải)
@@ -88,9 +110,11 @@ public class PhieuNhapPanel extends JPanel {
         PromptSupport.setPrompt("Nhập nội dung tìm kiếm...", txtSearch);
         PromptSupport.setForeground(Color.GRAY, txtSearch);
         btnLamMoi = new JButton("Làm mới");
+        btnTimKiem2=new JButton("Tìm Kiếm");
 
         rightToolPanel.add(cbbSearchType);
         rightToolPanel.add(txtSearch);
+        rightToolPanel.add(btnTimKiem2);
         rightToolPanel.add(btnLamMoi);
 
         // Ghép 2 panel vào topPanel
@@ -105,7 +129,7 @@ public class PhieuNhapPanel extends JPanel {
         
         // ==================== Panel lọc bên trái ====================
         JPanel filterPanel = new JPanel();
-        filterPanel.setLayout(new GridLayout(6, 1, 0, 0)); 
+        filterPanel.setLayout(new GridLayout(7, 1, 0, 0)); 
         // Hoặc BoxLayout, tuỳ ý
         filterPanel.setPreferredSize(new Dimension(200, 0)); 
         // Để chiều rộng cố định, chiều cao flexy
@@ -114,14 +138,43 @@ public class PhieuNhapPanel extends JPanel {
         // chọn nhà cung cấp
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row1.add(new JLabel("Nhà cung cấp:"));
-        cbbNhaCungCap = new JComboBox<>(new String[]{"Tất cả", "NCC01", "NCC02", "NCC03"});
+        NhaCungCapBUS nccbus=new NhaCungCapBUS();
+        // 1. Lấy danh sách NCC từ cơ sở dữ liệu
+        List<NhaCungCapDTO> danhSachNCC = new ArrayList<>();
+        danhSachNCC=nccbus.layTatCa();
+
+        // 2. Tạo model cho ComboBox và thêm "Tất cả"
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Tất cả");
+
+        // 3. Thêm mã NCC vào model
+        for (NhaCungCapDTO ncc : danhSachNCC) {
+            model.addElement(ncc.getTenNCC());
+        }
+
+        // 4. Gán model cho ComboBox
+        cbbNhaCungCap = new JComboBox<>(model);
+
+        
+        
+        
         row1.add(cbbNhaCungCap);
         filterPanel.add(row1);
 
         // chọn nhân viên
         JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row2.add(new JLabel("Nhân viên:"));
-        cbbNhanVien = new JComboBox<>(new String[]{"Tất cả", "NV01", "NV02", "NV03"});
+        NhanVienBUS nvbus=new NhanVienBUS();
+        List<NhanVienDTO> listnv=new ArrayList<>();
+        listnv=nvbus.layTatCa();
+        DefaultComboBoxModel<String> modelcomboboxnv=new DefaultComboBoxModel<>();
+        modelcomboboxnv.addElement("Tất cả");
+        for(NhanVienDTO nvdto : listnv)
+        {
+            modelcomboboxnv.addElement(nvdto.getMaNV());
+        }
+        
+        cbbNhanVien = new JComboBox<>(modelcomboboxnv);
         row2.add(cbbNhanVien);
         filterPanel.add(row2);
         
@@ -130,7 +183,7 @@ public class PhieuNhapPanel extends JPanel {
         // Từ ngày
         JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row3.add(new JLabel("Từ ngày:"));
-        JDateChooser dateChooserTuNgay = new JDateChooser();
+         dateChooserTuNgay = new JDateChooser();
         dateChooserTuNgay.setLocale(new Locale("vi", "VN")); // hiển thị tiếng Việt
         dateChooserTuNgay.setDateFormatString("dd/MM/yyyy");
         row3.add(dateChooserTuNgay);
@@ -139,7 +192,7 @@ public class PhieuNhapPanel extends JPanel {
         // Đến ngày
         JPanel row4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         row4.add(new JLabel("Đến ngày:"));
-        JDateChooser dateChooserDenNgay = new JDateChooser();
+         dateChooserDenNgay = new JDateChooser();
         dateChooserDenNgay.setLocale(new Locale("vi", "VN")); // hiển thị tiếng Việt
         dateChooserDenNgay.setDateFormatString("dd/MM/yyyy");
         row4.add(dateChooserDenNgay);
@@ -147,10 +200,18 @@ public class PhieuNhapPanel extends JPanel {
 
         //Số tiền
         JPanel row5 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        row5.add(new JLabel("Số tiền (VNĐ):"));
-        txtSoTien = new JTextField(10);
-        row5.add(txtSoTien);
+        row5.add(new JLabel("Từ Số tiền (VNĐ):"));
+        txtTuSoTien = new JTextField(10);
+        row5.add(txtTuSoTien);
         filterPanel.add(row5);
+        
+        JPanel row7= new JPanel(new FlowLayout(FlowLayout.LEFT));
+        row7.add(new JLabel("Đến Số tiền (VNĐ):"));
+        txtDenSotien = new JTextField(10);
+        row7.add(txtDenSotien);
+        filterPanel.add(row7);
+        
+        
         
         JPanel row6 = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnTimKiem = new JButton("Tìm Kiếm");  // Tạo một nút mới với tên "Click Me"
@@ -162,7 +223,7 @@ public class PhieuNhapPanel extends JPanel {
         add(filterPanel, BorderLayout.WEST);
 
         // ==================== Bảng hiển thị trung tâm ====================
-        String[] columns = {"STT", "Mã phiếu", "Tên nhà cung cấp", "Nhân viên nhập", "Thời gian", "Tổng tiền"};
+        String[] columns = {"STT", "Mã phiếu", "Tên nhà cung cấp", "Nhân viên nhập", "Thời gian nhập", "Tổng tiền"};
         tableModel = new DefaultTableModel(columns, 0);
         table = new JTable(tableModel);
 
@@ -171,125 +232,266 @@ public class PhieuNhapPanel extends JPanel {
         add(scroll, BorderLayout.CENTER);
 
         // ==================== Sự kiện mẫu này nọ ====================
+        
+        
+        btnLamMoi.addActionListener(e -> {
+                loadData();
+                txtSearch.setText("");
+                cbbSearchType.setSelectedIndex(0);
+                cbbNhaCungCap.setSelectedIndex(0);
+                cbbNhanVien.setSelectedIndex(0);
+             
+                txtDenSotien.setText("");
+                txtTuSoTien.setText("");
+                dateChooserTuNgay.setDate(null);
+                dateChooserDenNgay.setDate(null);
+        }
+        
+        );
         btnTimKiem.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, "Thông báo của bạn ở đây", "Tiêu đề thông báo", JOptionPane.INFORMATION_MESSAGE);
+        
+            String mancc=(String) cbbNhaCungCap.getSelectedItem();
+            String manv=(String ) cbbNhanVien.getSelectedItem();
+            Date ngaystar=dateChooserTuNgay.getDate();
+            Date ngayend=dateChooserDenNgay.getDate();
+            int tongtienstar=0;
+            int tongtienend=0;
+            String text = txtTuSoTien.getText(); 
+            try {
+                 tongtienstar = Integer.parseInt(text);  
+                System.out.println("Số đã nhập: " + tongtienstar);
+            } catch (NumberFormatException ex) { 
+                System.out.println("GIA TRI NHAP VAO KHONG HOP LE .");
+            }
+            String text2=txtDenSotien.getText();
+            try {
+                tongtienend = Integer.parseInt(text2);  
+                System.out.println("Số đã nhập: " + tongtienend);
+            } catch (NumberFormatException ex) { 
+                System.out.println("GIA TRI NHAP VAO KHONG HOP LE .");
+            }
+            System.out.println("MA NHAN VIEN "+manv+"MA NHA CUNG CAP :"+mancc+"NGAY STAR :"+ngaystar+"NGAY END :"+ngayend+"TONGTIENSTAR:"+tongtienstar+"TONG TIEN END "+tongtienend);
+            
+           
+            loadDataFromFilter(manv, mancc, ngaystar, ngayend, tongtienstar, tongtienend);
+            
+            
+    
+            
+            
+          
+            
+            
         });
+        btnTimKiem2.addActionListener(e-> load_datatimkiem());
+        
         btnThem.addActionListener(e -> {
         ThemPhieuNhapDialog dialog = new ThemPhieuNhapDialog((Frame) SwingUtilities.getWindowAncestor(this), true,this.manv);
         dialog.setLocationRelativeTo(this); // Căn giữa với frame cha
         dialog.setVisible(true);
+        tableModel.setRowCount(0);
+        txtSearch.setText("");
+        loadData();
     });
 
         btnChiTiet.addActionListener(e -> {   
         int row = table.getSelectedRow();
-    // Nếu không có dòng nào được chọn
         if (row == -1) {
         JOptionPane.showMessageDialog(this, "Vui lòng chọn phiếu nhập để xem chi tiết.");
         return;
         }
-        // Lấy mã phiếu nhập từ cột thứ 2 (giả sử cột mã phiếu nhập là cột thứ 2)
         String maPhieuNhap = table.getValueAt(row, 1).toString();
-        // Mở dialog hiển thị chi tiết phiếu nhập
-       // Mở dialog hiển thị chi tiết phiếu nhập và truyền mã phiếu nhập vào
         ChiTietPhieuNhapDialog dialog = new ChiTietPhieuNhapDialog(new JFrame(), true, maPhieuNhap);
         dialog.setVisible(true);
 
             
         });
-        btnHuyPhieu.addActionListener(e -> {
+        
+        btnSuaPhieu.addActionListener(e -> {
+               int row = table.getSelectedRow();
+ 
+        if (row == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn phiếu nhập để xem chi tiết.");
+        return;
+        }
+        String maPhieuNhap = table.getValueAt(row, 1).toString();
+        SuaPhieuNhapDialog dialog=new SuaPhieuNhapDialog(new JFrame(), true, maPhieuNhap);
+        dialog.setVisible(true);
             
         });
-        btnXuatExcel.addActionListener(e -> {
-            JOptionPane.showMessageDialog(this, "Xuất Excel!");
-        });
-        btnLamMoi.addActionListener(e -> {
-            // Xoá bảng rồi thêm lại
-        tableModel.setRowCount(0);
-        txtSearch.setText("");
-        loadData();
-        });
         
-        
-        
-        
-        
-        txtSearch.getDocument().addDocumentListener(new DocumentListener() {
-        public void insertUpdate(DocumentEvent e) {
-            search();
-        }
+       
+      btnXuatExcel.addActionListener(e -> {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Chọn nơi lưu file Excel");
+        int userSelection = fileChooser.showSaveDialog(null);
 
-        public void removeUpdate(DocumentEvent e) {
-            search();
-        }
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            if (!fileToSave.getAbsolutePath().endsWith(".xlsx")) {
+                fileToSave = new File(fileToSave.getAbsolutePath() + ".xlsx");
+            }
 
-        public void changedUpdate(DocumentEvent e) {
-            search();
-        }
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Danh sách phiếu nhập");
 
-        private void search() {
-            String type = cbbSearchType.getSelectedItem().toString();
-            String keyword = txtSearch.getText().trim();
-            loadData(type, keyword);
+                // Tạo header
+                Row headerRow = sheet.createRow(0);
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                    Cell cell = headerRow.createCell(i);
+                    cell.setCellValue(tableModel.getColumnName(i));
+                }
+
+                // Dữ liệu
+                for (int row = 0; row < tableModel.getRowCount(); row++) {
+                    Row excelRow = sheet.createRow(row + 1);
+                    for (int col = 0; col < tableModel.getColumnCount(); col++) {
+                        Cell cell = excelRow.createCell(col);
+                        Object value = tableModel.getValueAt(row, col);
+                        cell.setCellValue(value != null ? value.toString() : "");
+                    }
+                }
+
+            
+                FileOutputStream fileOut = new FileOutputStream(fileToSave);
+                workbook.write(fileOut);
+                fileOut.close();
+
+
+                Desktop.getDesktop().open(fileToSave);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Lỗi khi xuất Excel: " + ex.getMessage());
+            }
         }
-        
-});
+    });
+
 
         
         
         
+
+        
+     
    
     
     }
-
+private void load_datatimkiem()
+{
+      String type = cbbSearchType.getSelectedItem().toString();
+            String keyword = txtSearch.getText().trim();
+            load(type, keyword);
+}
+    
 private void loadData() {
-    // Xóa dữ liệu cũ
+ 
     tableModel.setRowCount(0);
+        NhaCungCapBUS nccbus =new NhaCungCapBUS();
 
-    // Lấy danh sách phiếu nhập và map MaNCC -> TenNCC
     List<PhieuNhapDTO> danhSach = new PhieuNhapBUS().getAllPhieuNhap();
-    Map<String, String> nhaCungCapMap = PhieuNhapBUS.getTenNhaCungCapMap();
+  
 
     int stt = 1;
     for (PhieuNhapDTO pn : danhSach) {
-        String tenNCC = nhaCungCapMap.getOrDefault(pn.getMaNCC(), "Không rõ");
+        String tenNCC=nccbus.layTenNhaCungCapTheoMa(pn.getMaNCC());
         tableModel.addRow(new Object[]{
             stt++,
             pn.getMaPhieuNhap(),
             tenNCC,
-            pn.getMaNhanVien(), // hoặc map tên nhân viên nếu cần
+            pn.getMaNhanVien(), 
             pn.getNgayNhap(),
             pn.getTongTien()
         });
     }
 }
-private void loadData(String type, String keyword) {
-    tableModel.setRowCount(0);
 
-    List<PhieuNhapDTO> danhSach = new PhieuNhapBUS().getAllPhieuNhap();
-    Map<String, String> nhaCungCapMap = PhieuNhapBUS.getTenNhaCungCapMap();
+    
 
-    int stt = 1;
-    for (PhieuNhapDTO pn : danhSach) {
-        String tenNCC = nhaCungCapMap.getOrDefault(pn.getMaNCC(), "Không rõ");
 
-        boolean match = switch (type) {
-            case "Tất cả" -> true;
-            case "Mã phiếu nhập" -> pn.getMaPhieuNhap().toLowerCase().contains(keyword.toLowerCase());
-            case "Nhà cung cấp" -> tenNCC.toLowerCase().contains(keyword.toLowerCase());
-            case "Nhân viên nhập" -> pn.getMaNhanVien().toLowerCase().contains(keyword.toLowerCase()); // Hoặc map tên nhân viên nếu cần
-            default -> true;
-        };
+private void loadDataFromFilter(String tenncc,String manv,Date ngaystar,Date ngayend,int tongtienstar,int tongtienend) {
+        // Xóa dữ liệu cũ
+        tableModel.setRowCount(0);
+        NhaCungCapBUS nccbus =new NhaCungCapBUS();
 
-        if (match) {
+     
+        List<PhieuNhapDTO> danhSach = new PhieuNhapBUS().get_filter(manv, tenncc, ngaystar, ngayend, tongtienstar, tongtienend);
+
+
+        int stt = 1;
+        for (PhieuNhapDTO pn : danhSach) {
+            String tenNCC=nccbus.layTenNhaCungCapTheoMa(pn.getMaNCC());
             tableModel.addRow(new Object[]{
                 stt++,
                 pn.getMaPhieuNhap(),
                 tenNCC,
-                pn.getMaNhanVien(),
+                pn.getMaNhanVien(), 
                 pn.getNgayNhap(),
                 pn.getTongTien()
             });
         }
+    }
+
+
+
+
+
+private void load(String type,String keyword)
+{
+    int stt=1;
+ 
+    tableModel.setRowCount(0);
+    List<PhieuNhapDTO> ds =new ArrayList<>();
+    ds=new PhieuNhapBUS().getAllPhieuNhap();
+    NhaCungCapBUS nccbus=new NhaCungCapBUS();
+    for (PhieuNhapDTO pn : ds)
+    {
+        boolean check=false;
+        switch (type)
+        {
+            case "Tất cả":
+                check=true;
+                break;
+            case "Mã phiếu nhập":
+                if(pn.getMaPhieuNhap().toLowerCase().contains(keyword.toLowerCase()))
+                {
+                    check=true;
+                    
+                }
+                break;
+            case "Nhà cung cấp" :
+                if(nccbus.layTenNhaCungCapTheoMa(pn.getMaNCC()).toLowerCase().contains(keyword.toLowerCase()))
+                {
+                    
+                    check=true;;
+                    
+                }
+                break;
+            case "Nhân viên nhập":
+            {
+                if(pn.getMaNhanVien().toLowerCase().contains(keyword.toLowerCase()))
+                {
+                    check=true;
+                     
+                }
+                break;
+            }
+                
+        }
+        if(check)
+        {
+            tableModel.addRow(new Object[]{
+                stt++,
+                pn.getMaPhieuNhap(),
+                nccbus.layTenNhaCungCapTheoMa(pn.MaNCC),
+                pn.getMaNhanVien(),
+                pn.getNgayNhap(),
+                pn.getTongTien()
+                
+            
+            });
+            
+        }
+        
     }
 }
 

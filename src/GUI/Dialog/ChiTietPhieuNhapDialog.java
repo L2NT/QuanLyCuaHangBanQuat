@@ -7,6 +7,7 @@ package GUI.Dialog;
 /**
  *
  * @author nguye
+ * 
  */
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
@@ -18,20 +19,63 @@ import javax.swing.*;
 import DTO.ChiTietPhieuNhapDTO;
 import BUS.ChiTietPhieuNhapBUS;
 import java.util.List;
+import BUS.NhanVienBUS;
+import BUS.NhaCungCapBUS;
+import BUS.QuatBUS;
+
+// iText classes
+
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.Phrase;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.awt.Desktop;
+import java.io.IOException;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
-import java.awt.Dimension;
+
+
+
+
+
+
+// Java I/O
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+
 public class ChiTietPhieuNhapDialog extends javax.swing.JDialog {
-    private String maPhieuNhap;  
+      private String maPhieuNhap;  
+    private DefaultTableModel model;
+
     /**
-     * Creates new form ChiTietPhieuNhapDialog
+     * Creates new form ChiTietpn
      */
     public ChiTietPhieuNhapDialog(java.awt.Frame parent, boolean modal,String maPhieuNhap) {
+   
         super(parent, modal);
         initComponents();
         this.maPhieuNhap=maPhieuNhap;
-        hienThiBangPhieuNhap();
+         hienThiBangPhieuNhap();
         hienThiThongTinPhieuNhap();
+        pack();                      // Tự động căn kích thước theo nội dung
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -43,122 +87,279 @@ public class ChiTietPhieuNhapDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
         jPanel2 = new javax.swing.JPanel();
-        button1 = new java.awt.Button();
-        button2 = new java.awt.Button();
         jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
+        btn_inpdf = new javax.swing.JButton();
+        btn_cancel = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         text_maphieunhap = new javax.swing.JTextField();
         text_nhanviennhap = new javax.swing.JTextField();
         text_nhacungcap = new javax.swing.JTextField();
         text_thoigiantao = new javax.swing.JTextField();
-        table_phieunhap = new javax.swing.JPanel();
+        text_tongtien = new javax.swing.JTextField();
+        paneltest = new javax.swing.JPanel();
+        panel1 = new java.awt.Panel();
+        jLabel7 = new javax.swing.JLabel();
+        table_phieunhap = new java.awt.Panel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setText("THÔNG TIN PHIẾU NHẬP");
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(408, 408, 408)
+        jLabel1.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("CHI TIẾT PHIẾU NHẬP");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(322, 322, 322)
                 .addComponent(jLabel1)
-                .addContainerGap(397, Short.MAX_VALUE))
+                .addContainerGap(352, Short.MAX_VALUE))
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(47, Short.MAX_VALUE)
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(45, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(37, 37, 37))
+                .addGap(39, 39, 39))
         );
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        jPanel2.add(jPanel3, java.awt.BorderLayout.PAGE_START);
 
-        button1.setLabel("XUẤT FILE PDF");
+        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 200, 20));
 
-        button2.setLabel("HỦY");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(263, 263, 263)
-                .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(246, 246, 246)
-                .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(288, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(49, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27))
-        );
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
-
-        jPanel3.setLayout(new java.awt.BorderLayout());
-
-        jPanel4.setLayout(new java.awt.GridLayout(2, 0));
-
-        jLabel2.setText("MÃ PHIẾU NHẬP");
-        jPanel4.add(jLabel2);
-
-        jLabel3.setText("NHÂN VIÊN NHẬP");
-        jPanel4.add(jLabel3);
-
-        jLabel4.setText("NHÀ CUNG CẤP");
-        jPanel4.add(jLabel4);
-
-        jLabel5.setText("THỜI GIAN TẠO");
-        jPanel4.add(jLabel5);
-
-        text_maphieunhap.addActionListener(new java.awt.event.ActionListener() {
+        btn_inpdf.setBackground(new java.awt.Color(0, 204, 204));
+        btn_inpdf.setText("IN PDF");
+        btn_inpdf.setPreferredSize(new java.awt.Dimension(90, 30));
+        btn_inpdf.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                text_maphieunhapActionPerformed(evt);
+                btn_inpdfActionPerformed(evt);
             }
         });
-        jPanel4.add(text_maphieunhap);
-        jPanel4.add(text_nhanviennhap);
-        jPanel4.add(text_nhacungcap);
-        jPanel4.add(text_thoigiantao);
+        jPanel4.add(btn_inpdf);
 
-        jPanel3.add(jPanel4, java.awt.BorderLayout.PAGE_START);
+        btn_cancel.setBackground(new java.awt.Color(255, 102, 102));
+        btn_cancel.setText("HỦY");
+        btn_cancel.setPreferredSize(new java.awt.Dimension(90, 30));
+        btn_cancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_cancelActionPerformed(evt);
+            }
+        });
+        jPanel4.add(btn_cancel);
+
+        jPanel2.add(jPanel4, java.awt.BorderLayout.PAGE_END);
+
+        jPanel5.setLayout(new java.awt.BorderLayout());
+
+        jPanel6.setPreferredSize(new java.awt.Dimension(864, 50));
+        jPanel6.setLayout(new java.awt.GridLayout(2, 0, 30, 0));
+
+        jLabel2.setText("MÃ PHIẾU NHẬP");
+        jPanel6.add(jLabel2);
+
+        jLabel3.setText("NHÂN VIÊN NHẬP");
+        jPanel6.add(jLabel3);
+
+        jLabel4.setText("NHÀ CUNG CẤP");
+        jPanel6.add(jLabel4);
+
+        jLabel5.setText("THỜI GIAN TẠO");
+        jPanel6.add(jLabel5);
+
+        jLabel6.setText("TỔNG TIỀN");
+        jPanel6.add(jLabel6);
+        jPanel6.add(text_maphieunhap);
+        jPanel6.add(text_nhanviennhap);
+        jPanel6.add(text_nhacungcap);
+        jPanel6.add(text_thoigiantao);
+        jPanel6.add(text_tongtien);
+
+        jPanel5.add(jPanel6, java.awt.BorderLayout.PAGE_START);
+
+        paneltest.setLayout(new java.awt.BorderLayout());
+
+        panel1.setMaximumSize(new java.awt.Dimension(0, 30));
+        panel1.setPreferredSize(new java.awt.Dimension(864, 30));
+        panel1.setLayout(new javax.swing.BoxLayout(panel1, javax.swing.BoxLayout.LINE_AXIS));
+        panel1.add(jLabel7);
+
+        paneltest.add(panel1, java.awt.BorderLayout.PAGE_START);
+
+        table_phieunhap.setPreferredSize(new java.awt.Dimension(864, 200));
 
         javax.swing.GroupLayout table_phieunhapLayout = new javax.swing.GroupLayout(table_phieunhap);
         table_phieunhap.setLayout(table_phieunhapLayout);
         table_phieunhapLayout.setHorizontalGroup(
             table_phieunhapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 939, Short.MAX_VALUE)
+            .addGap(0, 864, Short.MAX_VALUE)
         );
         table_phieunhapLayout.setVerticalGroup(
             table_phieunhapLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 396, Short.MAX_VALUE)
+            .addGap(0, 390, Short.MAX_VALUE)
         );
 
-        jPanel3.add(table_phieunhap, java.awt.BorderLayout.CENTER);
+        paneltest.add(table_phieunhap, java.awt.BorderLayout.CENTER);
 
-        getContentPane().add(jPanel3, java.awt.BorderLayout.CENTER);
+        jPanel5.add(paneltest, java.awt.BorderLayout.CENTER);
+
+        jPanel2.add(jPanel5, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void text_maphieunhapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_text_maphieunhapActionPerformed
+    private void btn_inpdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_inpdfActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_text_maphieunhapActionPerformed
+       
+    JFileChooser fileChooser = new JFileChooser();
+    fileChooser.setDialogTitle("Chọn nơi lưu file PDF");
+    fileChooser.setSelectedFile(new File("phieu_nhap.pdf"));
+    
+    NhanVienBUS nvbus=new NhanVienBUS();
+    NhaCungCapBUS nccbus=new NhaCungCapBUS();
+    
+    String mapn=text_maphieunhap.getText();
+    String manv=text_nhanviennhap.getText();
+    String mancc=text_nhacungcap.getText();
+    String thoigiantao=text_thoigiantao.getText();
+    String tongtien=text_tongtien.getText();
+    
+    String tennvnhap=nvbus.getNameNVByMaNV(manv);
+    String tenncc=nccbus.layTenNhaCungCapTheoMa(mancc);
+    
+    
+    
+
+    int userSelection = fileChooser.showSaveDialog(this);
+    if (userSelection == JFileChooser.APPROVE_OPTION) {
+        File fileToSave = fileChooser.getSelectedFile();
+
+        try {
+  
+            String fontPath = "src/font/DejaVuSans.ttf";
+            BaseFont baseFont = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            Font font = new Font(baseFont, 12);
+             Font titletable = new Font(baseFont, 12, Font.BOLD);
+
+
+            Document document = new Document(PageSize.A4);
+            PdfWriter.getInstance(document, new FileOutputStream(fileToSave));
+            document.open();
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String currentTime = LocalDateTime.now().format(formatter);
+
+            Paragraph timePrint = new Paragraph("Thời gian in phiếu: " + currentTime, font);
+            timePrint.setAlignment(Element.ALIGN_RIGHT);     
+            timePrint.setSpacingAfter(10f);                
+            document.add(timePrint);
+
+   
+          
+           Font titleFont = new Font(baseFont, 18, Font.BOLD); // Cỡ 18, in đậm
+            Paragraph title = new Paragraph("THÔNG TIN PHIẾU NHẬP", titleFont);
+            title.setAlignment(Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            
+            
+      
+            document.add(new Paragraph("Mã phiếu:"+mapn , font));
+            document.add(new Paragraph("Nhà cung cấp:"+tenncc, font));
+            
+            document.add(new Paragraph("Thời gian nhập:"+thoigiantao, font));
+            document.add(new Paragraph("Người thực hiện:"+tennvnhap+" Mã Nhân Viên:"+manv, font));
+            document.add(new Paragraph("\n")); 
+
+
+            PdfPTable table = new PdfPTable(5); 
+            table.setWidthPercentage(100);
+
+    
+            String[] headers = {"Mã Quạt", "Tên Quạt", "Số Lượng", "Đơn giá", "Thành Tiền"};
+            for (String header : headers) {
+                table.addCell(new PdfPCell(new Phrase(header, titletable)));
+            }
+
+     
+            for (int row = 0; row < model.getRowCount(); row++) {
+                for (int col = 0; col < model.getColumnCount(); col++) {
+                    Object value = model.getValueAt(row, col);
+                    table.addCell(new PdfPCell(new Phrase(value.toString(), font)));
+                }
+            }
+
+            document.add(table);
+
+            // Tổng tiền
+            document.add(new Paragraph("Tổng thành tiền: "+tongtien+"đ", font));
+            document.add(new Paragraph("\n")); 
+
+       
+            PdfPTable signatureTable = new PdfPTable(3); 
+            signatureTable.setWidthPercentage(100);
+
+        
+            PdfPCell cell1 = new PdfPCell(new Phrase("Người lập phiếu\n(Ký và ghi rõ họ tên)", font));
+            PdfPCell cell2 = new PdfPCell(new Phrase("Nhân viên nhận\n(Ký và ghi rõ họ tên)", font));
+            PdfPCell cell3 = new PdfPCell(new Phrase("Nhà cung cấp\n(Ký và ghi rõ họ tên)", font));
+
+         
+            cell1.setBorder(PdfPCell.NO_BORDER);
+            cell2.setBorder(PdfPCell.NO_BORDER);
+            cell3.setBorder(PdfPCell.NO_BORDER);
+
+          
+            cell1.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell2.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell3.setHorizontalAlignment(Element.ALIGN_CENTER);
+
+        
+            signatureTable.addCell(cell1);
+            signatureTable.addCell(cell2);
+            signatureTable.addCell(cell3);
+
+            document.add(signatureTable);
+
+
+            document.close();
+
+            
+            if (Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(fileToSave);
+            }
+
+        } catch (DocumentException | IOException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi xuất PDF: " + ex.getMessage());
+        }
+    }
+        
+        
+        
+        
+        
+        
+    }//GEN-LAST:event_btn_inpdfActionPerformed
+
+    private void btn_cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_cancelActionPerformed
+        // TODO add your handling code here:
+        dispose();
+    }//GEN-LAST:event_btn_cancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -186,11 +387,13 @@ public class ChiTietPhieuNhapDialog extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(ChiTietPhieuNhapDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
-            String maphieunhap="PN0222";
+        //</editor-fold>
+
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                ChiTietPhieuNhapDialog dialog = new ChiTietPhieuNhapDialog(new javax.swing.JFrame(), true,maphieunhap);
+                String mapn="test";
+                ChiTietPhieuNhapDialog dialog = new ChiTietPhieuNhapDialog(new javax.swing.JFrame(), true,mapn);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -201,13 +404,15 @@ public class ChiTietPhieuNhapDialog extends javax.swing.JDialog {
             }
         });
     }
+
+     
     public void hienThiThongTinPhieuNhap(){
-        // Lấy thông tin phiếu nhập từ BLL
+   
         PhieuNhapDTO pn=new PhieuNhapDTO();
         PhieuNhapBUS pnbll=new PhieuNhapBUS();
          pn = pnbll.findphieunhapfrommapn(this.maPhieuNhap);
 
-        // Hiển thị thông tin phiếu nhập lên các TextField
+       
         if (pn != null) {
             text_maphieunhap.setText(pn.getMaPhieuNhap());
             text_thoigiantao.setText(pn.getNgayNhap().toString());
@@ -219,52 +424,84 @@ public class ChiTietPhieuNhapDialog extends javax.swing.JDialog {
     }
 
 public void hienThiBangPhieuNhap() {
-    String[] columnNames = {"Mã quạt", "Số lượng", "Đơn giá", "Thành tiền"};
-
+    QuatBUS quatbus=new QuatBUS();
+   
+    String[] columnNames = {"Mã quạt","Tên Quạt", "Số lượng", "Đơn giá", "Thành tiền"};
+    int tongtien=0;
     // Lấy dữ liệu từ BLL
-    List<ChiTietPhieuNhapDTO> dsCTPN = ChiTietPhieuNhapBUS.getChiTietPhieuNhapByMaPN(this.maPhieuNhap);
+    ChiTietPhieuNhapBUS ctpnbus= new ChiTietPhieuNhapBUS();
+    List<ChiTietPhieuNhapDTO> dsCTPN = ctpnbus.getChiTietPhieuNhapByMaPN(this.maPhieuNhap);
 
     // Chuyển sang Object[][]
-    Object[][] data = new Object[dsCTPN.size()][4];
+    Object[][] data = new Object[dsCTPN.size()][5];
     for (int i = 0; i < dsCTPN.size(); i++) {
         ChiTietPhieuNhapDTO ct = dsCTPN.get(i);
         data[i][0] = ct.getMaQuat();
-        data[i][1] = ct.getSoLuong();
-        data[i][2] = ct.getDonGia();
-        data[i][3] = ct.getThanhTien();
+        data[i][1]=quatbus.timTheoMaQuat(ct.getMaQuat()).getTenQuat();
+        data[i][2] = ct.getSoLuong();
+        data[i][3] = ct.getDonGia();
+        data[i][4] = ct.getThanhTien();
+        tongtien+=ct.getThanhTien();
     }
+    text_tongtien.setText(String.valueOf(tongtien));
 
-    // Tạo model và bảng
-    DefaultTableModel model = new DefaultTableModel(data, columnNames);
+
+
+    model = new DefaultTableModel(data, columnNames);
     JTable table = new JTable(model);
-
-    // Cho bảng vào JScrollPane
     JScrollPane scrollPane = new JScrollPane(table);
 
-    // Hiển thị vào panel
-    table_phieunhap.removeAll();
-    table_phieunhap.setLayout(new BorderLayout());
-    table_phieunhap.add(scrollPane, BorderLayout.CENTER);
-    table_phieunhap.revalidate();
-    table_phieunhap.repaint();
+    paneltest.removeAll();
+    paneltest.setLayout(new BorderLayout());
+    paneltest.add(scrollPane, BorderLayout.CENTER);
+    paneltest.revalidate();
+    paneltest.repaint();
 }
 
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private java.awt.Button button1;
-    private java.awt.Button button2;
+    private javax.swing.JButton btn_cancel;
+    private javax.swing.JButton btn_inpdf;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel table_phieunhap;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private java.awt.Panel panel1;
+    private javax.swing.JPanel paneltest;
+    private java.awt.Panel table_phieunhap;
     private javax.swing.JTextField text_maphieunhap;
     private javax.swing.JTextField text_nhacungcap;
     private javax.swing.JTextField text_nhanviennhap;
     private javax.swing.JTextField text_thoigiantao;
+    private javax.swing.JTextField text_tongtien;
     // End of variables declaration//GEN-END:variables
 }

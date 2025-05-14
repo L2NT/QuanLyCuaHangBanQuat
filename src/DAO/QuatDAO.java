@@ -178,6 +178,7 @@ public class QuatDAO {
         }
         return false;
     }
+
     public List<QuatDTO> findByMaLoai(String maLoai) throws SQLException {
         List<QuatDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM quat WHERE MaLoaiSP = ?";

@@ -35,9 +35,11 @@ public class ThongKeKhachHangTheoNgay extends JPanel {
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.setOpaque(false);
         LocalDate now = LocalDate.now();
+        LocalDate oneWeekAgo = now.minusDays(7);  
         String currentDate = now.toString();
+        String oneWeekAgoStr = oneWeekAgo.toString();
         JLabel lblNgayBatDau = new JLabel("Ngày bắt đầu (yyyy-mm-dd):");
-        txtNgayBatDau = new JTextField(currentDate, 10);
+        txtNgayBatDau = new JTextField(oneWeekAgoStr, 10);
         JLabel lblNgayKetThuc = new JLabel("Ngày kết thúc (yyyy-mm-dd):");
         txtNgayKetThuc = new JTextField(currentDate, 10);
 

@@ -1,6 +1,5 @@
 package GUI.Panel;
 import GUI.Dialog.ThemQuatDialog;
-import DTO.DBConnection;
 import BUS.QuatBUS;
 import DAO.LoaiSanPhamDAO;
 import DTO.LoaiSanPhamDTO;
@@ -11,30 +10,16 @@ import java.sql.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import DTO.QuatDTO;
+import GUI.Dialog.ExcelQuatDialog;
 import java.awt.Font;
 import java.awt.Color;
 import GUI.Dialog.SuaQuatDialog;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileOutputStream;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableRowSorter;
-import org.apache.poi.ss.usermodel.Sheet;  
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class QuatPanel extends JPanel {
@@ -44,8 +29,9 @@ public class QuatPanel extends JPanel {
     private Map<String, String> mapTenToMaLoai = new HashMap<>();
 
     public QuatPanel() throws SQLException {
-        setBackground(Color.LIGHT_GRAY);
         setLayout(new BorderLayout());  
+         setLayout(new BorderLayout(10, 10));
+        setBorder(new EmptyBorder(10,10,10,10));
 
         add(createButtonPanel(), BorderLayout.NORTH);
         add(createTablePanel(), BorderLayout.CENTER); 
@@ -56,7 +42,6 @@ public class QuatPanel extends JPanel {
     private JPanel createButtonPanel() throws SQLException {
         JPanel toolbar = new JPanel(new BorderLayout());
         toolbar.setBackground(Color.WHITE);
-        toolbar.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
         // LEFT TOOL PANEL
         JPanel leftToolPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -65,7 +50,7 @@ public class QuatPanel extends JPanel {
         JButton btnThem = new JButton("THÊM", new ImageIcon(getClass().getResource("/icon/them.png")));
         JButton btnXoa = new JButton("XÓA", new ImageIcon(getClass().getResource("/icon/xoa.png")));
         JButton btnSua = new JButton("SỬA", new ImageIcon(getClass().getResource("/icon/sua.png")));
-        JButton btnExcel = new JButton("XUẤT EXCEL", new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
+        JButton btnExcel = new JButton("EXCEL", new ImageIcon(getClass().getResource("/icon/xuatexcel.png")));
 
         for (JButton btn : new JButton[]{btnThem, btnXoa, btnSua, btnExcel}) {
             btn.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -135,7 +120,7 @@ public class QuatPanel extends JPanel {
 
         toolbar.add(leftWrapper, BorderLayout.WEST);
         toolbar.add(rightWrapper, BorderLayout.EAST);
-        toolbar.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 5, true));
+
 
         // Sự kiện các nút
         btnThem.addActionListener(e -> {
@@ -185,10 +170,14 @@ public class QuatPanel extends JPanel {
             dialog.setVisible(true);
             if (dialog.isUpdated()) loadDataFromDatabase();
         });
+        btnExcel.addActionListener(e -> {
+            ExcelQuatDialog dlg = new ExcelQuatDialog(SwingUtilities.getWindowAncestor(this), table, this::loadDataFromDatabase);
+            dlg.setVisible(true);
+        });
 
-        btnExcel.addActionListener(e -> xuatExcel());
 
-        // GỌI PHẦN SEARCH/LOC/FILTER TÁCH RIÊNG
+
+
         addSearchFunctionality(txtSearch, cbbFilter, btnLamMoi, loaiSP,txtGiaTu,txtGiaDen,btnLocGia);
 
         return toolbar;
@@ -215,11 +204,10 @@ public class QuatPanel extends JPanel {
              txtGiaDen.setText("");
              TableRowSorter<DefaultTableModel> sorter = (TableRowSorter<DefaultTableModel>) table.getRowSorter();
              if (sorter != null) {
-                 sorter.setRowFilter(null); // Tắt bộ lọc
+                 sorter.setRowFilter(null); 
              }
 
-             loadDataFromDatabase(); // Tải lại dữ liệu từ cơ sở dữ liệu
-             System.out.print("đã load data");
+             loadDataFromDatabase(); 
          });
 
     }
@@ -420,7 +408,6 @@ private void filterData(JTextField txtSearch, JComboBox<String> cbbFilter, JComb
         tableQuat.setRowCount(0);
         loadLoaiMap(); 
         List<QuatDTO> danhSachQuat = quatBUS.layTatCa();
-        System.out.println("Số lượng quạt lấy được: " + danhSachQuat.size());
         for (QuatDTO quat : danhSachQuat) {
             tableQuat.addRow(new Object[] {
                 quat.getMaQuat(),
@@ -436,47 +423,6 @@ private void filterData(JTextField txtSearch, JComboBox<String> cbbFilter, JComb
         }
     }
 
-    public void xuatExcel() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Lưu file Excel");
-        int userSelection = fileChooser.showSaveDialog(null);
-
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File fileToSave = fileChooser.getSelectedFile();
-            if (!fileToSave.getName().endsWith(".xlsx")) {
-                fileToSave = new File(fileToSave.getAbsolutePath() + ".xlsx");
-            }
-
-            try (Workbook workbook = new XSSFWorkbook()) {
-                Sheet sheet = workbook.createSheet("DanhSach");
-
-                // Tạo dòng tiêu đề từ tableQuat
-                Row header = sheet.createRow(0);
-                for (int i = 0; i < tableQuat.getColumnCount(); i++) {
-                    header.createCell(i).setCellValue(tableQuat.getColumnName(i));
-                }
-
-                // Ghi dữ liệu từ tableQuat
-                for (int i = 0; i < tableQuat.getRowCount(); i++) {
-                    Row row = sheet.createRow(i + 1);
-                    for (int j = 0; j < tableQuat.getColumnCount(); j++) {
-                        Object value = tableQuat.getValueAt(i, j);
-                        row.createCell(j).setCellValue(value != null ? value.toString() : "");
-                    }
-                }
-
-                // Ghi ra file
-                FileOutputStream out = new FileOutputStream(fileToSave);
-                workbook.write(out);
-                out.close();
-
-                JOptionPane.showMessageDialog(null, "Xuất Excel thành công!");
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(null, "Lỗi khi xuất Excel: " + ex.getMessage());
-            }
-        }
-    }
-
+  
 
 }
