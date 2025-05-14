@@ -51,6 +51,7 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
         this.manv=manv;
         initComponents();
         createSanPhamTable();
+        locktext();
         createPhieuNhapTable();
         loadComboBoxNhaCungCap();
         addsanphamtoform();
@@ -107,7 +108,6 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
         jLabel17 = new javax.swing.JLabel();
         jLabel18 = new javax.swing.JLabel();
         btn_addsanpham = new javax.swing.JButton();
-        btn_editsanpham = new javax.swing.JButton();
         btn_deletesanpham = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -258,9 +258,6 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
         btn_addsanpham.setText("THÊM");
         panel5.add(btn_addsanpham);
 
-        btn_editsanpham.setText("SỬA");
-        panel5.add(btn_editsanpham);
-
         btn_deletesanpham.setText("XÓA");
         btn_deletesanpham.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -285,6 +282,7 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
     if (selectedRow != -1) {
      
         modelPhieuNhap.removeRow(selectedRow);
+        load_tongtien();
     } else {
    
         
@@ -423,7 +421,17 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
     
     
     
-    
+    public void load_tongtien()
+    {
+        int tongtien=0;
+    for (int i = 0; i < modelPhieuNhap.getRowCount(); i++) 
+    {
+    int gia = Integer.parseInt(modelPhieuNhap.getValueAt(i, 2).toString());
+    int soLuong = Integer.parseInt(modelPhieuNhap.getValueAt(i, 3).toString());
+    tongtien += gia * soLuong;
+    }
+    txt_tongtien.setText("TỔNG TIỀN :"+tongtien);
+    }
     public void locktext()
     {
         txt_maquat.setEditable(false);
@@ -452,8 +460,6 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
         panel_tablephieunhap.revalidate();
         panel_tablephieunhap.repaint();
     }
-    
-   
 
     
     private void addsanphamtoform() {
@@ -478,6 +484,7 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
         }
 
         modelPhieuNhap.addRow(new Object[]{ma, ten, gia, soLuong, ngaySX, chatlieu,NhaSanXuat});
+        load_tongtien();
     });
 }
 
@@ -560,7 +567,6 @@ public class ThemPhieuNhapDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_addsanpham;
     private javax.swing.JButton btn_deletesanpham;
-    private javax.swing.JButton btn_editsanpham;
     private javax.swing.JButton btn_nhaphang;
     private javax.swing.JComboBox<String> combobox_nhacungcap;
     private javax.swing.JLabel jLabel1;

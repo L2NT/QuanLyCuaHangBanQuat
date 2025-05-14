@@ -100,7 +100,6 @@ public class LoginFrame extends JFrame implements KeyListener {
         });
         pnlMain.add(pnlLogIn);
 
-
         add(pnlMain, BorderLayout.EAST);
     }
 

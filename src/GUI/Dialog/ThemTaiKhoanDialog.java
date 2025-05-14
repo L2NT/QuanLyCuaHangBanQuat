@@ -1,138 +1,315 @@
-package GUI.Dialog;
+package GUI.Panel;
 
+import BUS.NhanVienBUS;
 import BUS.TaiKhoanBUS;
 import DTO.NhanVienDTO;
-import BUS.NhanVienBUS;
+import DTO.TaiKhoanDTO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.*;
 import java.util.List;
+import java.awt.Dialog.ModalityType;
 
-public class ThemTaiKhoanDialog extends JDialog {
-    private final JComboBox<String> cbbNV;
-    private final JTextField txtUser, txtPass;
-    private final JComboBox<String> cbbQuyenHang;
-    private boolean saved = false;
+public class ThongTinCaNhanPanel extends JPanel {
+    private JTextField txtMaNV, txtHoTen, txtChucVu, txtSDT, txtDiaChi;
+    private JTextField txtTenDangNhap, txtMatKhau;
+    private JButton btnDoiMatKhau;
+    private final String maNhanVien;
     private final NhanVienBUS nvBUS = new NhanVienBUS();
-
-    public ThemTaiKhoanDialog(Window owner) {
-        super(owner,"Thêm tài khoản",ModalityType.APPLICATION_MODAL);
-        JPanel p = new JPanel(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
-        gbc.anchor = GridBagConstraints.WEST;
-
-        gbc.gridx=0; gbc.gridy=0; p.add(new JLabel("Nhân viên:"),gbc);
-        gbc.gridx=1;
-        cbbNV = new JComboBox<>();
-        // Already filtered in TaiKhoanBUS.layDanhSachNhanVienChuaCoTaiKhoan()
-        new TaiKhoanBUS().layDanhSachNhanVienChuaCoTaiKhoan().forEach(cbbNV::addItem);
-        p.add(cbbNV,gbc);
-
-        gbc.gridy=1; gbc.gridx=0; p.add(new JLabel("Tên đăng nhập:"),gbc);
-        gbc.gridx=1; txtUser=new JTextField(15); p.add(txtUser,gbc);
-
-        gbc.gridy=2; gbc.gridx=0; p.add(new JLabel("Mật khẩu:"),gbc);
-        gbc.gridx=1; txtPass=new JTextField(15); p.add(txtPass,gbc);
-
-        gbc.gridy=3; gbc.gridx=0; p.add(new JLabel("Quyền hạng:"),gbc);
-        gbc.gridx=1; 
-        cbbQuyenHang=new JComboBox<>(new String[]{"QuanLy","NhanVien"});
-        cbbQuyenHang.setEnabled(false); // Deshabilitar para que no se pueda cambiar manualmente
-        p.add(cbbQuyenHang,gbc);
-
-        gbc.gridy=4; gbc.gridx=0; gbc.gridwidth=2; gbc.anchor=GridBagConstraints.CENTER;
-        JPanel btnP = new JPanel();
-        JButton btnL=new JButton("Lưu"), btnH=new JButton("Hủy");
-        btnP.add(btnL); btnP.add(btnH);
-        p.add(btnP,gbc);
-
-        getContentPane().add(p);
-        pack(); setLocationRelativeTo(owner);
-
-        // Sự kiện khi chọn Nhân viên
-        cbbNV.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    // Cập nhật giá trị mặc định cho quyền hạng dựa trên chức vụ
-                    setDefaultQuyenHang();
-                }
-            }
-        });
-
-        btnH.addActionListener(e->dispose());
-        btnL.addActionListener(e->{
-            try {
-                String maNV = (String)cbbNV.getSelectedItem();
-                String user = txtUser.getText().trim();
-                String pass = txtPass.getText().trim();
-                String role = (String)cbbQuyenHang.getSelectedItem();
-                
-                // Verificar si rol y cargo coinciden
-                NhanVienDTO nv = nvBUS.layTatCa().stream()
-                              .filter(n -> n.getMaNV().equals(maNV))
-                              .findFirst()
-                              .orElse(null);
-                              
-                if (nv != null) {
-                    boolean roleMatches = ("Quản lý".equals(nv.getChucVu()) && "QuanLy".equals(role)) ||
-                                         ("Nhân viên".equals(nv.getChucVu()) && "NhanVien".equals(role));
-                    
-                    if (!roleMatches) {
-                        // Si han cambiado, mostrar advertencia pero permitir continuar
-                        int response = JOptionPane.showOptionDialog(
-                            this,
-                            "Quyền hạng của tài khoản không phù hợp với chức vụ của nhân viên.\n" +
-                            "Bạn có muốn tiếp tục?",
-                            "Xác nhận",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.WARNING_MESSAGE,
-                            null,
-                            new Object[]{"Có", "Hủy"},
-                            "Có"
-                        );
-                        
-                        if (response != 0) { // No es "Có"
-                            return;
-                        }
-                    }
-                }
-                
-                new TaiKhoanBUS().them(user, pass, role, maNV);
-                saved = true;
-                dispose();
-            } catch(Exception ex){
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
-            }
-        });
+    private final TaiKhoanBUS tkBUS = new TaiKhoanBUS();
+    
+    public ThongTinCaNhanPanel(String maNhanVien) {
+        this.maNhanVien = maNhanVien;
+        initComponents();
+        loadData();
+    }
+    
+    private void initComponents() {
+        setLayout(new BorderLayout(10, 10));
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Cập nhật quyền hạng mặc định khi hiển thị dialog
-        if (cbbNV.getItemCount() > 0) {
-            setDefaultQuyenHang();
+        // Title Panel
+        JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JLabel lblTitle = new JLabel("THÔNG TIN CÁ NHÂN");
+        lblTitle.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitle.setForeground(new Color(0, 102, 204));
+        titlePanel.add(lblTitle);
+        add(titlePanel, BorderLayout.NORTH);
+        
+        // Main Content Panel
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(10, 10, 10, 10),
+            BorderFactory.createLineBorder(Color.LIGHT_GRAY)
+        ));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        // Thông tin nhân viên section
+        JLabel lblInfoSection = new JLabel("Thông tin nhân viên");
+        lblInfoSection.setFont(new Font("Arial", Font.BOLD, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        mainPanel.add(lblInfoSection, gbc);
+        
+        gbc.gridwidth = 1;
+        
+        // Mã nhân viên
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        mainPanel.add(new JLabel("Mã nhân viên:"), gbc);
+        
+        gbc.gridx = 1;
+        txtMaNV = new JTextField(20);
+        txtMaNV.setEditable(false);
+        txtMaNV.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtMaNV, gbc);
+        
+        // Họ tên
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        mainPanel.add(new JLabel("Họ tên:"), gbc);
+        
+        gbc.gridx = 1;
+        txtHoTen = new JTextField(20);
+        txtHoTen.setEditable(false);
+        txtHoTen.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtHoTen, gbc);
+        
+        // Chức vụ
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        mainPanel.add(new JLabel("Chức vụ:"), gbc);
+        
+        gbc.gridx = 1;
+        txtChucVu = new JTextField(20);
+        txtChucVu.setEditable(false);
+        txtChucVu.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtChucVu, gbc);
+        
+        // Số điện thoại
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        mainPanel.add(new JLabel("Số điện thoại:"), gbc);
+        
+        gbc.gridx = 1;
+        txtSDT = new JTextField(20);
+        txtSDT.setEditable(false);
+        txtSDT.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtSDT, gbc);
+        
+        // Địa chỉ
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        mainPanel.add(new JLabel("Địa chỉ:"), gbc);
+        
+        gbc.gridx = 1;
+        txtDiaChi = new JTextField(20);
+        txtDiaChi.setEditable(false);
+        txtDiaChi.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtDiaChi, gbc);
+        
+        // Separator
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        JSeparator separator = new JSeparator();
+        separator.setPreferredSize(new Dimension(400, 2));
+        mainPanel.add(separator, gbc);
+        
+        // Thông tin tài khoản section
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        JLabel lblAccountSection = new JLabel("Thông tin tài khoản");
+        lblAccountSection.setFont(new Font("Arial", Font.BOLD, 16));
+        mainPanel.add(lblAccountSection, gbc);
+        
+        gbc.gridwidth = 1;
+        
+        // Tên đăng nhập
+        gbc.gridx = 0;
+        gbc.gridy = 8;
+        mainPanel.add(new JLabel("Tên đăng nhập:"), gbc);
+        
+        gbc.gridx = 1;
+        txtTenDangNhap = new JTextField(20);
+        txtTenDangNhap.setEditable(false);
+        txtTenDangNhap.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtTenDangNhap, gbc);
+        
+        // Mật khẩu
+        gbc.gridx = 0;
+        gbc.gridy = 9;
+        mainPanel.add(new JLabel("Mật khẩu:"), gbc);
+        
+        gbc.gridx = 1;
+        txtMatKhau = new JPasswordField(20);
+        txtMatKhau.setEditable(false);
+        txtMatKhau.setBackground(new Color(240, 240, 240));
+        mainPanel.add(txtMatKhau, gbc);
+        
+        add(mainPanel, BorderLayout.CENTER);
+        
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        btnDoiMatKhau = new JButton("Đổi mật khẩu");
+        
+        btnDoiMatKhau.addActionListener(e -> showPasswordChangeDialog());
+        
+        buttonPanel.add(btnDoiMatKhau);
+        
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+    
+    private void loadData() {
+        if (maNhanVien == null || maNhanVien.isEmpty()) {
+            JOptionPane.showMessageDialog(this, 
+                "Không thể xác định thông tin nhân viên!", 
+                "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Lấy thông tin nhân viên
+        NhanVienDTO nv = null;
+        for (NhanVienDTO n : nvBUS.layTatCa()) {
+            if (n.getMaNV().equals(maNhanVien)) {
+                nv = n;
+                break;
+            }
+        }
+        
+        if (nv != null) {
+            txtMaNV.setText(nv.getMaNV());
+            txtHoTen.setText(nv.getHoTen());
+            txtChucVu.setText(nv.getChucVu());
+            txtSDT.setText(nv.getSdt());
+            txtDiaChi.setText(nv.getDiaChi());
+        }
+        
+        // Lấy thông tin tài khoản
+        TaiKhoanDTO tk = null;
+        for (TaiKhoanDTO t : tkBUS.layTatCa()) {
+            if (maNhanVien.equals(t.getMaNhanVien())) {
+                tk = t;
+                break;
+            }
+        }
+        
+        if (tk != null) {
+            txtTenDangNhap.setText(tk.getUsername());
+            txtMatKhau.setText(tk.getPassword());
         }
     }
     
-    // Phương thức cập nhật quyền hạng mặc định dựa trên chức vụ của nhân viên
-    private void setDefaultQuyenHang() {
-        String maNV = (String)cbbNV.getSelectedItem();
-        if (maNV != null && !maNV.isEmpty()) {
-            // Truy vấn thông tin nhân viên từ BUS
-            List<NhanVienDTO> listNV = nvBUS.layTatCa();
-            for (NhanVienDTO nv : listNV) {
-                if (nv.getMaNV().equals(maNV)) {
-                    // Kiểm tra chức vụ và chọn đúng quyền hạng tương ứng
-                    if ("Quản lý".equals(nv.getChucVu())) {
-                        cbbQuyenHang.setSelectedItem("QuanLy");
-                    } else {
-                        cbbQuyenHang.setSelectedItem("NhanVien");
-                    }
+    private void showPasswordChangeDialog() {
+        JDialog passwordDialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Đổi mật khẩu", Dialog.ModalityType.APPLICATION_MODAL);        passwordDialog.setLayout(new BorderLayout(10, 10));
+        passwordDialog.setSize(400, 250);
+        passwordDialog.setLocationRelativeTo(this);
+        
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        
+        // Mật khẩu hiện tại
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        mainPanel.add(new JLabel("Mật khẩu hiện tại:"), gbc);
+        
+        gbc.gridx = 1;
+        JPasswordField txtCurrentPassword = new JPasswordField(15);
+        mainPanel.add(txtCurrentPassword, gbc);
+        
+        // Mật khẩu mới
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        mainPanel.add(new JLabel("Mật khẩu mới:"), gbc);
+        
+        gbc.gridx = 1;
+        JPasswordField txtNewPassword = new JPasswordField(15);
+        mainPanel.add(txtNewPassword, gbc);
+        
+        // Xác nhận mật khẩu mới
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        mainPanel.add(new JLabel("Xác nhận mật khẩu mới:"), gbc);
+        
+        gbc.gridx = 1;
+        JPasswordField txtConfirmPassword = new JPasswordField(15);
+        mainPanel.add(txtConfirmPassword, gbc);
+        
+        passwordDialog.add(mainPanel, BorderLayout.CENTER);
+        
+        // Button Panel
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JButton btnSave = new JButton("Lưu");
+        JButton btnCancel = new JButton("Hủy");
+        
+        btnSave.addActionListener(e -> {
+            // Kiểm tra mật khẩu hiện tại
+            String currentPass = new String(txtCurrentPassword.getPassword());
+            String newPass = new String(txtNewPassword.getPassword());
+            String confirmPass = new String(txtConfirmPassword.getPassword());
+            
+            if (currentPass.isEmpty() || newPass.isEmpty() || confirmPass.isEmpty()) {
+                JOptionPane.showMessageDialog(passwordDialog, 
+                    "Vui lòng nhập đầy đủ thông tin!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!currentPass.equals(txtMatKhau.getText())) {
+                JOptionPane.showMessageDialog(passwordDialog, 
+                    "Mật khẩu hiện tại không đúng!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            if (!newPass.equals(confirmPass)) {
+                JOptionPane.showMessageDialog(passwordDialog, 
+                    "Mật khẩu mới không khớp!", 
+                    "Lỗi", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Tìm tài khoản và cập nhật mật khẩu
+            TaiKhoanDTO tk = null;
+            for (TaiKhoanDTO t : tkBUS.layTatCa()) {
+                if (maNhanVien.equals(t.getMaNhanVien())) {
+                    tk = t;
                     break;
                 }
             }
-        }
+            
+            if (tk != null) {
+                try {
+                    tkBUS.capNhat(tk.getMaTaiKhoan(), tk.getUsername(), newPass, tk.getVaiTro(), tk.getMaNhanVien());
+                    JOptionPane.showMessageDialog(passwordDialog, 
+                        "Đổi mật khẩu thành công!", 
+                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                    passwordDialog.dispose();
+                    loadData(); // Reload data to show new password
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(passwordDialog, 
+                        "Lỗi khi đổi mật khẩu: " + ex.getMessage(), 
+                        "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        
+        btnCancel.addActionListener(e -> passwordDialog.dispose());
+        
+        buttonPanel.add(btnSave);
+        buttonPanel.add(btnCancel);
+        
+        passwordDialog.add(buttonPanel, BorderLayout.SOUTH);
+        passwordDialog.setVisible(true);
     }
-
-    public boolean isSaved(){ return saved; }
 }
