@@ -1,3 +1,4 @@
+
 package GUI.Panel;
 
 import BUS.NhanVienBUS;
@@ -13,10 +14,7 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Panel quản lý nhân viên - hiển thị danh sách, cho phép thêm, sửa, xóa nhân viên
- * và hỗ trợ tìm kiếm, lọc nhân viên theo nhiều tiêu chí
- */
+
 public class NhanVienPanel extends JPanel {
     // Các thành phần dữ liệu
     private final DefaultTableModel modelBangDuLieu;
@@ -41,9 +39,12 @@ public class NhanVienPanel extends JPanel {
         modelBangDuLieu = new DefaultTableModel(
             new Object[]{"Mã NV", "Họ tên", "Chức vụ", "SĐT", "Địa chỉ"}, 0
         ) {
+            /**
+             * Ghi đè phương thức để không cho phép chỉnh sửa trực tiếp trên bảng
+             */
             @Override 
             public boolean isCellEditable(int row, int column) { 
-                return false; // Không cho phép chỉnh sửa trực tiếp trên bảng
+                return false; 
             }
         };
         
@@ -190,7 +191,7 @@ public class NhanVienPanel extends JPanel {
             }
         });
 
-        // Sự kiện nút XÓA
+        // Sự kiện nút XÓA - ĐÃ SỬA
         btnXoa.addActionListener(e -> {
             // Kiểm tra xem đã chọn nhân viên nào chưa
             int dongDangChon = bangDuLieu.getSelectedRow();
@@ -201,27 +202,22 @@ public class NhanVienPanel extends JPanel {
                 return;
             }
             
-            // Hiển thị hộp thoại xác nhận xóa
-            int luaChon = JOptionPane.showConfirmDialog(this,
-                "Bạn có chắc chắn muốn xóa nhân viên này?", "Xác nhận xóa",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-                
-            if (luaChon == JOptionPane.YES_OPTION) {
-                // Lấy mã nhân viên và thực hiện xóa
-                String maNV = modelBangDuLieu.getValueAt(dongDangChon, 0).toString();
-                boolean ketQua = nhanVienBUS.xoa(maNV);
-                
-                if (ketQua) {
-                    JOptionPane.showMessageDialog(this,
-                        "Đã xóa nhân viên thành công",
-                        "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    napDuLieuVaoBang(); // Cập nhật lại bảng
-                } else {
-                    JOptionPane.showMessageDialog(this,
-                        "Không thể xóa nhân viên. Vui lòng kiểm tra lại!",
-                        "Lỗi", JOptionPane.ERROR_MESSAGE);
-                }
+            // Lấy mã nhân viên của dòng đã chọn
+            String maNV = modelBangDuLieu.getValueAt(dongDangChon, 0).toString();
+            
+            // Thực hiện xóa nhân viên - phương thức trả về false nếu:
+            // 1. Có lỗi xảy ra trong quá trình xóa
+            // 2. Người dùng hủy thao tác khi có xác nhận
+            boolean ketQua = nhanVienBUS.xoa(maNV);
+            
+            // Chỉ hiển thị thông báo và cập nhật bảng khi XÓA THÀNH CÔNG
+            if (ketQua) {
+                JOptionPane.showMessageDialog(this,
+                    "Đã xóa nhân viên thành công",
+                    "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                napDuLieuVaoBang(); // Cập nhật lại bảng
             }
+            // KHÔNG hiển thị thông báo lỗi ở đây nữa
         });
 
         // Sự kiện nút XUẤT EXCEL
